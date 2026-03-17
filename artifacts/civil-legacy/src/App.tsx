@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Menu, X, ChevronRight, ArrowRight, ChevronDown,
   Facebook, Twitter, Linkedin, Instagram,
@@ -143,6 +143,31 @@ const Navbar = ({
   setCurrentPage: (p: Page) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setScrollDirection('down');
+      } else if (currentScrollY < lastScrollY.current) {
+        setScrollDirection('up');
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const NAV_LINKS: { name: string; id: Page }[] = [
     { name: 'Home', id: 'home' },
@@ -157,8 +182,21 @@ const Navbar = ({
     setIsOpen(false);
   };
 
+  // Determine nav styling based on scroll state
+  // Default (top): semi-transparent, no blur to let hero show clearly
+  // Scrolling down: heavily blurred, semi-transparent
+  // Scrolling up: solid opaque black for distinct navigation
+  let navClasses = "fixed w-full z-[100] transition-all duration-300 border-b border-white/10 ";
+  if (!scrolled) {
+    navClasses += "bg-black/40 backdrop-blur-sm";
+  } else if (scrollDirection === 'down') {
+    navClasses += "bg-black/70 backdrop-blur-xl";
+  } else {
+    navClasses += "bg-black backdrop-blur-none";
+  }
+
   return (
-    <nav className="fixed w-full z-50 bg-black/90 border-b border-white/10 backdrop-blur-md">
+    <nav className={navClasses}>
       <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
         <div className="flex justify-between h-24 items-center">
           {/* Logo */}
@@ -212,21 +250,28 @@ const Navbar = ({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 100 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 top-24 bg-black z-40 lg:hidden px-8 pt-12"
+            className="absolute top-24 left-0 w-full bg-[#0a0a0a] z-[99] lg:hidden border-b-4 border-[#0077B6]"
           >
-            {NAV_LINKS.map(({ name, id }) => (
-              <button
-                key={id}
-                onClick={() => navigate(id)}
-                className="block w-full text-left text-4xl font-black uppercase tracking-tighter mb-8 text-white hover:text-[#0077B6] transition-colors focus:outline-none"
-              >
-                {name}
-              </button>
-            ))}
+            <div className="px-8 pt-8 pb-4">
+              {NAV_LINKS.map(({ name, id }, index) => {
+                const isLast = index === NAV_LINKS.length - 1;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => navigate(id)}
+                    className={`block w-full text-left text-4xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors focus:outline-none py-4 ${
+                      !isLast ? 'border-b border-white/5' : ''
+                    }`}
+                  >
+                    {name}
+                  </button>
+                );
+              })}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
