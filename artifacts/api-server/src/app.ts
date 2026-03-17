@@ -4,7 +4,7 @@ import router from "./routes";
 
 const app: Express = express();
 
-app.use(cors());
+app.use(cors({ origin: process.env.ALLOWED_ORIGIN }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
