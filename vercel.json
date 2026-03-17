@@ -1,0 +1,20 @@
+{
+  "buildCommand": "pnpm --filter @workspace/civil-legacy run build",
+  "outputDirectory": "artifacts/civil-legacy/dist",
+  "functions": {
+    "artifacts/api-server/src/app.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/artifacts/api-server/src/app.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
