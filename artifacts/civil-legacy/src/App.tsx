@@ -211,23 +211,37 @@ const Navbar = ({
       {/* Mobile drawer */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 100 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 top-24 bg-black z-40 lg:hidden px-8 pt-12"
-          >
-            {NAV_LINKS.map(({ name, id }) => (
-              <button
-                key={id}
-                onClick={() => navigate(id)}
-                className="block w-full text-left text-4xl font-black uppercase tracking-tighter mb-8 text-white hover:text-[#0077B6] transition-colors focus:outline-none"
-              >
-                {name}
-              </button>
-            ))}
-          </motion.div>
+          <>
+            {/* Blurred backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 top-24 z-30 lg:hidden"
+              style={{ backdropFilter: 'blur(12px)', backgroundColor: 'rgba(0,0,0,0.6)' }}
+              onClick={() => setIsOpen(false)}
+            />
+            {/* Drawer panel */}
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 100 }}
+              transition={{ duration: 0.25 }}
+              className="fixed top-24 right-0 bottom-0 w-3/4 max-w-xs z-40 lg:hidden px-8 pt-12"
+              style={{ backgroundColor: 'rgba(0,0,0,0.95)', borderLeft: '1px solid rgba(255,255,255,0.1)' }}
+            >
+              {NAV_LINKS.map(({ name, id }) => (
+                <button
+                  key={id}
+                  onClick={() => navigate(id)}
+                  className="block w-full text-left text-4xl font-black uppercase tracking-tighter mb-8 text-white hover:text-[#0077B6] transition-colors focus:outline-none"
+                >
+                  {name}
+                </button>
+              ))}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </nav>
