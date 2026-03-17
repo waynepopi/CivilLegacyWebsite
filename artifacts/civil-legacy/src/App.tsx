@@ -423,34 +423,34 @@ const AboutPage = () => (
   </div>
 );
 
-const ServicesPage = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }) => {
-  const servicePillars = [
-    {
-      id: "consultancy",
-      title: "Consultancy",
-      icon: <Ruler size={48} />,
-      summary: "Precision-driven strategic engineering and detailed design.",
-      details: ["Feasibility Studies", "Hydraulic Modeling", "Detailed Design", "Contract Administration", "Structural Analysis"],
-      stats: "BS 8110 Standard Compliant"
-    },
-    {
-      id: "construction",
-      title: "Construction",
-      icon: <HardHat size={48} />,
-      summary: "Implementation of heavy-duty urban and industrial infrastructure.",
-      details: ["Roadworks", "Sewer Reticulation", "Reservoir Construction", "Structural Works", "Waste Stabilisation Ponds"],
-      stats: "Full Site Supervision"
-    },
-    {
-      id: "training",
-      title: "Training Hub",
-      icon: <GraduationCap size={48} />,
-      summary: "Industry-aligned software mastery for future engineers.",
-      details: ["Civil 3D Training", "AutoCAD Workshops", "WaterGEMS Mastery", "BOQ Preparation", "Case-Study Analysis"],
-      stats: "Practical Design Focused"
-    }
-  ];
+const servicePillars = [
+  {
+    id: "consultancy",
+    title: "Consultancy",
+    icon: <Ruler size={48} />,
+    summary: "Precision-driven strategic engineering and detailed design.",
+    details: ["Feasibility Studies", "Hydraulic Modeling", "Detailed Design", "Contract Administration", "Structural Analysis"],
+    stats: "BS 8110 Standard Compliant"
+  },
+  {
+    id: "construction",
+    title: "Construction",
+    icon: <HardHat size={48} />,
+    summary: "Implementation of heavy-duty urban and industrial infrastructure.",
+    details: ["Roadworks", "Sewer Reticulation", "Reservoir Construction", "Structural Works", "Waste Stabilisation Ponds"],
+    stats: "Full Site Supervision"
+  },
+  {
+    id: "training",
+    title: "Training Hub",
+    icon: <GraduationCap size={48} />,
+    summary: "Industry-aligned software mastery for future engineers.",
+    details: ["Civil 3D Training", "AutoCAD Workshops", "WaterGEMS Mastery", "BOQ Preparation", "Case-Study Analysis"],
+    stats: "Practical Design Focused"
+  }
+];
 
+const ServicesPage = ({ setCurrentPage }: { setCurrentPage: (page: string) => void }) => {
   return (
     <div className="pt-24 bg-black min-h-screen text-white px-6 lg:px-12 text-left">
       <div className="max-w-[1600px] mx-auto py-32">
