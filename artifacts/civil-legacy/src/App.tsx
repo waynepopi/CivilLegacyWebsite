@@ -200,16 +200,11 @@ const Navbar = ({
         <div className="flex justify-between h-24 items-center">
           {/* Logo */}
           <button onClick={() => navigate('home')} className="text-left focus:outline-none">
-            <div className="text-2xl font-black text-white tracking-tighter uppercase leading-none">
-              {CONFIG.BRAND.NAME_1}
-              <span style={{ color: BLUE }}>{CONFIG.BRAND.NAME_2}</span>
-            </div>
-            <div
-              className="text-[9px] font-bold tracking-[0.4em] uppercase mt-1"
-              style={{ color: BLUE }}
-            >
-              {CONFIG.BRAND.TAGLINE}
-            </div>
+            <img
+              src="/logo.png"
+              alt="Civil Legacy Logo"
+              className="h-12 w-auto object-contain"
+            />
           </button>
 
           {/* Desktop links */}
@@ -434,10 +429,11 @@ const Footer = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
           {/* Brand */}
           <div>
-            <span className="text-3xl font-black text-white tracking-tighter mb-8 block leading-none">
-              {CONFIG.BRAND.NAME_1}
-              <span style={{ color: BLUE }}>{CONFIG.BRAND.NAME_2}</span>
-            </span>
+            <img
+              src="/logo.png"
+              alt="Civil Legacy Logo"
+              className="h-16 w-auto object-contain mb-8 block"
+            />
             <p className="text-gray-500 text-sm leading-relaxed mb-8">
               Zimbabwe's premier engineering legacy built on structural precision and water management excellence.
             </p>
