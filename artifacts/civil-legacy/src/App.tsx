@@ -183,16 +183,15 @@ const Navbar = ({
   };
 
   // Determine nav styling based on scroll state
-  // Default (top): semi-transparent, no blur to let hero show clearly
-  // Scrolling down: heavily blurred, semi-transparent
-  // Scrolling up: solid opaque black for distinct navigation
-  let navClasses = "fixed w-full z-[100] transition-all duration-300 border-b border-white/10 ";
+  // Using bg-black/85 uniformly to ensure good contrast across all pages (especially light-themed ones like Projects and Contact)
+  // while preserving the dynamic backdrop-blur transitions
+  let navClasses = "fixed w-full z-[100] transition-all duration-300 border-b border-white/10 bg-black/85 ";
   if (!scrolled) {
-    navClasses += "bg-black/40 backdrop-blur-sm";
+    navClasses += "backdrop-blur-sm";
   } else if (scrollDirection === 'down') {
-    navClasses += "bg-black/70 backdrop-blur-xl";
+    navClasses += "backdrop-blur-xl";
   } else {
-    navClasses += "bg-black backdrop-blur-none";
+    navClasses += "backdrop-blur-none";
   }
 
   return (
