@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Civil Legacy Consultancy"
+title = "Civil Legacy"
 version = "1.0.0"
 id = "artifacts/civil-legacy"
 router = "path"
