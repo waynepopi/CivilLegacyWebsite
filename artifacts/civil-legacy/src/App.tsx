@@ -2,9 +2,12 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Menu, X, ChevronRight, ArrowRight, ChevronDown,
   Facebook, Twitter, Linkedin, Instagram,
-  HardHat, Ruler, GraduationCap,
+  HardHat, Ruler, GraduationCap, Mail, MapPin,
 } from 'lucide-react';
+import { FaTiktok, FaInstagram, FaLinkedinIn, FaFacebookF, FaWhatsapp } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 
 // ─── CENTRALIZED CONFIG ──────────────────────────────────────────────────────
 
@@ -434,6 +437,12 @@ const AccordionItem = ({
 
 const Footer = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => {
   const SOCIAL_ICONS = [Facebook, Twitter, Linkedin, Instagram];
+  const { toast } = useToast();
+
+  const copyPhone = () => {
+    navigator.clipboard.writeText(String(CONFIG.CONTACT.MAIN_LINE));
+    toast({ description: 'Copied to clipboard!' });
+  };
 
   return (
     <footer className="bg-black text-white pt-24 pb-12 border-t border-white/5 text-left">
@@ -505,8 +514,23 @@ const Footer = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => {
               Transmission
             </h4>
             <ul className="space-y-4 text-sm font-mono text-gray-400">
-              <li className="text-white font-black">{String(CONFIG.CONTACT.MAIN_LINE)}</li>
-              <li>{String(CONFIG.CONTACT.EMAIL)}</li>
+              <li>
+                <button
+                  onClick={copyPhone}
+                  className="text-white font-black hover:text-[#0077B6] transition-colors cursor-pointer"
+                  title="Click to copy"
+                >
+                  {String(CONFIG.CONTACT.MAIN_LINE)}
+                </button>
+              </li>
+              <li>
+                <a
+                  href={`mailto:${String(CONFIG.CONTACT.EMAIL)}`}
+                  className="hover:text-white transition-colors"
+                >
+                  {String(CONFIG.CONTACT.EMAIL)}
+                </a>
+              </li>
               <li className="text-[10px] uppercase tracking-widest opacity-50">
                 {String(CONFIG.BRAND.REGISTRATION)}
               </li>
@@ -798,6 +822,26 @@ const ProjectsPage = () => (
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', details: '' });
+  const { toast } = useToast();
+
+  const copyPhone = () => {
+    navigator.clipboard.writeText(String(CONFIG.CONTACT.MAIN_LINE));
+    toast({ description: 'Copied to clipboard!' });
+  };
+
+  const scrollToForm = () => {
+    document.getElementById('whatsapp-form')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const SOCIAL_LINKS = [
+    { icon: FaTiktok,      label: 'TikTok',    href: 'https://www.tiktok.com/@civillegacy',         onClick: undefined },
+    { icon: FaInstagram,   label: 'Instagram',  href: 'https://www.instagram.com/civillegacy',       onClick: undefined },
+    { icon: FaLinkedinIn,  label: 'LinkedIn',   href: 'https://www.linkedin.com/company/civillegacy', onClick: undefined },
+    { icon: FaFacebookF,   label: 'Facebook',   href: 'https://www.facebook.com/civillegacy',        onClick: undefined },
+    { icon: FaWhatsapp,    label: 'WhatsApp',   href: undefined,                                     onClick: scrollToForm },
+    { icon: Mail,          label: 'Email',      href: `mailto:${String(CONFIG.CONTACT.EMAIL)}`,       onClick: undefined },
+    { icon: MapPin,        label: 'Location',   href: `https://maps.google.com/?q=${encodeURIComponent(String(CONFIG.CONTACT.OFFICES[0].location))}`, onClick: undefined },
+  ];
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -830,32 +874,55 @@ const ContactPage = () => {
                 <h5 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4" style={{ color: BLUE }}>
                   Official Line
                 </h5>
-                <p className="text-3xl font-black text-black">{String(CONFIG.CONTACT.MAIN_LINE)}</p>
+                <button
+                  onClick={copyPhone}
+                  className="text-3xl font-black text-black hover:text-[#0077B6] transition-colors cursor-pointer"
+                  title="Click to copy"
+                >
+                  {String(CONFIG.CONTACT.MAIN_LINE)}
+                </button>
               </div>
               <div>
                 <h5 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4" style={{ color: BLUE }}>
                   Email
                 </h5>
-                <p className="text-xl font-black text-black break-all">{String(CONFIG.CONTACT.EMAIL)}</p>
+                <a
+                  href={`mailto:${String(CONFIG.CONTACT.EMAIL)}`}
+                  className="text-xl font-black text-black break-all hover:text-[#0077B6] transition-colors"
+                >
+                  {String(CONFIG.CONTACT.EMAIL)}
+                </a>
               </div>
             </div>
             <div className="mt-16 bg-black p-10 rounded-[2rem] text-white">
               <h4 className="text-xs font-black uppercase tracking-[0.3em] mb-6" style={{ color: BLUE }}>
-                Staff Extensions
+                Connect With Us
               </h4>
-              <div className="grid grid-cols-2 gap-4">
-                {CONFIG.CONTACT.EXTENSIONS.map((ext, i) => (
-                  <div key={i} className="text-[10px] border-l border-white/20 pl-4">
-                    <span className="block font-bold">{String(ext.name)}</span>
-                    <span className="text-gray-500">{String(ext.num)}</span>
-                  </div>
-                ))}
+              <div className="grid grid-cols-2 gap-3">
+                {SOCIAL_LINKS.map(({ icon: Icon, label, href, onClick }) => {
+                  const content = (
+                    <div className="flex items-center gap-3 p-3 rounded-xl border border-white/10 hover:border-[#0077B6]/60 hover:bg-white/5 transition-all group cursor-pointer">
+                      <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 group-hover:bg-[#0077B6]/20 transition-colors text-gray-400 group-hover:text-white">
+                        <Icon size={15} />
+                      </span>
+                      <span className="text-[11px] font-bold text-gray-400 group-hover:text-white uppercase tracking-widest transition-colors">
+                        {label}
+                      </span>
+                    </div>
+                  );
+                  return onClick ? (
+                    <button key={label} onClick={onClick} className="text-left w-full">{content}</button>
+                  ) : (
+                    <a key={label} href={href} target="_blank" rel="noopener noreferrer">{content}</a>
+                  );
+                })}
               </div>
             </div>
           </div>
 
           {/* Right: WhatsApp form */}
           <div
+            id="whatsapp-form"
             className="p-12 lg:p-20 text-left rounded-[3rem] border border-white/5 relative overflow-hidden"
             style={{ backgroundColor: '#000000' }}
           >
@@ -870,43 +937,32 @@ const ContactPage = () => {
               <input
                 type="text"
                 required
-                placeholder="IDENTIFICATION (FULL NAME)"
+                placeholder="Full name"
                 value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg uppercase placeholder-white/30 focus:border-[#0077B6] transition-colors"
+                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg placeholder-white/30 placeholder:text-sm focus:border-[#0077B6] transition-colors"
               />
               <input
                 type="email"
                 required
-                placeholder="EMAIL ADDR"
+                placeholder="Email address"
                 value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
-                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg uppercase placeholder-white/30 focus:border-[#0077B6] transition-colors"
+                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg placeholder-white/30 placeholder:text-sm focus:border-[#0077B6] transition-colors"
               />
               <textarea
                 rows={3}
                 required
-                placeholder="PROJECT REQUIREMENTS"
+                placeholder="Describe your project requirements"
                 value={form.details}
                 onChange={e => setForm({ ...form, details: e.target.value })}
-                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg uppercase placeholder-white/30 focus:border-[#0077B6] transition-colors resize-none"
+                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg placeholder-white/30 placeholder:text-xs focus:border-[#0077B6] transition-colors resize-none"
               />
               <button
                 type="submit"
-                className="w-full py-6 text-white font-black uppercase tracking-[0.4em] rounded-xl transition-all duration-500 focus:outline-none"
-                style={{ backgroundColor: BLUE }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLButtonElement;
-                  el.style.backgroundColor = '#ffffff';
-                  el.style.color = '#000000';
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLButtonElement;
-                  el.style.backgroundColor = BLUE;
-                  el.style.color = '#ffffff';
-                }}
+                className="w-full py-6 text-white font-black uppercase tracking-[0.4em] rounded-xl transition-all duration-500 focus:outline-none bg-[#25D366] hover:bg-[#128C7E]"
               >
-                Transmit via WhatsApp
+                Send via WhatsApp
               </button>
             </form>
           </div>
@@ -956,6 +1012,7 @@ export default function App() {
         </AnimatePresence>
       </main>
       <Footer setCurrentPage={setCurrentPage} />
+      <Toaster />
     </div>
   );
 }

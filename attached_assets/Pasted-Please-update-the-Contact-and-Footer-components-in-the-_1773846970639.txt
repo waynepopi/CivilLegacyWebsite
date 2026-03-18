@@ -1,0 +1,24 @@
+Please update the Contact and Footer components in the frontend application (`artifacts/civil-legacy/src`) to improve the contact information and social links. Use React, Tailwind CSS, and our existing UI libraries (`lucide-react`, `react-icons`, and Shadcn UI).
+
+Please implement the following 3 UI/UX updates:
+
+### 1. Replace "Staff Extensions" with Social Media Links
+Find the section in the Contact component currently displaying "Staff Extensions" and replace it with a modern grid/list of social media and platform links.
+- Required links: TikTok, Instagram, LinkedIn, Facebook, WhatsApp, Email, and Location (Google Maps).
+- For the WhatsApp link, set the `href` or `onClick` to direct the user to our existing WhatsApp API form on the same page.
+- Use appropriate icons from `lucide-react` or `react-icons/fa` for each platform.
+
+### 2. Refine the WhatsApp API Form
+Update the styling and text of the existing WhatsApp form:
+- Remove forced capitalization: Remove any `uppercase` or `capitalize` Tailwind classes from the form `<input>` and `<textarea>` elements so the user's natural typing case is preserved.
+- Adjust placeholder text: Add Tailwind classes (e.g., `placeholder:text-sm` or `placeholder:text-xs`) to reduce the size of the dummy text so it fits neatly inside the text boxes.
+- Update the Submit Button: Change the text from "Transmit via WhatsApp" to "Send via WhatsApp". 
+- Update Button Color: Change the button's background to official WhatsApp green. Use Tailwind arbitrary values: `bg-[#25D366] hover:bg-[#128C7E] text-white`.
+
+### 3. Make Official Line and Email Clickable
+Find where the official phone number and email are displayed (in the Contact section and Footer) and make them interactive:
+- Email: Wrap the email address in a standard mailto link (`<a href="mailto:info@civillegacy.com">...</a>`) so it opens the user's default mail client.
+- Phone Number: Convert the phone number text into a clickable `<button>`. Add an `onClick` handler that uses `navigator.clipboard.writeText()` to copy the number to the user's clipboard. 
+- Toast Notification: When the phone number is clicked, trigger a toast notification (using our existing Shadcn `useToast` hook) that says "Copied to clipboard!".
+
+Please review the code, make these targeted edits, and ensure the app still builds successfully.
