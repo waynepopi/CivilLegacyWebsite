@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Menu, X, ChevronRight, ArrowRight, ChevronDown,
   Facebook, Twitter, Linkedin, Instagram,
-  HardHat, Ruler, GraduationCap, Mail, MapPin,
+  HardHat, Ruler, GraduationCap, Mail, MapPin, Briefcase
 } from 'lucide-react';
 import { FaTiktok, FaInstagram, FaLinkedinIn, FaFacebookF, FaWhatsapp } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 // ─── CENTRALIZED CONFIG ──────────────────────────────────────────────────────
 
@@ -93,10 +95,17 @@ const CONFIG = {
       summary: 'Industry-aligned software mastery for future engineers.',
       details: ['Civil 3D Training', 'AutoCAD Workshops', 'WaterGEMS Mastery', 'BOQ Preparation', 'Case-Study Analysis'],
     },
+    {
+      id: 'project-management',
+      title: 'Project Management',
+      Icon: Briefcase,
+      summary: 'End-to-end execution, supervision, and lifecycle management.',
+      details: ['Project Planning', 'Risk Mitigation', 'Quality Assurance', 'Cost Control', 'Site Supervision'],
+    },
   ],
 } as const;
 
-type Page = 'home' | 'about' | 'services' | 'projects' | 'contact';
+type Page = 'home' | 'about' | 'services' | 'projects' | 'team' | 'contact';
 
 // ─── SHARED PRIMITIVES ───────────────────────────────────────────────────────
 
@@ -145,7 +154,6 @@ const Navbar = ({
   currentPage: Page;
   setCurrentPage: (p: Page) => void;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
   const lastScrollY = useRef(0);
@@ -172,22 +180,10 @@ const Navbar = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const NAV_LINKS: { name: string; id: Page }[] = [
-    { name: 'Home', id: 'home' },
-    { name: 'Firm', id: 'about' },
-    { name: 'Services', id: 'services' },
-    { name: 'Projects', id: 'projects' },
-    { name: 'Contact', id: 'contact' },
-  ];
-
   const navigate = (id: Page) => {
     setCurrentPage(id);
-    setIsOpen(false);
   };
 
-  // Determine nav styling based on scroll state
-  // Using bg-black/85 uniformly to ensure good contrast across all pages (especially light-themed ones like Projects and Contact)
-  // while preserving the dynamic backdrop-blur transitions
   let navClasses = "fixed w-full z-[100] transition-all duration-300 border-b border-white/10 bg-black/85 ";
   if (!scrolled) {
     navClasses += "backdrop-blur-sm";
@@ -223,67 +219,109 @@ const Navbar = ({
           </button>
 
           {/* Desktop links */}
-          <div className="hidden lg:flex space-x-12">
-            {NAV_LINKS.map(({ name, id }) => (
-              <button
-                key={id}
-                onClick={() => navigate(id)}
-                className="text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none"
-                style={{ color: currentPage === id ? BLUE : undefined }}
-              >
-                <span className={currentPage === id ? '' : 'text-gray-400 hover:text-white transition-colors'}>
-                  {name}
-                </span>
-                {currentPage === id && (
-                  <motion.div
-                    layoutId="nav-underline"
-                    className="absolute -bottom-2 left-0 w-full h-[2px]"
-                    style={{ backgroundColor: BLUE }}
-                  />
-                )}
-              </button>
-            ))}
+          <div className="hidden lg:flex items-center space-x-8">
+            <NavigationMenu>
+              <NavigationMenuList className="space-x-8">
+                <NavigationMenuItem>
+                  <button onClick={() => navigate('home')} className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${currentPage === 'home' ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                    Home
+                  </button>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <button onClick={() => navigate('about')} className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${currentPage === 'about' ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                    About Us
+                  </button>
+                </NavigationMenuItem>
+                
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="bg-transparent text-[11px] font-black uppercase tracking-[0.25em] text-gray-400 hover:text-white hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-white transition-colors h-auto p-0">
+                    Services
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-black/95 border border-white/10 rounded-xl shadow-2xl backdrop-blur-xl">
+                      {CONFIG.SERVICES.map((service) => (
+                        <li key={service.id}>
+                          <NavigationMenuLink asChild>
+                            <button
+                              onClick={() => navigate('services')}
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-white/10 text-left w-full"
+                            >
+                              <div className="text-sm font-bold text-white uppercase tracking-tighter mb-1">{service.title}</div>
+                              <p className="line-clamp-2 text-xs leading-snug text-gray-400">
+                                {service.summary}
+                              </p>
+                            </button>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <button onClick={() => navigate('projects')} className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${currentPage === 'projects' ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                    Projects
+                  </button>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <button onClick={() => navigate('team')} className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${currentPage === 'team' ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                    Team
+                  </button>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <button onClick={() => navigate('contact')} className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${currentPage === 'contact' ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                    Contact
+                  </button>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            {/* Prominent Training Hub Link */}
+            <button
+              onClick={() => navigate('services')}
+              className="px-6 py-2.5 font-black uppercase tracking-[0.2em] text-[10px] text-black bg-white rounded-md hover:bg-[#0077B6] hover:text-white transition-all duration-300 focus:outline-none flex items-center gap-2"
+            >
+              <GraduationCap size={14} /> Training Hub
+            </button>
           </div>
 
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setIsOpen((v) => !v)}
-            className="lg:hidden text-white p-2 border border-white/20 rounded focus:outline-none"
-          >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile hamburger (Sheet) */}
+          <div className="lg:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className="text-white p-2 border border-white/20 rounded focus:outline-none">
+                  <Menu size={20} />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-full sm:w-[400px] bg-black border-r border-white/10 p-0 text-white">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <SheetDescription className="sr-only">Main navigation for the application</SheetDescription>
+                <div className="pt-24 px-8 pb-4 h-full flex flex-col overflow-y-auto">
+                  <button onClick={() => navigate('home')} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Home</button>
+                  <button onClick={() => navigate('about')} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">About Us</button>
+                  <button onClick={() => navigate('services')} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Services</button>
+                  <div className="pl-6 py-2 space-y-4 border-b border-white/5">
+                    {CONFIG.SERVICES.map(s => (
+                      <button key={s.id} onClick={() => navigate('services')} className="block w-full text-left text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">{s.title}</button>
+                    ))}
+                  </div>
+                  <button onClick={() => navigate('projects')} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Projects</button>
+                  <button onClick={() => navigate('team')} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Team</button>
+                  <button onClick={() => navigate('contact')} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Contact</button>
+                  <div className="mt-8 mb-8">
+                    <button
+                      onClick={() => navigate('services')}
+                      className="w-full py-4 text-center font-black uppercase tracking-[0.2em] text-xs text-black bg-white rounded-xl hover:bg-[#0077B6] hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      <GraduationCap size={16} /> Training Hub
+                    </button>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
-
-      {/* Mobile drawer */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.25 }}
-            className="absolute top-24 left-0 w-full bg-[#0a0a0a] z-[99] lg:hidden border-b-4 border-[#0077B6]"
-          >
-            <div className="px-8 pt-8 pb-4">
-              {NAV_LINKS.map(({ name, id }, index) => {
-                const isLast = index === NAV_LINKS.length - 1;
-                return (
-                  <button
-                    key={id}
-                    onClick={() => navigate(id)}
-                    className={`block w-full text-left text-4xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors focus:outline-none py-4 ${
-                      !isLast ? 'border-b border-white/5' : ''
-                    }`}
-                  >
-                    {name}
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </nav>
   );
 };
@@ -448,7 +486,7 @@ const Footer = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => {
     <footer className="bg-black text-white pt-24 pb-12 border-t border-white/5 text-left">
       <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
-          {/* Brand */}
+          {/* Brand & Trust */}
           <div>
             <img
               src="/logo-full.png"
@@ -458,6 +496,11 @@ const Footer = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => {
             <p className="text-gray-500 text-sm leading-relaxed mb-8">
               Zimbabwe's premier engineering legacy built on structural precision and water management excellence.
             </p>
+            {/* Trust Elements */}
+            <div className="mb-8 p-4 border border-white/10 rounded-xl bg-white/5 inline-block">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: BLUE }}>Accreditations</h4>
+              <p className="text-xs font-bold text-white tracking-widest">{String(CONFIG.BRAND.REGISTRATION)}</p>
+            </div>
             <div className="flex gap-4">
               {SOCIAL_ICONS.map((Icon, idx) => (
                 <div
@@ -476,16 +519,16 @@ const Footer = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => {
           {/* Nav */}
           <div>
             <h4 className="text-xs font-black uppercase tracking-[0.3em] mb-8" style={{ color: BLUE }}>
-              System
+              Quick Links
             </h4>
             <ul className="space-y-4 text-sm font-bold text-gray-400 uppercase tracking-widest">
-              {(['home', 'about', 'services', 'projects'] as Page[]).map((p) => (
+              {(['home', 'about', 'services', 'projects', 'team', 'contact'] as Page[]).map((p) => (
                 <li
                   key={p}
                   onClick={() => setCurrentPage(p)}
                   className="hover:text-white cursor-pointer transition-colors"
                 >
-                  {p === 'about' ? 'Expertise' : p.charAt(0).toUpperCase() + p.slice(1)}
+                  {p === 'about' ? 'About Us' : p.charAt(0).toUpperCase() + p.slice(1)}
                 </li>
               ))}
             </ul>
@@ -531,9 +574,6 @@ const Footer = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => {
                   {String(CONFIG.CONTACT.EMAIL)}
                 </a>
               </li>
-              <li className="text-[10px] uppercase tracking-widest opacity-50">
-                {String(CONFIG.BRAND.REGISTRATION)}
-              </li>
             </ul>
           </div>
         </div>
@@ -571,7 +611,7 @@ const HomePage = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => 
   ];
 
   return (
-    <div className="bg-white">
+    <div className="bg-black">
       <Hero
         titleLine1="SHAPING"
         titleLine2="LEGACY."
@@ -583,65 +623,49 @@ const HomePage = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => 
 
       <ScrollingBanner />
 
-      {/* About teaser */}
-      <section className="py-32 bg-white px-6 lg:px-12">
-        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
-          <div className="lg:col-span-7">
-            <SectionHeader
-              title="Engineering Resilience"
-              subtitle="Leveraging cutting-edge methodologies and a client-centric ethos to ensure resilient systems that serve communities for generations."
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20 text-left">
-              <div className="space-y-4">
-                <h4 className="text-2xl font-black uppercase tracking-tighter text-black">Our Mission</h4>
-                <p className="text-gray-500 font-light leading-relaxed">
-                  To empower engineers and organisations with practical, design-focused training and consultancy that elevates standards across the region.
-                </p>
-              </div>
-              <div className="space-y-4">
-                <h4 className="text-2xl font-black uppercase tracking-tighter text-black">Our Vision</h4>
-                <p className="text-gray-500 font-light leading-relaxed">
-                  To be the premier provider of engineering excellence and professional development in Southern Africa.
-                </p>
-              </div>
-            </div>
-          </div>
+      {/* Banner */}
+      <section className="bg-[#0077B6] py-16 px-6 lg:px-12 text-center border-y border-white/10">
+        <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4 drop-shadow-sm">
+          Technical Documentation Services
+        </h3>
+        <p className="text-white/80 font-bold tracking-widest uppercase text-xs md:text-sm">
+          Comprehensive reporting, civil drawings, and regulatory submissions.
+        </p>
+      </section>
 
-          {/* Stats card */}
-          <div className="lg:col-span-5 flex flex-col justify-center">
-            <div
-              className="bg-black p-12 lg:p-20 text-white relative overflow-hidden text-left"
-              style={{ borderLeft: `12px solid ${BLUE}` }}
-            >
-              <div className="text-[12rem] font-black leading-none tracking-tighter text-white opacity-5 absolute -top-10 right-0 pointer-events-none select-none">
-                {String(CONFIG.PROJECTS.length)}
-              </div>
-              <h3 className="text-7xl font-black tracking-tighter mb-4 relative z-10">
-                {String(CONFIG.PROJECTS.length)}+
-              </h3>
-              <p className="text-xs font-black uppercase tracking-[0.4em] mb-12 relative z-10" style={{ color: BLUE }}>
-                Verified Assignments
-              </p>
-              <div className="space-y-6 border-t border-white/10 pt-8 relative z-10">
-                <p className="text-gray-400 italic font-light text-lg leading-relaxed">
-                  "We partner with municipalities to ensure infrastructure stands the test of time."
-                </p>
-                <div className="flex items-center gap-4">
-                  <img
-                    src={CONFIG.TEAM[0].img}
-                    className="w-12 h-12 rounded-full object-cover"
-                    style={{ filter: 'grayscale(1)' }}
-                    alt={CONFIG.TEAM[0].name}
-                  />
-                  <div>
-                    <p className="font-bold text-sm">{String(CONFIG.TEAM[0].name)}</p>
-                    <p className="text-[10px] uppercase tracking-widest text-gray-500">
-                      {String(CONFIG.TEAM[0].role)}
-                    </p>
+      {/* Four Pillars */}
+      <section className="py-32 bg-black px-6 lg:px-12">
+        <div className="max-w-[1600px] mx-auto">
+          <SectionHeader
+            title="The Four Pillars"
+            subtitle="Four segments ensuring a complete infrastructure life cycle."
+            light
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 text-left">
+            {CONFIG.SERVICES.map((pillar) => {
+              const { Icon } = pillar;
+              return (
+                <motion.div
+                  key={pillar.id}
+                  whileHover={{ y: -10 }}
+                  className="bg-white/5 p-10 flex flex-col group border border-white/10 shadow-2xl rounded-2xl"
+                >
+                  <div className="mb-8 transform group-hover:scale-110 origin-left transition-transform" style={{ color: BLUE }}>
+                    <Icon size={40} />
                   </div>
-                </div>
-              </div>
-            </div>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 text-white">{String(pillar.title)}</h3>
+                  <p className="text-gray-400 text-sm font-light mb-8 leading-relaxed flex-grow">{String(pillar.summary)}</p>
+                  <div className="space-y-3 border-l-2 border-white/5 pl-4">
+                    {pillar.details.slice(0, 3).map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                        <div className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: BLUE }} />
+                        {String(item)}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -667,13 +691,147 @@ const HomePage = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void }) => 
           </div>
         </div>
       </section>
+
+      {/* Resilience Teaser (Duplicated at bottom) */}
+      <section className="py-32 bg-black px-6 lg:px-12 border-t border-white/5">
+        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
+          <div className="lg:col-span-7">
+            <SectionHeader
+              title="Engineering Resilience"
+              subtitle="Leveraging cutting-edge methodologies and a client-centric ethos to ensure resilient systems that serve communities for generations."
+              light
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20 text-left">
+              <div className="space-y-4">
+                <h4 className="text-2xl font-black uppercase tracking-tighter text-white">Our Mission</h4>
+                <p className="text-gray-400 font-light leading-relaxed">
+                  To empower engineers and organisations with practical, design-focused training and consultancy that elevates standards across the region.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <h4 className="text-2xl font-black uppercase tracking-tighter text-white">Our Vision</h4>
+                <p className="text-gray-400 font-light leading-relaxed">
+                  To be the premier provider of engineering excellence and professional development in Southern Africa.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats card */}
+          <div className="lg:col-span-5 flex flex-col justify-center">
+            <div
+              className="bg-white/5 p-12 lg:p-20 text-white relative overflow-hidden text-left border border-white/10"
+              style={{ borderLeft: `12px solid ${BLUE}` }}
+            >
+              <div className="text-[12rem] font-black leading-none tracking-tighter text-white opacity-5 absolute -top-10 right-0 pointer-events-none select-none">
+                15
+              </div>
+              <h3 className="text-7xl font-black tracking-tighter mb-4 relative z-10">
+                15+
+              </h3>
+              <p className="text-xs font-black uppercase tracking-[0.4em] mb-12 relative z-10" style={{ color: BLUE }}>
+                Verified Projects
+              </p>
+              <div className="space-y-6 border-t border-white/10 pt-8 relative z-10">
+                <p className="text-gray-400 italic font-light text-lg leading-relaxed">
+                  "We partner with municipalities to ensure infrastructure stands the test of time."
+                </p>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={CONFIG.TEAM[0].img}
+                    className="w-12 h-12 rounded-full object-cover"
+                    style={{ filter: 'grayscale(1)' }}
+                    alt={CONFIG.TEAM[0].name}
+                  />
+                  <div>
+                    <p className="font-bold text-sm text-white">{String(CONFIG.TEAM[0].name)}</p>
+                    <p className="text-[10px] uppercase tracking-widest text-gray-500">
+                      {String(CONFIG.TEAM[0].role)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
 
-// ─── PAGE: ABOUT ──────────────────────────────────────────────────────────────
+// ─── PAGE: ABOUT US ───────────────────────────────────────────────────────────
 
-const AboutPage = () => (
+const AboutUsPage = () => (
+  <div className="bg-black min-h-screen text-white pt-24">
+    {/* About teaser */}
+    <section className="py-32 bg-black px-6 lg:px-12">
+      <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
+        <div className="lg:col-span-7">
+          <SectionHeader
+            title="Engineering Resilience"
+            subtitle="Leveraging cutting-edge methodologies and a client-centric ethos to ensure resilient systems that serve communities for generations."
+            light
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20 text-left">
+            <div className="space-y-4">
+              <h4 className="text-2xl font-black uppercase tracking-tighter text-white">Our Mission</h4>
+              <p className="text-gray-400 font-light leading-relaxed">
+                To empower engineers and organisations with practical, design-focused training and consultancy that elevates standards across the region.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h4 className="text-2xl font-black uppercase tracking-tighter text-white">Our Vision</h4>
+              <p className="text-gray-400 font-light leading-relaxed">
+                To be the premier provider of engineering excellence and professional development in Southern Africa.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats card */}
+        <div className="lg:col-span-5 flex flex-col justify-center">
+          <div
+            className="bg-white/5 p-12 lg:p-20 text-white relative overflow-hidden text-left border border-white/10"
+            style={{ borderLeft: `12px solid ${BLUE}` }}
+          >
+            <div className="text-[12rem] font-black leading-none tracking-tighter text-white opacity-5 absolute -top-10 right-0 pointer-events-none select-none">
+              15
+            </div>
+            <h3 className="text-7xl font-black tracking-tighter mb-4 relative z-10">
+              15+
+            </h3>
+            <p className="text-xs font-black uppercase tracking-[0.4em] mb-12 relative z-10" style={{ color: BLUE }}>
+              Verified Projects
+            </p>
+            <div className="space-y-6 border-t border-white/10 pt-8 relative z-10">
+              <p className="text-gray-400 italic font-light text-lg leading-relaxed">
+                "We partner with municipalities to ensure infrastructure stands the test of time."
+              </p>
+              <div className="flex items-center gap-4">
+                <img
+                  src={CONFIG.TEAM[0].img}
+                  className="w-12 h-12 rounded-full object-cover"
+                  style={{ filter: 'grayscale(1)' }}
+                  alt={CONFIG.TEAM[0].name}
+                />
+                <div>
+                  <p className="font-bold text-sm text-white">{String(CONFIG.TEAM[0].name)}</p>
+                  <p className="text-[10px] uppercase tracking-widest text-gray-500">
+                    {String(CONFIG.TEAM[0].role)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+);
+
+// ─── PAGE: TEAM ───────────────────────────────────────────────────────────────
+
+const TeamPage = () => (
   <div className="pt-24 bg-black min-h-screen text-white px-6 lg:px-12 text-left">
     <div className="max-w-[1600px] mx-auto py-32">
       <SectionHeader
@@ -714,8 +872,8 @@ const ServicesPage = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void })
   <div className="pt-24 bg-black min-h-screen text-white px-6 lg:px-12 text-left">
     <div className="max-w-[1600px] mx-auto py-32">
       <SectionHeader
-        title="The Three Pillars"
-        subtitle="Three segments ensuring a complete infrastructure life cycle."
+        title="The Four Pillars"
+        subtitle="Four segments ensuring a complete infrastructure life cycle."
         light
       />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/10 border border-white/10 overflow-hidden rounded-[3rem]">
@@ -984,7 +1142,8 @@ export default function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'home':     return <HomePage setCurrentPage={setCurrentPage} />;
-      case 'about':    return <AboutPage />;
+      case 'about':    return <AboutUsPage />;
+      case 'team':     return <TeamPage />;
       case 'services': return <ServicesPage setCurrentPage={setCurrentPage} />;
       case 'projects': return <ProjectsPage />;
       case 'contact':  return <ContactPage />;
@@ -1013,6 +1172,20 @@ export default function App() {
       </main>
       <Footer setCurrentPage={setCurrentPage} />
       <Toaster />
+
+      {/* WhatsApp Floating Widget */}
+      <a
+        href="https://wa.me/263714406037"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-[100] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#128C7E] hover:scale-110 transition-all duration-300 flex items-center justify-center group"
+      >
+        <FaWhatsapp size={32} />
+        {/* Optional tooltip */}
+        <span className="absolute right-16 bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+          Chat with us
+        </span>
+      </a>
     </div>
   );
 }
