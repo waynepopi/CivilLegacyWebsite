@@ -1,0 +1,358 @@
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, ChevronDown } from 'lucide-react';
+import { CONFIG } from '@/config';
+import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
+
+const BLUE = '#0077B6';
+
+export const SectionHeader = ({
+  title,
+  subtitle,
+  light = false,
+}: {
+  title: string;
+  subtitle: string;
+  light?: boolean;
+}) => (
+  <div className="mb-20 text-left">
+    <div className="flex items-center gap-4 mb-4">
+      <div className="w-12 h-1" style={{ backgroundColor: BLUE }} />
+      <span
+        className="text-[10px] font-black uppercase tracking-[0.5em]"
+        style={{ color: light ? '#9ca3af' : BLUE }}
+      >
+        Technical Specification
+      </span>
+    </div>
+    <h2
+      className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6"
+      style={{ color: light ? '#ffffff' : '#000000' }}
+    >
+      {title}
+    </h2>
+    <p
+      className="text-xl font-light max-w-2xl leading-relaxed"
+      style={{ color: light ? '#9ca3af' : '#4b5563' }}
+    >
+      {subtitle}
+    </p>
+  </div>
+);
+
+export const Hero = ({
+  titleLine1,
+  titleLine2,
+  subtitle,
+  bgImage,
+  ctaLabel,
+  onCta,
+}: {
+  titleLine1: string;
+  titleLine2: string;
+  subtitle: string;
+  bgImage: string;
+  ctaLabel: string;
+  onCta: () => void;
+}) => (
+  <section className="relative h-[90vh] min-h-[600px] flex items-center bg-black overflow-hidden px-6 lg:px-12 border-b border-white/10">
+    <div className="absolute inset-0 z-0">
+      <img
+        src={bgImage}
+        alt="Hero"
+        className="w-full h-full object-cover"
+        style={{ filter: 'grayscale(1) brightness(0.3) contrast(1.25)', transform: 'scale(1.05)' }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+    </div>
+
+    <div className="relative z-10 max-w-[1600px] mx-auto w-full">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        className="max-w-4xl text-left"
+      >
+        <h1 className="text-6xl md:text-[10rem] font-black text-white leading-[0.85] tracking-tighter uppercase mb-12">
+          {titleLine1}
+          <br />
+          <span style={{ color: BLUE }}>{titleLine2}</span>
+        </h1>
+        <p className="text-xl md:text-2xl text-gray-400 font-light max-w-xl mb-12 tracking-tight">
+          {subtitle}
+        </p>
+        <button
+          onClick={onCta}
+          className="group flex items-center gap-3 px-12 py-6 font-black uppercase tracking-[0.3em] text-xs text-white transition-all duration-500 hover:bg-white hover:text-black shadow-2xl"
+          style={{ backgroundColor: BLUE }}
+        >
+          {ctaLabel}
+          <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
+        </button>
+      </motion.div>
+    </div>
+  </section>
+);
+
+export const ScrollingBanner = () => {
+  const doubled = useMemo(
+    () => [...CONFIG.SCROLL_IMAGES, ...CONFIG.SCROLL_IMAGES],
+    [],
+  );
+  const totalOffset = CONFIG.SCROLL_IMAGES.length * 548;
+
+  return (
+    <div className="py-20 bg-black overflow-hidden border-y border-white/5">
+      <motion.div
+        className="flex gap-12 px-6"
+        animate={{ x: [0, -totalOffset] }}
+        transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+      >
+        {doubled.map((src, i) => (
+          <div
+            key={i}
+            className="min-w-[500px] h-[350px] overflow-hidden flex-shrink-0 rounded-2xl border border-white/10"
+            style={{ filter: 'grayscale(1) brightness(0.75)' }}
+          >
+            <img src={src} alt="Project" className="w-full h-full object-cover" />
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+export const AccordionItem = ({
+  title,
+  content,
+  image,
+  isOpen,
+  onToggle,
+}: {
+  title: string;
+  content: string;
+  image: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}) => (
+  <div className={`border-b border-white/10 transition-colors duration-500 ${isOpen ? 'bg-white/5' : ''}`}>
+    <button
+      onClick={onToggle}
+      className="w-full py-10 px-8 flex items-center justify-between text-left focus:outline-none"
+    >
+      <span
+        className="text-2xl font-black uppercase tracking-tighter transition-all"
+        style={{ color: isOpen ? BLUE : '#ffffff' }}
+      >
+        {title}
+      </span>
+      <ChevronDown
+        size={32}
+        strokeWidth={3}
+        className={`transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`}
+        style={{ color: isOpen ? BLUE : '#4b5563' }}
+      />
+    </button>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          key="content"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.35 }}
+          className="overflow-hidden"
+        >
+          <div className="px-8 pb-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <p className="text-gray-400 text-lg font-light leading-relaxed">{content}</p>
+            <div
+              className="h-64 border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+              style={{ filter: 'grayscale(1) brightness(0.5) contrast(1.25)' }}
+            >
+              <img src={image} alt={title} className="w-full h-full object-cover" />
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
+);
+
+const Home = () => {
+  const [openIdx, setOpenIdx] = useState<number>(0);
+  const navigate = useNavigate();
+
+  const ACCORDION = [
+    {
+      title: 'Sustainable Infrastructure',
+      content: 'We specialize in resilient systems. Our designs for 3200 stands at Suncoast demonstrate our ability to scale complex civil works while maintaining environmental stewardship.',
+      image: CONFIG.SCROLL_IMAGES[0],
+    },
+    {
+      title: 'Hydraulic Modelling',
+      content: 'Using cutting-edge software like WaterGEMS and Civil 3D, we provide precise pipe modelling to ensure optimal pressure in stand subdivisions.',
+      image: CONFIG.SCROLL_IMAGES[2],
+    },
+    {
+      title: 'Industrial Excellence',
+      content: 'From fuel stations in high-temperature environments to large-span industrial buildings, we maintain structural durability under operational loads.',
+      image: CONFIG.SCROLL_IMAGES[5],
+    },
+  ];
+
+  return (
+    <div className="bg-black">
+      <Helmet>
+        <title>Home | Civil Legacy Consultancy</title>
+        <meta name="description" content="Zimbabwe's leading civil engineering consultancy delivering high-impact water and infrastructure solutions across the region." />
+      </Helmet>
+
+      <Hero
+        titleLine1="SHAPING"
+        titleLine2="LEGACY."
+        subtitle="Zimbabwe's leading civil engineering consultancy delivering high-impact water and infrastructure solutions across the region."
+        bgImage="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1600"
+        ctaLabel="View Reference List"
+        onCta={() => navigate('/projects')}
+      />
+
+      <ScrollingBanner />
+
+      {/* Banner */}
+      <section className="bg-[#0077B6] py-16 px-6 lg:px-12 text-center border-y border-white/10">
+        <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4 drop-shadow-sm">
+          Technical Documentation Services
+        </h3>
+        <p className="text-white/80 font-bold tracking-widest uppercase text-xs md:text-sm">
+          Comprehensive reporting, civil drawings, and regulatory submissions.
+        </p>
+      </section>
+
+      {/* Four Pillars */}
+      <section className="py-32 bg-black px-6 lg:px-12">
+        <div className="max-w-[1600px] mx-auto">
+          <SectionHeader
+            title="The Four Pillars"
+            subtitle="Four segments ensuring a complete infrastructure life cycle."
+            light
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 text-left">
+            {CONFIG.SERVICES.map((pillar) => {
+              const { Icon } = pillar;
+              return (
+                <motion.div
+                  key={pillar.id}
+                  whileHover={{ y: -10 }}
+                  className="bg-white/5 p-10 flex flex-col group border border-white/10 shadow-2xl rounded-2xl"
+                >
+                  <div className="mb-8 transform group-hover:scale-110 origin-left transition-transform" style={{ color: BLUE }}>
+                    <Icon size={40} />
+                  </div>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 text-white">{String(pillar.title)}</h3>
+                  <p className="text-gray-400 text-sm font-light mb-8 leading-relaxed flex-grow">{String(pillar.summary)}</p>
+                  <div className="space-y-3 border-l-2 border-white/5 pl-4">
+                    {pillar.details.slice(0, 3).map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                        <div className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: BLUE }} />
+                        {String(item)}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Core capabilities accordion */}
+      <section className="py-32 bg-black border-y border-white/5">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex items-center gap-6 mb-20">
+            <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Core Capabilities</h2>
+            <div className="h-[2px] flex-grow bg-white/10" />
+          </div>
+          <div className="border-t border-white/10">
+            {ACCORDION.map((item, idx) => (
+              <AccordionItem
+                key={idx}
+                title={item.title}
+                content={item.content}
+                image={item.image}
+                isOpen={openIdx === idx}
+                onToggle={() => setOpenIdx(openIdx === idx ? -1 : idx)}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Resilience Teaser (Duplicated at bottom) */}
+      <section className="py-32 bg-black px-6 lg:px-12 border-t border-white/5">
+        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
+          <div className="lg:col-span-7">
+            <SectionHeader
+              title="Engineering Resilience"
+              subtitle="Leveraging cutting-edge methodologies and a client-centric ethos to ensure resilient systems that serve communities for generations."
+              light
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20 text-left">
+              <div className="space-y-4">
+                <h4 className="text-2xl font-black uppercase tracking-tighter text-white">Our Mission</h4>
+                <p className="text-gray-400 font-light leading-relaxed">
+                  To empower engineers and organisations with practical, design-focused training and consultancy that elevates standards across the region.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <h4 className="text-2xl font-black uppercase tracking-tighter text-white">Our Vision</h4>
+                <p className="text-gray-400 font-light leading-relaxed">
+                  To be the premier provider of engineering excellence and professional development in Southern Africa.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats card */}
+          <div className="lg:col-span-5 flex flex-col justify-center">
+            <div
+              className="bg-white/5 p-12 lg:p-20 text-white relative overflow-hidden text-left border border-white/10"
+              style={{ borderLeft: `12px solid ${BLUE}` }}
+            >
+              <div className="text-[12rem] font-black leading-none tracking-tighter text-white opacity-5 absolute -top-10 right-0 pointer-events-none select-none">
+                15
+              </div>
+              <h3 className="text-7xl font-black tracking-tighter mb-4 relative z-10">
+                15+
+              </h3>
+              <p className="text-xs font-black uppercase tracking-[0.4em] mb-12 relative z-10" style={{ color: BLUE }}>
+                Verified Projects
+              </p>
+              <div className="space-y-6 border-t border-white/10 pt-8 relative z-10">
+                <p className="text-gray-400 italic font-light text-lg leading-relaxed">
+                  "We partner with municipalities to ensure infrastructure stands the test of time."
+                </p>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={CONFIG.TEAM[0].img}
+                    className="w-12 h-12 rounded-full object-cover"
+                    style={{ filter: 'grayscale(1)' }}
+                    alt={CONFIG.TEAM[0].name}
+                  />
+                  <div>
+                    <p className="font-bold text-sm text-white">{String(CONFIG.TEAM[0].name)}</p>
+                    <p className="text-[10px] uppercase tracking-widest text-gray-500">
+                      {String(CONFIG.TEAM[0].role)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Home;
