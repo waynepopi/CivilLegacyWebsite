@@ -10,6 +10,17 @@ import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Badge } from "@/components/ui/badge";
 
 // ─── CENTRALIZED CONFIG ──────────────────────────────────────────────────────
 
@@ -42,28 +53,28 @@ const CONFIG = {
     ],
   },
   PROJECTS: [
-    { title: 'Suncoast Project', loc: 'Masvingo', scope: 'Road Design, Water Reticulation, Sewer Reticulation, Stormwater Drainage', stands: '3200 Stands', date: 'Oct 2022' },
-    { title: 'The Nest of Kenilworth', loc: 'Chipinge', scope: 'Water, Stormwater, Sewer, Road and Public Lighting Design', stands: '3800 Stands', date: 'Nov 2025' },
-    { title: 'Victoria Range', loc: 'Masvingo', scope: 'Water & Sewer Reticulation Designs', stands: '500 Stands', date: 'Dec 2023' },
-    { title: 'Boronia Farm Subdivision', loc: 'Harare', scope: 'Water Reticulation Design', stands: '200 Stands', date: 'Mar 2025' },
-    { title: 'Flamboyant Project', loc: 'Masvingo', scope: 'Water Reticulation Design', stands: '400 Stands', date: 'Jan 2023' },
-    { title: 'Mutare Recovery Facility', loc: 'Mutare', scope: 'Full structural design & geotechnical guidance for Industrial Waste Processing Structure', stands: 'Industrial', date: 'Completed' },
-    { title: 'Madziwa Structural Development', loc: 'Gweru', scope: 'Full structural design, detailing and documentation for reinforced concrete multi-level building', stands: 'Multi-Storey', date: 'Completed' },
-    { title: 'Popi Residence', loc: 'Gweru', scope: 'High-end modern residential structural design with reinforced concrete framing and cantilever elements', stands: 'Randolph Phase 1', date: 'Underway' },
-    { title: 'Proposed Shops & Offices', loc: 'Rusape', scope: 'Commercial double-storey structural design and reinforcement detailing under BS 8110 standards', stands: 'Stand 2461', date: 'Approved' },
-    { title: 'Waste Stabilisation Ponds', loc: 'Gweru', scope: 'Design of complete wastewater stabilisation pond system and abattoir effluent treatment', stands: 'Connemara Farm', date: 'Completed' },
-    { title: 'Fuel Service Station', loc: 'Muzarabani', scope: 'Commercial structural design of canopy, steel framing and composite infrastructure', stands: 'Energy Park', date: 'Completed' },
-    { title: '219m² Residential Unit', loc: 'Chipinge', scope: 'Structural design for modern medium-density residential development including boundary walls', stands: 'Residential', date: 'Completed' },
-    { title: 'Residential Unit (St Kelvin)', loc: 'Chipinge', scope: 'Full structural design and construction documentation for high-end multi-bedroom dwelling', stands: 'High-End', date: 'Completed' },
-    { title: 'Church Structure Foundation', loc: 'Chipinge', scope: 'Structural foundation design and reinforcement detailing for institutional development', stands: 'UCCZ Gaza', date: 'Completed' },
-    { title: 'Structural Building Development', loc: 'Mt Selinda', scope: 'Comprehensive multi-storey reinforced concrete building structural design and certification', stands: 'Multi-Storey', date: 'Completed' },
+    { title: 'Suncoast Project', loc: 'Masvingo', sector: 'Residential', scope: 'Road Design, Water Reticulation, Sewer Reticulation, Stormwater Drainage', stands: '3200 Stands', date: 'Oct 2022', status: 'Completed' },
+    { title: 'The Nest of Kenilworth', loc: 'Chipinge', sector: 'Residential', scope: 'Water, Stormwater, Sewer, Road and Public Lighting Design', stands: '3800 Stands', date: 'Nov 2025', status: 'Underway' },
+    { title: 'Victoria Range', loc: 'Masvingo', sector: 'Residential', scope: 'Water & Sewer Reticulation Designs', stands: '500 Stands', date: 'Dec 2023', status: 'Completed' },
+    { title: 'Boronia Farm Subdivision', loc: 'Harare', sector: 'Residential', scope: 'Water Reticulation Design', stands: '200 Stands', date: 'Mar 2025', status: 'Underway' },
+    { title: 'Flamboyant Project', loc: 'Masvingo', sector: 'Residential', scope: 'Water Reticulation Design', stands: '400 Stands', date: 'Jan 2023', status: 'Completed' },
+    { title: 'Mutare Recovery Facility', loc: 'Mutare', sector: 'Industrial', scope: 'Full structural design & geotechnical guidance for Industrial Waste Processing Structure', stands: 'Industrial', date: 'Completed', status: 'Completed' },
+    { title: 'Madziwa Structural Development', loc: 'Gweru', sector: 'Industrial', scope: 'Full structural design, detailing and documentation for reinforced concrete multi-level building', stands: 'Multi-Storey', date: 'Completed', status: 'Completed' },
+    { title: 'Popi Residence', loc: 'Gweru', sector: 'Residential', scope: 'High-end modern residential structural design with reinforced concrete framing and cantilever elements', stands: 'Randolph Phase 1', date: 'Underway', status: 'Underway' },
+    { title: 'Proposed Shops & Offices', loc: 'Rusape', sector: 'Commercial', scope: 'Commercial double-storey structural design and reinforcement detailing under BS 8110 standards', stands: 'Stand 2461', date: 'Approved', status: 'Approved' },
+    { title: 'Waste Stabilisation Ponds', loc: 'Gweru', sector: 'Infrastructure', scope: 'Design of complete wastewater stabilisation pond system and abattoir effluent treatment', stands: 'Connemara Farm', date: 'Completed', status: 'Completed' },
+    { title: 'Fuel Service Station', loc: 'Muzarabani', sector: 'Commercial', scope: 'Commercial structural design of canopy, steel framing and composite infrastructure', stands: 'Energy Park', date: 'Completed', status: 'Completed' },
+    { title: '219m² Residential Unit', loc: 'Chipinge', sector: 'Residential', scope: 'Structural design for modern medium-density residential development including boundary walls', stands: 'Residential', date: 'Completed', status: 'Completed' },
+    { title: 'Residential Unit (St Kelvin)', loc: 'Chipinge', sector: 'Residential', scope: 'Full structural design and construction documentation for high-end multi-bedroom dwelling', stands: 'High-End', date: 'Completed', status: 'Completed' },
+    { title: 'Church Structure Foundation', loc: 'Chipinge', sector: 'Institutional', scope: 'Structural foundation design and reinforcement detailing for institutional development', stands: 'UCCZ Gaza', date: 'Completed', status: 'Completed' },
+    { title: 'Structural Building Development', loc: 'Mt Selinda', sector: 'Institutional', scope: 'Comprehensive multi-storey reinforced concrete building structural design and certification', stands: 'Multi-Storey', date: 'Completed', status: 'Completed' },
   ],
   TEAM: [
     { name: 'Eng. Dereck M. Popi', role: 'Company Director', id: 'ZIE 198098 | ECZ 151080', creds: 'BSc (Hons), MBA, Pr Eng', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600' },
     { name: 'Simbarashe Musakwembewa', role: 'Structural Expert', id: 'ZIE 084408 | ECZ 150285', creds: 'BSc (Hons), Pr. Eng, MECZ', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600' },
     { name: 'Eng. Byron Muzovaka', role: 'GeoTech Expert', id: 'ZIE 144395 | ECZ 100645', creds: 'BSc (Hons), ECZ, Pr. Eng', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600' },
-    { name: 'Tawanda Mvarume', role: 'Civil & Water Engineer', id: 'BSc (Hons)', creds: 'Civil Design Specialist', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600' },
-    { name: 'Shylet Moyo', role: 'Quantity Surveyor', id: 'BSc (Hons)', creds: 'BOQ & Cost Analysis', img: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=600' },
+    { name: 'Eng. Panashe Gora', role: 'Lead Engineer', id: 'ZIE 144446 | ECZ 100446', creds: 'BSc (Hons), ECZ, Pr. Eng', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600' },
+    { name: 'Tawanda Mvarume', role: 'Civil & Water Engineer', id: 'ZIE 150410 | ECZ 120511', creds: 'BSc (Hons), Civil Design Specialist', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=600' },
   ],
   SCROLL_IMAGES: [
     'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=800',
@@ -839,27 +850,49 @@ const TeamPage = () => (
         subtitle="Our multidisciplinary board of registered Professional Engineers."
         light
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20">
         {CONFIG.TEAM.map((member, i) => (
-          <div
+          <Card
             key={i}
-            className="border border-white/10 p-12 hover:border-[#0077B6] transition-all group relative overflow-hidden bg-white/5 rounded-[2rem] shadow-2xl"
+            className="bg-white/5 border-white/10 hover:border-[#0077B6]/50 transition-all duration-500 overflow-hidden group rounded-[2rem] h-full flex flex-col"
           >
-            <div
-              className="w-full aspect-square mb-10 overflow-hidden rounded-2xl"
-              style={{ filter: 'grayscale(1)' }}
-            >
-              <img src={member.img} alt={String(member.name)} className="w-full h-full object-cover" />
+            <div className="relative aspect-square overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
+              <img
+                src={member.img}
+                alt={String(member.name)}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
-            <h4 className="text-3xl font-black uppercase tracking-tighter mb-2">{String(member.name)}</h4>
-            <p className="font-bold text-xs uppercase tracking-widest mb-6" style={{ color: BLUE }}>
-              {String(member.role)}
-            </p>
-            <div className="space-y-1 pt-6 border-t border-white/5 font-mono text-[10px] text-gray-500 uppercase">
-              <p>{String(member.creds)}</p>
-              <p>{String(member.id)}</p>
-            </div>
-          </div>
+            <CardHeader className="p-8 pb-0">
+              <CardTitle className="text-3xl font-black uppercase tracking-tighter text-white mb-2">
+                {String(member.name)}
+              </CardTitle>
+              <CardDescription className="font-bold text-xs uppercase tracking-widest" style={{ color: BLUE }}>
+                {String(member.role)}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8 pt-6 flex-grow">
+              <div className="space-y-4">
+                <div className="h-px bg-white/10 w-12" />
+                <div className="space-y-1 font-mono text-[10px] text-gray-500 uppercase tracking-widest">
+                  <p className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: BLUE }} />
+                    {String(member.creds)}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: BLUE }} />
+                    {String(member.id)}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="p-8 pt-0">
+              <div className="flex gap-4">
+                 {/* Social links could go here if needed, but keeping it clean as per brand */}
+              </div>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </div>
@@ -929,46 +962,90 @@ const ServicesPage = ({ setCurrentPage }: { setCurrentPage: (p: Page) => void })
 // ─── PAGE: PROJECTS ───────────────────────────────────────────────────────────
 
 const ProjectsPage = () => (
-  <div className="pt-24 bg-white min-h-screen px-6 lg:px-12 text-left text-black">
+  <div className="pt-24 bg-black min-h-screen px-6 lg:px-12 text-left text-white">
     <div className="max-w-[1600px] mx-auto py-32">
       <SectionHeader
         title="Project Reference"
         subtitle="Comprehensive structural and civil assignments across Zimbabwe."
+        light
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 bg-gray-200 border border-gray-200 shadow-2xl">
+      
+      {/* Featured Projects Carousel */}
+      <Carousel className="w-full max-w-6xl mx-auto mb-32">
+        <CarouselContent>
+          {CONFIG.PROJECTS.slice(0, 5).map((proj, i) => (
+            <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 p-4">
+              <Card className="bg-white/5 border-white/10 h-full flex flex-col hover:border-[#0077B6]/50 transition-all duration-500 rounded-[2rem] overflow-hidden">
+                <CardHeader className="p-8">
+                  <div className="flex justify-between items-start mb-4">
+                    <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-white/20 text-gray-400">
+                      {String(proj.sector)}
+                    </Badge>
+                    <span className="text-[10px] font-mono text-gray-500 uppercase">{String(proj.status)}</span>
+                  </div>
+                  <CardTitle className="text-2xl font-black uppercase tracking-tighter text-white">
+                    {String(proj.title)}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-8 pb-8 flex-grow">
+                   <p className="text-gray-400 font-light text-sm italic mb-4 line-clamp-3">"{String(proj.scope)}"</p>
+                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#0077B6]">
+                      <MapPin size={12} /> {String(proj.loc)}
+                   </div>
+                </CardContent>
+              </Card>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="hidden md:block">
+          <CarouselPrevious className="bg-white/5 border-white/10 text-white hover:bg-[#0077B6] -left-12" />
+          <CarouselNext className="bg-white/5 border-white/10 text-white hover:bg-[#0077B6] -right-12" />
+        </div>
+      </Carousel>
+
+      {/* Project Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {CONFIG.PROJECTS.map((proj, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white p-12 hover:bg-gray-50 transition-colors group"
+            transition={{ delay: i * 0.05 }}
           >
-            <div className="flex flex-col md:flex-row justify-between items-baseline mb-8 gap-4">
-              <div>
-                <span
-                  className="text-[10px] font-black uppercase tracking-[0.5em] mb-2 block"
-                  style={{ color: BLUE }}
-                >
-                  {String(proj.loc)}
-                </span>
-                <h3 className="text-3xl font-black uppercase tracking-tighter group-hover:text-[#0077B6] transition-colors">
+            <Card className="bg-white/5 border-white/10 hover:border-[#0077B6]/30 transition-all duration-500 rounded-[2rem] h-full">
+              <CardHeader className="p-8">
+                <div className="flex justify-between items-center mb-4">
+                  <Badge variant="secondary" className="bg-[#0077B6]/10 text-[#0077B6] border-none text-[8px] uppercase tracking-widest">
+                    {String(proj.sector)}
+                  </Badge>
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{String(proj.date)}</span>
+                </div>
+                <CardTitle className="text-xl font-black uppercase tracking-tighter text-white">
                   {String(proj.title)}
-                </h3>
-              </div>
-              <div className="md:text-right">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                  {String(proj.date)}
-                </p>
-                <p className="text-xs font-mono font-bold text-gray-900 mt-1 uppercase tracking-tighter">
-                  {String(proj.stands)}
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4 items-start">
-              <div className="w-1 h-12 bg-gray-100 flex-shrink-0" />
-              <p className="text-gray-500 font-light text-base leading-relaxed italic">{String(proj.scope)}</p>
-            </div>
+                </CardTitle>
+                <CardDescription className="text-[10px] font-black uppercase tracking-[0.2em] mt-1" style={{ color: BLUE }}>
+                  {String(proj.loc)}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-8 pb-8">
+                <div className="space-y-4">
+                  <div className="p-4 bg-black/40 rounded-xl border border-white/5">
+                    <p className="text-gray-400 text-xs font-light leading-relaxed line-clamp-2">
+                       {String(proj.scope)}
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">
+                       Capacity: {String(proj.stands)}
+                    </div>
+                    <Badge variant="outline" className={`text-[8px] uppercase tracking-widest ${proj.status === 'Completed' ? 'border-green-500/50 text-green-500' : 'border-[#0077B6]/50 text-[#0077B6]'}`}>
+                       {String(proj.status)}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>
@@ -978,63 +1055,83 @@ const ProjectsPage = () => (
 
 // ─── PAGE: CONTACT ────────────────────────────────────────────────────────────
 
+const contactSchema = z.object({
+  name: z.string().min(2, "Name is too short"),
+  email: z.string().email("Invalid email address"),
+  type: z.enum(["General Inquiry", "RFQ", "Corporate Training"]),
+  message: z.string().min(10, "Please provide more details"),
+});
+
+type ContactValues = z.infer<typeof contactSchema>;
+
 const ContactPage = () => {
-  const [form, setForm] = useState({ name: '', email: '', details: '' });
   const { toast } = useToast();
+  const form = useForm<ContactValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      type: "General Inquiry",
+      message: "",
+    },
+  });
 
   const copyPhone = () => {
     navigator.clipboard.writeText(String(CONFIG.CONTACT.MAIN_LINE));
     toast({ description: 'Copied to clipboard!' });
   };
 
-  const scrollToForm = () => {
-    document.getElementById('whatsapp-form')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const SOCIAL_LINKS = [
-    { icon: FaTiktok,      label: 'TikTok',    href: 'https://www.tiktok.com/@civillegacy',         onClick: undefined },
-    { icon: FaInstagram,   label: 'Instagram',  href: 'https://www.instagram.com/civillegacy',       onClick: undefined },
-    { icon: FaLinkedinIn,  label: 'LinkedIn',   href: 'https://www.linkedin.com/company/civillegacy', onClick: undefined },
-    { icon: FaFacebookF,   label: 'Facebook',   href: 'https://www.facebook.com/civillegacy',        onClick: undefined },
-    { icon: FaWhatsapp,    label: 'WhatsApp',   href: undefined,                                     onClick: scrollToForm },
-    { icon: Mail,          label: 'Email',      href: `mailto:${String(CONFIG.CONTACT.EMAIL)}`,       onClick: undefined },
-    { icon: MapPin,        label: 'Location',   href: `https://maps.google.com/?q=${encodeURIComponent(String(CONFIG.CONTACT.OFFICES[0].location))}`, onClick: undefined },
-  ];
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Sanitize all inputs via encodeURIComponent before injecting into URL
-    const sanitizedName = encodeURIComponent(form.name.trim().toUpperCase());
-    const sanitizedEmail = encodeURIComponent(form.email.trim().toUpperCase());
-    const sanitizedDetails = encodeURIComponent(form.details.trim().toUpperCase());
-    const message = encodeURIComponent(
-      `ENGINEERING INQUIRY\n\nNAME: ${decodeURIComponent(sanitizedName)}\nEMAIL: ${decodeURIComponent(sanitizedEmail)}\nDETAILS: ${decodeURIComponent(sanitizedDetails)}`,
+  const onSubmit = (values: ContactValues) => {
+    const sanitizedName = encodeURIComponent(values.name.trim().toUpperCase());
+    const sanitizedEmail = encodeURIComponent(values.email.trim().toUpperCase());
+    const sanitizedType = encodeURIComponent(values.type.trim().toUpperCase());
+    const sanitizedMessage = encodeURIComponent(values.message.trim().toUpperCase());
+    
+    const whatsappMessage = encodeURIComponent(
+      `CIVIL LEGACY INQUIRY\n\nTYPE: ${decodeURIComponent(sanitizedType)}\nNAME: ${decodeURIComponent(sanitizedName)}\nEMAIL: ${decodeURIComponent(sanitizedEmail)}\n\nMESSAGE: ${decodeURIComponent(sanitizedMessage)}`,
     );
+    
     window.open(
-      `https://wa.me/${String(CONFIG.CONTACT.WHATSAPP_NUM)}?text=${message}`,
+      `https://wa.me/${String(CONFIG.CONTACT.WHATSAPP_NUM)}?text=${whatsappMessage}`,
       '_blank',
       'noopener,noreferrer',
     );
+    
+    toast({
+      title: "Inquiry Initialized",
+      description: "Redirecting to WhatsApp for secure transmission.",
+    });
   };
 
+  const SOCIAL_LINKS = [
+    { icon: FaTiktok,      label: 'TikTok',    href: 'https://www.tiktok.com/@civillegacy' },
+    { icon: FaInstagram,   label: 'Instagram',  href: 'https://www.instagram.com/civillegacy' },
+    { icon: FaLinkedinIn,  label: 'LinkedIn',   href: 'https://www.linkedin.com/company/civillegacy' },
+    { icon: FaFacebookF,   label: 'Facebook',   href: 'https://www.facebook.com/civillegacy' },
+    { icon: FaWhatsapp,    label: 'WhatsApp',   href: `https://wa.me/${String(CONFIG.CONTACT.WHATSAPP_NUM)}` },
+    { icon: Mail,          label: 'Email',      href: `mailto:${String(CONFIG.CONTACT.EMAIL)}` },
+    { icon: MapPin,        label: 'Location',   href: `https://maps.google.com/?q=${encodeURIComponent(String(CONFIG.CONTACT.OFFICES[0].location))}` },
+  ];
+
   return (
-    <div className="pt-24 bg-white min-h-screen px-6 lg:px-12 text-left">
+    <div className="pt-24 bg-black min-h-screen px-6 lg:px-12 text-left text-white">
       <div className="max-w-[1600px] mx-auto py-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
           {/* Left: info */}
           <div>
             <SectionHeader
-              title="Let's Build"
+              title="Transmission"
               subtitle="Connect with technical headquarters for project consultations and training cohorts."
+              light
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
               <div>
                 <h5 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4" style={{ color: BLUE }}>
-                  Official Line
+                  Direct Feed
                 </h5>
                 <button
                   onClick={copyPhone}
-                  className="text-3xl font-black text-black hover:text-[#0077B6] transition-colors cursor-pointer"
+                  className="text-4xl font-black text-white hover:text-[#0077B6] transition-colors cursor-pointer tracking-tighter"
                   title="Click to copy"
                 >
                   {String(CONFIG.CONTACT.MAIN_LINE)}
@@ -1042,87 +1139,136 @@ const ContactPage = () => {
               </div>
               <div>
                 <h5 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4" style={{ color: BLUE }}>
-                  Email
+                  Network Node
                 </h5>
                 <a
                   href={`mailto:${String(CONFIG.CONTACT.EMAIL)}`}
-                  className="text-xl font-black text-black break-all hover:text-[#0077B6] transition-colors"
+                  className="text-2xl font-black text-white break-all hover:text-[#0077B6] transition-colors tracking-tighter"
                 >
                   {String(CONFIG.CONTACT.EMAIL)}
                 </a>
               </div>
             </div>
-            <div className="mt-16 bg-black p-10 rounded-[2rem] text-white">
-              <h4 className="text-xs font-black uppercase tracking-[0.3em] mb-6" style={{ color: BLUE }}>
-                Connect With Us
+            
+            <div className="mt-16 bg-white/5 p-10 rounded-[2.5rem] border border-white/10">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.4em] mb-8" style={{ color: BLUE }}>
+                Satellite Links
               </h4>
-              <div className="grid grid-cols-2 gap-3">
-                {SOCIAL_LINKS.map(({ icon: Icon, label, href, onClick }) => {
-                  const content = (
-                    <div className="flex items-center gap-3 p-3 rounded-xl border border-white/10 hover:border-[#0077B6]/60 hover:bg-white/5 transition-all group cursor-pointer">
-                      <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 group-hover:bg-[#0077B6]/20 transition-colors text-gray-400 group-hover:text-white">
-                        <Icon size={15} />
-                      </span>
-                      <span className="text-[11px] font-bold text-gray-400 group-hover:text-white uppercase tracking-widest transition-colors">
-                        {label}
-                      </span>
-                    </div>
-                  );
-                  return onClick ? (
-                    <button key={label} onClick={onClick} className="text-left w-full">{content}</button>
-                  ) : (
-                    <a key={label} href={href} target="_blank" rel="noopener noreferrer">{content}</a>
-                  );
-                })}
+              <div className="grid grid-cols-2 gap-4">
+                {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
+                  <a 
+                    key={label} 
+                    href={href} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-[#0077B6]/60 hover:bg-white/5 transition-all group"
+                  >
+                    <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 group-hover:bg-[#0077B6]/20 transition-colors text-gray-400 group-hover:text-white">
+                      <Icon size={18} />
+                    </span>
+                    <span className="text-xs font-black text-gray-400 group-hover:text-white uppercase tracking-widest transition-colors">
+                      {label}
+                    </span>
+                  </a>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Right: WhatsApp form */}
+          {/* Right: Hook Form */}
           <div
-            id="whatsapp-form"
-            className="p-12 lg:p-20 text-left rounded-[3rem] border border-white/5 relative overflow-hidden"
-            style={{ backgroundColor: '#000000' }}
+            className="p-12 lg:p-16 rounded-[3rem] border border-white/5 relative bg-white/5 overflow-hidden"
           >
             <div
-              className="absolute top-0 right-0 w-32 h-32 opacity-5 rounded-bl-full"
+              className="absolute top-0 right-0 w-64 h-64 opacity-5 rounded-bl-full"
               style={{ backgroundColor: BLUE }}
             />
-            <h3 className="text-4xl font-black text-white uppercase tracking-tighter mb-12">
-              Direct WhatsApp Inquiry
+            <h3 className="text-4xl font-black text-white uppercase tracking-tighter mb-4">
+              Secure Uplink
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-10">
-              <input
-                type="text"
-                required
-                placeholder="Full name"
-                value={form.name}
-                onChange={e => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg placeholder-white/30 placeholder:text-sm focus:border-[#0077B6] transition-colors"
-              />
-              <input
-                type="email"
-                required
-                placeholder="Email address"
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })}
-                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg placeholder-white/30 placeholder:text-sm focus:border-[#0077B6] transition-colors"
-              />
-              <textarea
-                rows={3}
-                required
-                placeholder="Describe your project requirements"
-                value={form.details}
-                onChange={e => setForm({ ...form, details: e.target.value })}
-                className="w-full bg-transparent border-b-2 border-white/20 py-4 outline-none text-white font-bold text-lg placeholder-white/30 placeholder:text-xs focus:border-[#0077B6] transition-colors resize-none"
-              />
-              <button
-                type="submit"
-                className="w-full py-6 text-white font-black uppercase tracking-[0.4em] rounded-xl transition-all duration-500 focus:outline-none bg-[#25D366] hover:bg-[#128C7E]"
-              >
-                Send via WhatsApp
-              </button>
-            </form>
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-12">
+               Encryption-ready technical inquiry portal
+            </p>
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 relative z-10">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">FullName</FormLabel>
+                      <FormControl>
+                        <Input placeholder="DESIGNATION / NAME" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
+                      </FormControl>
+                      <FormMessage className="text-[10px] uppercase font-bold" />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">EmailAddress</FormLabel>
+                      <FormControl>
+                        <Input placeholder="NODE@NETWORK.COM" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
+                      </FormControl>
+                      <FormMessage className="text-[10px] uppercase font-bold" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">InquiryRouting</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]">
+                            <SelectValue placeholder="SELECT ROUTE" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-black border-white/10 text-white uppercase font-bold">
+                          <SelectItem value="General Inquiry">General Inquiry</SelectItem>
+                          <SelectItem value="RFQ">Request for Quotation (RFQ)</SelectItem>
+                          <SelectItem value="Corporate Training">Corporate Training Cohort</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-[10px] uppercase font-bold" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">ProjectParameters</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="DESCRIBE TECHNICAL REQUIREMENTS..." 
+                          className="bg-transparent border-white/10 text-white font-bold rounded-xl focus:border-[#0077B6] min-h-[120px] resize-none" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage className="text-[10px] uppercase font-bold" />
+                    </FormItem>
+                  )}
+                />
+
+                <Button 
+                  type="submit" 
+                  className="w-full h-16 bg-[#0077B6] hover:bg-[#0077B6]/80 text-white font-black uppercase tracking-[0.4em] rounded-xl transition-all duration-300"
+                >
+                  Initiate Secure Transmission
+                </Button>
+              </form>
+            </Form>
           </div>
         </div>
       </div>
