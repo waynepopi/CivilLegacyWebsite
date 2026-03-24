@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-import { CONFIG } from '@/config';
+import { CONFIG, SERVICE_CATEGORIES } from '@/config';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 
@@ -229,16 +229,16 @@ const Home = () => {
         </p>
       </section>
 
-      {/* Four Pillars */}
+      {/* Service Pillars */}
       <section className="py-32 bg-black px-6 lg:px-12">
         <div className="max-w-[1600px] mx-auto">
           <SectionHeader
-            title="The Four Pillars"
-            subtitle="Four segments ensuring a complete infrastructure life cycle."
+            title="Our Pillars"
+            subtitle="Three core disciplines ensuring a complete infrastructure life cycle."
             light
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 text-left">
-            {CONFIG.SERVICES.map((pillar) => {
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 text-left">
+            {SERVICE_CATEGORIES.map((pillar) => {
               const { Icon } = pillar;
               return (
                 <motion.div
@@ -249,16 +249,8 @@ const Home = () => {
                   <div className="mb-8 transform group-hover:scale-110 origin-left transition-transform" style={{ color: BLUE }}>
                     <Icon size={40} />
                   </div>
-                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 text-white">{String(pillar.title)}</h3>
-                  <p className="text-gray-400 text-sm font-light mb-8 leading-relaxed flex-grow">{String(pillar.summary)}</p>
-                  <div className="space-y-3 border-l-2 border-white/5 pl-4">
-                    {pillar.details.slice(0, 3).map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                        <div className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: BLUE }} />
-                        {String(item)}
-                      </div>
-                    ))}
-                  </div>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 text-white">{pillar.title}</h3>
+                  <p className="text-gray-400 text-sm font-light leading-relaxed flex-grow">{pillar.summary}</p>
                 </motion.div>
               );
             })}

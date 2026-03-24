@@ -1,4 +1,195 @@
-import { HardHat, Ruler, GraduationCap, Briefcase } from 'lucide-react';
+import { HardHat, Ruler, Briefcase, Layers, PenTool, BarChart2, Shield, ClipboardCheck, DollarSign, Eye, Waves, Building2, Droplets, Factory, Wrench, GitBranch, FlaskConical, FileText, FileSearch } from 'lucide-react';
+
+// ─── Non-buyable parent categories (tabs / organisational) ───────────────────
+export const SERVICE_CATEGORIES = [
+  {
+    id: 'construction',
+    title: 'Construction',
+    Icon: HardHat,
+    summary: 'Implementation of heavy-duty urban and industrial infrastructure at scale.',
+  },
+  {
+    id: 'consultancy',
+    title: 'Consultancy',
+    Icon: Ruler,
+    summary: 'Precision-driven strategic engineering advisory and detailed technical design.',
+  },
+  {
+    id: 'project-management',
+    title: 'Project Management',
+    Icon: Briefcase,
+    summary: 'End-to-end execution, supervision, and full lifecycle management of civil projects.',
+  },
+] as const;
+
+// ─── Buyable child services (each links to a parent category) ────────────────
+export const CHILD_SERVICES = [
+  // ── Construction ──────────────────────────────────────────────────────────
+  {
+    id: 'roadworks',
+    categoryId: 'construction',
+    title: 'Roadworks',
+    Icon: Layers,
+    summary: 'Urban and rural road construction including sub-base preparation, surfacing and kerbing.',
+    details: ['Sub-base & Base Course', 'Asphalt Surfacing', 'Kerb & Channel', 'Line Marking'],
+    price: 15000,
+  },
+  {
+    id: 'sewer-reticulation',
+    categoryId: 'construction',
+    title: 'Sewer Reticulation',
+    Icon: Waves,
+    summary: 'Full installation of gravity sewer networks, manholes and pump stations.',
+    details: ['Gravity Sewer Mains', 'Manhole Construction', 'Pump Station Installation', 'CCTV Inspection'],
+    price: 15000,
+  },
+  {
+    id: 'reservoir-construction',
+    categoryId: 'construction',
+    title: 'Reservoir Construction',
+    Icon: Droplets,
+    summary: 'Design and construction of reinforced concrete water storage reservoirs.',
+    details: ['RC Tank Design', 'Foundation Works', 'Waterproofing', 'Commissioning'],
+    price: 15000,
+  },
+  {
+    id: 'structural-works',
+    categoryId: 'construction',
+    title: 'Structural Works',
+    Icon: Building2,
+    summary: 'Heavy structural construction for commercial, industrial and institutional buildings.',
+    details: ['Reinforced Concrete Frames', 'Masonry & Blockwork', 'Steel Fabrication', 'Formwork & Shuttering'],
+    price: 15000,
+  },
+  {
+    id: 'waste-stabilisation-ponds',
+    categoryId: 'construction',
+    title: 'Waste Stabilisation Ponds',
+    Icon: Factory,
+    summary: 'Construction of engineered waste-water treatment ponds for municipal and industrial use.',
+    details: ['Earthworks & Lining', 'Inlet/Outlet Structures', 'Effluent Monitoring', 'Commissioning'],
+    price: 15000,
+  },
+  {
+    id: 'highway-construction',
+    categoryId: 'construction',
+    title: 'Highway Construction',
+    Icon: HardHat,
+    summary: 'Large-scale highway and arterial road implementation with full civil works.',
+    details: ['Earthworks & Grading', 'Asphalt Laying', 'Drainage Structures', 'Traffic Management'],
+    price: 15000,
+  },
+  // ── Consultancy ───────────────────────────────────────────────────────────
+  {
+    id: 'feasibility-studies',
+    categoryId: 'consultancy',
+    title: 'Feasibility Studies',
+    Icon: FileSearch,
+    summary: 'Comprehensive technical and economic feasibility assessments for proposed projects.',
+    details: ['Site Investigation', 'Economic Analysis', 'Risk Assessment', 'Recommendation Report'],
+    price: 15000,
+  },
+  {
+    id: 'hydraulic-modeling',
+    categoryId: 'consultancy',
+    title: 'Hydraulic Modeling',
+    Icon: Waves,
+    summary: 'Advanced computational hydraulic analysis for water supply and drainage systems.',
+    details: ['Network Simulation', 'Flood Routing', 'Pressure Zone Analysis', 'Calibration & Reporting'],
+    price: 15000,
+  },
+  {
+    id: 'detailed-design',
+    categoryId: 'consultancy',
+    title: 'Detailed Design',
+    Icon: PenTool,
+    summary: 'Full engineering drawings and specifications ready for tender and construction.',
+    details: ['CAD / BIM Drawings', 'Structural Calculations', 'Specifications', 'Bill of Quantities'],
+    price: 15000,
+  },
+  {
+    id: 'contract-administration',
+    categoryId: 'consultancy',
+    title: 'Contract Administration',
+    Icon: FileText,
+    summary: 'Professional oversight of construction contracts from award through to final account.',
+    details: ['Tender Evaluation', 'Progress Certification', 'Variation Management', 'Final Account Settlement'],
+    price: 15000,
+  },
+  {
+    id: 'structural-analysis',
+    categoryId: 'consultancy',
+    title: 'Structural Analysis',
+    Icon: FlaskConical,
+    summary: 'Finite element and hand-calculation structural analysis to BS/SANS/EN standards.',
+    details: ['Load Analysis', 'FEA Modelling', 'Peer Review', 'Certification'],
+    price: 15000,
+  },
+  {
+    id: 'bridge-design',
+    categoryId: 'consultancy',
+    title: 'Bridge Design',
+    Icon: GitBranch,
+    summary: 'Advanced structural design for urban and rural bridge and culvert infrastructure.',
+    details: ['Structural Analysis', 'Load Testing', 'Material Specification', 'Construction Drawings'],
+    price: 15000,
+  },
+  // ── Project Management ────────────────────────────────────────────────────
+  {
+    id: 'project-planning',
+    categoryId: 'project-management',
+    title: 'Project Planning',
+    Icon: ClipboardCheck,
+    summary: 'Detailed programme development with resource-loaded schedules and milestone tracking.',
+    details: ['Work Breakdown Structure', 'Gantt Scheduling', 'Resource Allocation', 'Baseline Programme'],
+    price: 15000,
+  },
+  {
+    id: 'risk-mitigation',
+    categoryId: 'project-management',
+    title: 'Risk Mitigation',
+    Icon: Shield,
+    summary: 'Systematic identification, analysis and management of project risks throughout the lifecycle.',
+    details: ['Risk Register', 'Qualitative Assessment', 'Mitigation Strategies', 'Monthly Monitoring'],
+    price: 15000,
+  },
+  {
+    id: 'quality-assurance',
+    categoryId: 'project-management',
+    title: 'Quality Assurance',
+    Icon: Wrench,
+    summary: 'Independent QA and QC programmes ensuring construction meets specification and code.',
+    details: ['Inspection Test Plans', 'Material Testing', 'Non-Conformance Reporting', 'Audit & Sign-Off'],
+    price: 15000,
+  },
+  {
+    id: 'cost-control',
+    categoryId: 'project-management',
+    title: 'Cost Control',
+    Icon: DollarSign,
+    summary: 'Budgeting, forecasting and earned-value management to keep projects financially on track.',
+    details: ['Budget Establishment', 'Earned Value Analysis', 'Cash-Flow Forecasting', 'Monthly Cost Reports'],
+    price: 15000,
+  },
+  {
+    id: 'site-supervision',
+    categoryId: 'project-management',
+    title: 'Site Supervision',
+    Icon: Eye,
+    summary: 'Resident engineer and clerk-of-works services ensuring day-to-day compliance on site.',
+    details: ['Daily Site Diaries', 'Contractor Coordination', 'Progress Photography', 'Weekly Reports'],
+    price: 15000,
+  },
+  {
+    id: 'performance-reporting',
+    categoryId: 'project-management',
+    title: 'Performance Reporting',
+    Icon: BarChart2,
+    summary: 'Executive and stakeholder dashboards providing full project transparency and accountability.',
+    details: ['KPI Dashboards', 'Schedule Variance', 'Budget vs Actual', 'Stakeholder Reports'],
+    price: 15000,
+  },
+] as const;
 
 export const CONFIG = {
   BRAND: {
@@ -59,53 +250,6 @@ export const CONFIG = {
     'https://images.unsplash.com/photo-1517089535819-3d8569aa83fa?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=800',
     'https://images.unsplash.com/photo-1503387762-592dea58ef21?auto=format&fit=crop&q=80&w=800',
-  ],
-  SERVICES: [
-    {
-      id: 'construction',
-      title: 'Construction',
-      pillar: 'Construction',
-      Icon: HardHat,
-      summary: 'Implementation of heavy-duty urban and industrial infrastructure.',
-      details: ['Roadworks', 'Sewer Reticulation', 'Reservoir Construction', 'Structural Works', 'Waste Stabilisation Ponds'],
-      price: 1500, // Mock price for cart
-    },
-    {
-      id: 'consultancy',
-      title: 'Consultancy',
-      pillar: 'Consultancy',
-      Icon: Ruler,
-      summary: 'Precision-driven strategic engineering and detailed design.',
-      details: ['Feasibility Studies', 'Hydraulic Modeling', 'Detailed Design', 'Contract Administration', 'Structural Analysis'],
-      price: 800, // Mock price for cart
-    },
-    {
-      id: 'project-management',
-      title: 'Project Management',
-      pillar: 'Project Management',
-      Icon: Briefcase,
-      summary: 'End-to-end execution, supervision, and lifecycle management.',
-      details: ['Project Planning', 'Risk Mitigation', 'Quality Assurance', 'Cost Control', 'Site Supervision'],
-      price: 0, // Quote based
-    },
-    {
-      id: 'bridge-design',
-      title: 'Bridge Design',
-      pillar: 'Consultancy',
-      Icon: Ruler,
-      summary: 'Advanced structural design for urban and rural bridge infrastructure.',
-      details: ['Structural Analysis', 'Load Testing', 'Material Spec'],
-      price: 1200,
-    },
-    {
-      id: 'road-construction',
-      title: 'Highway Construction',
-      pillar: 'Construction',
-      Icon: HardHat,
-      summary: 'Large scale highway and arterial road implementation.',
-      details: ['Asphalt Laying', 'Earthworks', 'Drainage'],
-      price: 5000,
-    },
   ],
 } as const;
 

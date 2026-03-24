@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, GraduationCap } from 'lucide-react';
+import { Search, GraduationCap, CheckCircle2, ArrowRight, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { CONFIG } from '@/config';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { SERVICE_CATEGORIES, CHILD_SERVICES } from '@/config';
 import { useCart } from '@/context/CartContext';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 
 const BLUE = '#0077B6';
 
+// ─── Hero ─────────────────────────────────────────────────────────────────────
 const StorefrontHero = ({
   searchQuery,
   setSearchQuery,
@@ -19,183 +17,353 @@ const StorefrontHero = ({
   searchQuery: string;
   setSearchQuery: (q: string) => void;
 }) => (
-  <section className="relative h-[60vh] min-h-[400px] flex items-center justify-center bg-black overflow-hidden px-6 lg:px-12 border-b border-white/10">
+  <section className="relative h-[58vh] min-h-[380px] flex items-center justify-center bg-black overflow-hidden border-b border-white/10">
     <div className="absolute inset-0 z-0">
       <img
         src="https://images.unsplash.com/photo-1504307651254-35680f3366d4?auto=format&fit=crop&q=80&w=1600"
-        alt="Storefront Hero"
+        alt="Engineering Services"
         className="w-full h-full object-cover"
-        style={{ filter: 'grayscale(1) brightness(0.2) contrast(1.2)' }}
+        style={{ filter: 'grayscale(1) brightness(0.18) contrast(1.2)' }}
       />
     </div>
-    <div className="relative z-10 w-full max-w-4xl text-center">
-      <motion.h2
+    <div className="relative z-10 w-full max-w-4xl text-center px-6">
+      <motion.p
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="text-[10px] font-black uppercase tracking-[0.35em] mb-4"
+        style={{ color: BLUE }}
+      >
+        Civil Legacy Consultancy
+      </motion.p>
+      <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-8"
+        transition={{ delay: 0.2 }}
+        className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-8 leading-tight"
       >
-        Engineering <span style={{ color: BLUE }}>Services</span> Store
-      </motion.h2>
-      <div className="relative max-w-2xl mx-auto">
+        Engineering <span style={{ color: BLUE }}>Services</span>
+      </motion.h1>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.35 }}
+        className="text-gray-400 text-sm font-light mb-10 max-w-xl mx-auto"
+      >
+        Browse our full suite of civil engineering and consultancy services. Select a category below to explore individual offerings and request a tailored quote.
+      </motion.p>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45 }}
+        className="relative max-w-2xl mx-auto"
+      >
         <input
           type="text"
-          placeholder="SEARCH CONSTRUCTION, CONSULTANCY, OR PROJECT MGMT..."
+          placeholder="Search services…"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full h-20 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-8 text-white font-bold tracking-widest uppercase placeholder:text-gray-500 focus:outline-none focus:border-[#0077B6] transition-all"
+          className="w-full h-16 bg-white/8 backdrop-blur-md border border-white/15 rounded-2xl px-6 pr-14 text-white font-medium tracking-wide placeholder:text-gray-600 focus:outline-none focus:border-[#0077B6] transition-all text-sm"
         />
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500">
-          <Search size={24} />
+        <div className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">
+          <Search size={20} />
         </div>
-      </div>
+      </motion.div>
     </div>
   </section>
 );
 
+// ─── Category Tab Bar ─────────────────────────────────────────────────────────
+type CategoryId = 'all' | (typeof SERVICE_CATEGORIES)[number]['id'];
+
+const CategoryTabs = ({
+  active,
+  setActive,
+  counts,
+}: {
+  active: CategoryId;
+  setActive: (id: CategoryId) => void;
+  counts: Record<string, number>;
+}) => {
+  const tabs = [{ id: 'all' as const, title: 'All Services', Icon: null }, ...SERVICE_CATEGORIES];
+
+  return (
+    <div className="w-full overflow-x-auto">
+      <div className="flex gap-3 min-w-max mx-auto justify-center pb-2">
+        {tabs.map((tab) => {
+          const isActive = active === tab.id;
+          const count = tab.id === 'all' ? Object.values(counts).reduce((a, b) => a + b, 0) : (counts[tab.id] ?? 0);
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActive(tab.id)}
+              className={`flex items-center gap-2.5 px-6 py-3.5 rounded-2xl font-black uppercase tracking-[0.12em] text-[10px] transition-all duration-300 border whitespace-nowrap ${
+                isActive
+                  ? 'bg-[#0077B6] border-[#0077B6] text-white shadow-lg shadow-[#0077B6]/20'
+                  : 'bg-white/5 border-white/10 text-gray-400 hover:border-[#0077B6]/40 hover:text-white'
+              }`}
+            >
+              {tab.Icon && <tab.Icon size={14} />}
+              {tab.title}
+              <span
+                className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
+                  isActive ? 'bg-white/20 text-white' : 'bg-white/8 text-gray-500'
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ─── Category Info Banner (non-buyable) ───────────────────────────────────────
+const CategoryBanner = ({ categoryId }: { categoryId: CategoryId }) => {
+  if (categoryId === 'all') return null;
+  const cat = SERVICE_CATEGORIES.find((c) => c.id === categoryId);
+  if (!cat) return null;
+
+  return (
+    <motion.div
+      key={categoryId}
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex items-start gap-5 p-6 rounded-3xl border border-white/8 bg-white/3 mb-10"
+    >
+      <div className="p-3.5 rounded-2xl shrink-0" style={{ background: `${BLUE}18` }}>
+        <cat.Icon size={26} color={BLUE} />
+      </div>
+      <div>
+        <h2 className="text-lg font-black uppercase tracking-tighter text-white mb-1">{cat.title}</h2>
+        <p className="text-gray-400 text-sm font-light leading-relaxed max-w-2xl">{cat.summary}</p>
+      </div>
+      {/* Intentionally NO price or CTA here — categories are informational only */}
+    </motion.div>
+  );
+};
+
+// ─── Child Service Card (buyable) ─────────────────────────────────────────────
+const ServiceCard = ({
+  service,
+  onAddToCart,
+}: {
+  service: (typeof CHILD_SERVICES)[number];
+  onAddToCart: (s: (typeof CHILD_SERVICES)[number]) => void;
+}) => {
+  const isPM = service.categoryId === 'project-management';
+  const categoryLabel = SERVICE_CATEGORIES.find((c) => c.id === service.categoryId)?.title ?? service.categoryId;
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ duration: 0.25 }}
+      className="flex flex-col h-full"
+    >
+      <div className="group flex flex-col h-full bg-white/4 border border-white/8 rounded-[2rem] overflow-hidden hover:border-[#0077B6]/50 transition-all duration-500 hover:shadow-xl hover:shadow-[#0077B6]/10">
+        {/* Card header */}
+        <div className="p-8 pb-5">
+          <div className="flex items-start justify-between mb-6">
+            <div
+              className="p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300"
+              style={{ background: `${BLUE}15` }}
+            >
+              <service.Icon size={28} color={BLUE} />
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 border border-white/10 rounded-full px-3 py-1">
+              {categoryLabel}
+            </span>
+          </div>
+          <h3 className="text-xl font-black uppercase tracking-tighter text-white mb-2">{service.title}</h3>
+          <p className="text-gray-500 text-sm font-light leading-relaxed">{service.summary}</p>
+        </div>
+
+        {/* Detail bullets */}
+        <div className="px-8 pb-5 flex-grow">
+          <div className="space-y-2.5">
+            {service.details.map((detail, idx) => (
+              <div key={idx} className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                <CheckCircle2 size={12} className="shrink-0 text-[#0077B6]" />
+                {detail}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Price + CTA (child services only) */}
+        <div className="px-8 pb-8 pt-4 border-t border-white/6 mt-2">
+          <div className="flex items-end justify-between mb-5">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 mb-1">Est. Starting Price</p>
+              <p className="text-3xl font-black text-white tracking-tight">
+                ${service.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
+            </div>
+            <p className="text-[9px] text-gray-600 font-medium text-right leading-tight max-w-[100px]">
+              Final price<br />varies by scope
+            </p>
+          </div>
+
+          {/* CTA — Add to Cart (all) | Request Quote no-op (Project Management only) */}
+          {isPM ? (
+            <button
+              disabled
+              onClick={(e) => e.preventDefault()}
+              className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] text-gray-500 bg-white/5 border border-white/10 cursor-not-allowed select-none"
+            >
+              Request Quote
+              <ArrowRight size={14} />
+            </button>
+          ) : (
+            <button
+              onClick={() => onAddToCart(service)}
+              className="group/btn w-full h-14 flex items-center justify-center gap-3 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] transition-all duration-300 text-white relative overflow-hidden"
+              style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #005f8f 100%)` }}
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                <ShoppingCart size={14} />
+                Add to Cart
+              </span>
+              <span className="absolute inset-0 bg-white/0 group-hover/btn:bg-white/10 transition-all duration-300" />
+            </button>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 const Storefront = () => {
   const { toast } = useToast();
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const [activePillar, setActivePillar] = useState<'All' | 'Construction' | 'Consultancy' | 'Project Management'>('All');
+  const [activeCategory, setActiveCategory] = useState<CategoryId>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredServices = CONFIG.SERVICES.filter((s) => {
-    const matchesPillar = activePillar === 'All' || s.pillar === activePillar;
-    const matchesSearch = s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          s.summary.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesPillar && matchesSearch;
-  });
+  // Counts per category for tab badges
+  const counts = useMemo(() => {
+    const map: Record<string, number> = {};
+    SERVICE_CATEGORIES.forEach((c) => {
+      map[c.id] = CHILD_SERVICES.filter((s) => s.categoryId === c.id).length;
+    });
+    return map;
+  }, []);
 
-  const pillars = ['All', 'Construction', 'Consultancy', 'Project Management'] as const;
+  // Filtered list of child services
+  const filteredServices = useMemo(() => {
+    return CHILD_SERVICES.filter((s) => {
+      const matchesCategory = activeCategory === 'all' || s.categoryId === activeCategory;
+      const q = searchQuery.toLowerCase();
+      const matchesSearch =
+        s.title.toLowerCase().includes(q) ||
+        s.summary.toLowerCase().includes(q) ||
+        s.details.some((d) => d.toLowerCase().includes(q));
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, searchQuery]);
 
-  const handleQuoteRequest = (service: any) => {
+  const handleAddToCart = (service: (typeof CHILD_SERVICES)[number]) => {
+    addToCart({ ...service, pillar: service.categoryId } as any);
     toast({
-      title: "Quote Requested",
-      description: `A technical specialist will contact you regarding ${service.title}.`,
+      title: '✓ Added to Cart',
+      description: `${service.title} has been added. Proceed to checkout when ready.`,
     });
   };
 
   return (
-    <div className="bg-black min-h-screen text-white text-left">
+    <div className="bg-black min-h-screen text-white">
       <Helmet>
         <title>Services | Civil Legacy Consultancy</title>
-        <meta name="description" content="Explore our engineering services: Construction, Consultancy, and Project Management." />
+        <meta name="description" content="Explore Civil Legacy's engineering services: Construction, Consultancy, and Project Management. Request a quote today." />
       </Helmet>
 
       <StorefrontHero searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      <div className="max-w-[1600px] mx-auto px-6 lg:px-12 py-20">
-        {/* Pillar Filters */}
-        <div className="flex flex-wrap gap-4 mb-20 justify-center">
-          {pillars.map((pillar) => (
-            <button
-              key={pillar}
-              onClick={() => setActivePillar(pillar)}
-              className={`px-8 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all duration-300 border ${
-                activePillar === pillar
-                  ? 'bg-[#0077B6] border-[#0077B6] text-white'
-                  : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20 hover:text-white'
-              }`}
-            >
-              {pillar}
-            </button>
-          ))}
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-14">
+
+        {/* ── Category Tab Bar (non-buyable) ─────────────────────────────────── */}
+        <div className="mb-10">
+          <CategoryTabs active={activeCategory} setActive={setActiveCategory} counts={counts} />
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* ── Category Info Banner (non-buyable — no price/CTA) ──────────────── */}
+        <AnimatePresence mode="wait">
+          <CategoryBanner key={activeCategory} categoryId={activeCategory} />
+        </AnimatePresence>
+
+        {/* ── Section heading ────────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-1" style={{ color: BLUE }}>
+              {activeCategory === 'all' ? 'All Categories' : SERVICE_CATEGORIES.find((c) => c.id === activeCategory)?.title}
+            </p>
+            <h2 className="text-2xl font-black uppercase tracking-tighter text-white">
+              {filteredServices.length} Service{filteredServices.length !== 1 ? 's' : ''} Available
+            </h2>
+          </div>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+            >
+              Clear Search ✕
+            </button>
+          )}
+        </div>
+
+        {/* ── Child Service Cards Grid (all buyable) ─────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
             {filteredServices.map((service) => (
-              <motion.div
-                key={service.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card className="bg-white/5 border-white/10 hover:border-[#0077B6]/50 transition-all duration-500 rounded-[2.5rem] overflow-hidden flex flex-col h-full group text-left">
-                  <CardHeader className="p-10 pb-6">
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="p-3 bg-[#0077B6]/10 rounded-2xl text-[#0077B6] group-hover:scale-110 transition-transform">
-                        <service.Icon size={32} />
-                      </div>
-                      <Badge variant="outline" className="text-[9px] uppercase tracking-[0.2em] border-white/10 text-gray-400">
-                        {service.pillar}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-3xl font-black uppercase tracking-tighter text-white mb-2">
-                      {service.title}
-                    </CardTitle>
-                    <p className="text-gray-500 text-sm font-light leading-relaxed">
-                      {service.summary}
-                    </p>
-                  </CardHeader>
-                  <CardContent className="p-10 pt-0 flex-grow">
-                     <div className="space-y-3 mb-8">
-                        {service.details.map((detail, idx) => (
-                          <div key={idx} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                            <div className="w-1 h-1 rounded-full bg-[#0077B6]" />
-                            {detail}
-                          </div>
-                        ))}
-                     </div>
-                     {service.price > 0 && (
-                        <div className="text-2xl font-black text-white mb-6">
-                          ${service.price.toLocaleString()}
-                          <span className="text-[10px] text-gray-500 ml-2 font-bold uppercase tracking-widest">Est. Base Price</span>
-                        </div>
-                     )}
-                  </CardContent>
-                  <CardFooter className="p-10 pt-0">
-                    {service.pillar === 'Project Management' ? (
-                      <Button
-                        className="w-full h-16 bg-white text-black hover:bg-white/90 font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl transition-all"
-                        onClick={() => handleQuoteRequest(service)}
-                      >
-                        Request a Quote
-                      </Button>
-                    ) : (
-                      <Button
-                        className="w-full h-16 bg-[#0077B6] hover:bg-[#0077B6]/80 text-white font-black uppercase tracking-[0.2em] text-[11px] rounded-2xl transition-all"
-                        onClick={() => addToCart(service as any)}
-                      >
-                        Add to Cart
-                      </Button>
-                    )}
-                  </CardFooter>
-                </Card>
-              </motion.div>
+              <ServiceCard key={service.id} service={service} onAddToCart={handleAddToCart} />
             ))}
           </AnimatePresence>
         </div>
 
+        {/* ── Empty state ────────────────────────────────────────────────────── */}
         {filteredServices.length === 0 && (
-          <div className="text-center py-32">
-            <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-500">No Services Found</h3>
-            <p className="text-gray-600 mt-2">Try adjusting your search or filters.</p>
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-28"
+          >
+            <Search size={40} className="mx-auto text-gray-700 mb-4" />
+            <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-600">No Services Found</h3>
+            <p className="text-gray-700 mt-2 text-sm">Try adjusting your search term or selecting a different category.</p>
+            <button
+              onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
+              className="mt-6 px-6 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:border-white/20 transition-all"
+            >
+              Reset Filters
+            </button>
+          </motion.div>
         )}
       </div>
 
-      {/* Training Hub Sticky Tab */}
+      {/* ── Training Hub Sticky Tab (desktop) ──────────────────────────────── */}
       <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[90] hidden md:block">
         <button
           onClick={() => navigate('/training')}
-          className="bg-white text-black border-y border-l border-white/10 px-6 py-6 rounded-l-3xl shadow-2xl flex flex-col items-center gap-4 hover:bg-[#0077B6] hover:text-white transition-all duration-500 group"
+          className="bg-white text-black border-y border-l border-white/10 px-5 py-6 rounded-l-3xl shadow-2xl flex flex-col items-center gap-4 hover:bg-[#0077B6] hover:text-white transition-all duration-500 group"
         >
-          <GraduationCap size={24} className="group-hover:scale-110 transition-transform" />
+          <GraduationCap size={22} className="group-hover:scale-110 transition-transform" />
           <span className="[writing-mode:vertical-lr] font-black uppercase tracking-[0.3em] text-[10px]">Training Hub</span>
         </button>
       </div>
 
-      {/* Training Hub FAB for Mobile */}
-      <div className="fixed left-6 bottom-6 z-[100] md:hidden">
+      {/* ── Training Hub FAB (mobile) ───────────────────────────────────────── */}
+      <div className="fixed left-4 bottom-24 z-[100] md:hidden">
         <button
           onClick={() => navigate('/training')}
-          className="bg-white text-black w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:bg-[#0077B6] hover:text-white transition-all"
+          className="bg-white text-black w-12 h-12 rounded-full shadow-2xl flex items-center justify-center hover:bg-[#0077B6] hover:text-white transition-all"
         >
-          <GraduationCap size={24} />
+          <GraduationCap size={20} />
         </button>
       </div>
     </div>

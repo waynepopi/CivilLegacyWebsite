@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, ShoppingCart, GraduationCap } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { CONFIG } from '@/config';
+import { CONFIG, SERVICE_CATEGORIES } from '@/config';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useCart } from '@/context/CartContext';
@@ -97,16 +97,16 @@ const Navbar = () => {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-black/95 border border-white/10 rounded-xl shadow-2xl backdrop-blur-xl">
-                      {CONFIG.SERVICES.map((service) => (
-                        <li key={service.id}>
+                      {SERVICE_CATEGORIES.map((category) => (
+                        <li key={category.id}>
                           <NavigationMenuLink asChild>
                             <Link
                               to="/services"
                               className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-white/10 text-left w-full"
                             >
-                              <div className="text-sm font-bold text-white uppercase tracking-tighter mb-1">{service.title}</div>
+                              <div className="text-sm font-bold text-white uppercase tracking-tighter mb-1">{category.title}</div>
                               <p className="line-clamp-2 text-xs leading-snug text-gray-400">
-                                {service.summary}
+                                {category.summary}
                               </p>
                             </Link>
                           </NavigationMenuLink>
@@ -193,8 +193,8 @@ const Navbar = () => {
                   <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">About Us</Link>
                   <Link to="/services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Services</Link>
                   <div className="pl-6 py-2 space-y-4 border-b border-white/5">
-                    {CONFIG.SERVICES.map(s => (
-                      <Link key={s.id} to="/services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">{s.title}</Link>
+                    {SERVICE_CATEGORIES.map(cat => (
+                      <Link key={cat.id} to="/services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">{cat.title}</Link>
                     ))}
                   </div>
                   <Link to="/projects" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Projects</Link>
