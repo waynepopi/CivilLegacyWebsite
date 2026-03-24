@@ -38,33 +38,44 @@ const Checkout = () => {
 
   const onSubmit = async (values: CheckoutValues) => {
     try {
-      // Note: In a real app, this would be an environment variable
-      const response = await fetch('http://localhost:5000/api/paynow/initiate', {
+      const response = await fetch('/api/paynow/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...values,
-          items: cart.map(item => ({ id: item.id, title: item.title, price: item.price })),
-          total,
+          items: cart.map(item => ({ 
+            id: item.id, 
+            title: item.title, 
+            price: Number(item.price) 
+          })),
+          total: Number(total),
         }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        throw new Error("Invalid response from server: " + text.substring(0, 100));
+      }
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Could not initiate payment. Please try again.");
+      }
+
+
       if (data.browserurl) {
         // We use window.location.href here because it's an external redirect to Paynow (or mock)
         window.location.href = data.browserurl;
       } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Could not initiate payment. Please try again.",
-        });
+        throw new Error("Invalid response from server.");
       }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Network Error",
-        description: "Failed to connect to the server.",
+        title: "Payment Error",
+        description: error instanceof Error ? error.message : "Failed to connect to the server.",
       });
     }
   };
