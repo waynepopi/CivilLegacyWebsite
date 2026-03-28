@@ -142,7 +142,6 @@ export const CHILD_SERVICES = [
     Icon: ClipboardCheck,
     summary: 'Detailed programme development with resource-loaded schedules and milestone tracking.',
     details: ['Work Breakdown Structure', 'Gantt Scheduling', 'Resource Allocation', 'Baseline Programme'],
-    price: 15000,
   },
   {
     id: 'risk-mitigation',
@@ -151,7 +150,6 @@ export const CHILD_SERVICES = [
     Icon: Shield,
     summary: 'Systematic identification, analysis and management of project risks throughout the lifecycle.',
     details: ['Risk Register', 'Qualitative Assessment', 'Mitigation Strategies', 'Monthly Monitoring'],
-    price: 15000,
   },
   {
     id: 'quality-assurance',
@@ -160,7 +158,6 @@ export const CHILD_SERVICES = [
     Icon: Wrench,
     summary: 'Independent QA and QC programmes ensuring construction meets specification and code.',
     details: ['Inspection Test Plans', 'Material Testing', 'Non-Conformance Reporting', 'Audit & Sign-Off'],
-    price: 15000,
   },
   {
     id: 'cost-control',
@@ -169,7 +166,6 @@ export const CHILD_SERVICES = [
     Icon: DollarSign,
     summary: 'Budgeting, forecasting and earned-value management to keep projects financially on track.',
     details: ['Budget Establishment', 'Earned Value Analysis', 'Cash-Flow Forecasting', 'Monthly Cost Reports'],
-    price: 15000,
   },
   {
     id: 'site-supervision',
@@ -178,7 +174,6 @@ export const CHILD_SERVICES = [
     Icon: Eye,
     summary: 'Resident engineer and clerk-of-works services ensuring day-to-day compliance on site.',
     details: ['Daily Site Diaries', 'Contractor Coordination', 'Progress Photography', 'Weekly Reports'],
-    price: 15000,
   },
   {
     id: 'performance-reporting',
@@ -187,7 +182,6 @@ export const CHILD_SERVICES = [
     Icon: BarChart2,
     summary: 'Executive and stakeholder dashboards providing full project transparency and accountability.',
     details: ['KPI Dashboards', 'Schedule Variance', 'Budget vs Actual', 'Stakeholder Reports'],
-    price: 15000,
   },
 ] as const;
 

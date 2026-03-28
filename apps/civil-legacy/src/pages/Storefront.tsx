@@ -199,26 +199,38 @@ const ServiceCard = ({
         <div className="px-8 pb-8 pt-4 border-t border-white/6 mt-2">
           <div className="flex items-end justify-between mb-5">
             <div>
-              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 mb-1">Est. Starting Price</p>
-              <p className="text-3xl font-black text-white tracking-tight">
-                ${service.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 mb-1">
+                {isPM ? 'Pricing' : 'Est. Starting Price'}
+              </p>
+              <p className={`font-black text-white tracking-tight ${isPM ? 'text-lg mt-1' : 'text-3xl'}`}>
+                {isPM ? (
+                  'Request a Quote below'
+                ) : (
+                  `$${((service as any).price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+                )}
               </p>
             </div>
-            <p className="text-[9px] text-gray-600 font-medium text-right leading-tight max-w-[100px]">
-              Final price<br />varies by scope
-            </p>
+            {!isPM && (
+              <p className="text-[9px] text-gray-600 font-medium text-right leading-tight max-w-[100px]">
+                Final price<br />varies by scope
+              </p>
+            )}
           </div>
 
           {/* CTA — Add to Cart (all) | Request Quote no-op (Project Management only) */}
           {isPM ? (
-            <button
-              disabled
+            <a
+              href="#"
               onClick={(e) => e.preventDefault()}
-              className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] text-gray-500 bg-white/5 border border-white/10 cursor-not-allowed select-none"
+              className="group/btn w-full h-14 flex items-center justify-center gap-2 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] transition-all duration-300 text-white relative overflow-hidden cursor-pointer"
+              style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #005f8f 100%)` }}
             >
-              Request Quote
-              <ArrowRight size={14} />
-            </button>
+              <span className="relative z-10 flex items-center gap-2">
+                Request Quote
+                <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+              </span>
+              <span className="absolute inset-0 bg-white/0 group-hover/btn:bg-white/10 transition-all duration-300" />
+            </a>
           ) : (
             <button
               onClick={() => onAddToCart(service)}
