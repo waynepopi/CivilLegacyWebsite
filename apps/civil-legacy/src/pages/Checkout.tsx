@@ -136,7 +136,7 @@ const Checkout = () => {
         {/* Right: Checkout Form */}
         <div className="bg-white/5 p-12 lg:p-16 rounded-[3rem] border border-white/10 relative overflow-hidden">
           <h3 className="text-3xl font-black text-white uppercase tracking-tighter mb-4">Checkout</h3>
-          <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-12">Finalize your technical acquisition</p>
+          <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-12">Complete your service booking</p>
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -145,7 +145,7 @@ const Checkout = () => {
                 name="full_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">FullName</FormLabel>
+                    <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Full Name</FormLabel>
                     <FormControl>
                       <Input placeholder="YOUR FULL NAME" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
                     </FormControl>
@@ -158,7 +158,7 @@ const Checkout = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">EmailAddress</FormLabel>
+                    <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Email Address</FormLabel>
                     <FormControl>
                       <Input placeholder="EMAIL@EXAMPLE.COM" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
                     </FormControl>
