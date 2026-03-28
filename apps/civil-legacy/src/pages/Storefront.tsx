@@ -349,7 +349,7 @@ const Storefront = () => {
       {/* ── Training Hub Sticky Tab (desktop) ──────────────────────────────── */}
       <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[90] hidden md:block">
         <button
-          onClick={() => navigate('/training')}
+          onClick={() => navigate('/Training')}
           className="bg-white text-black border-y border-l border-white/10 px-5 py-6 rounded-l-3xl shadow-2xl flex flex-col items-center gap-4 hover:bg-[#0077B6] hover:text-white transition-all duration-500 group"
         >
           <GraduationCap size={22} className="group-hover:scale-110 transition-transform" />
@@ -360,7 +360,7 @@ const Storefront = () => {
       {/* ── Training Hub FAB (mobile) ───────────────────────────────────────── */}
       <div className="fixed left-4 bottom-24 z-[100] md:hidden">
         <button
-          onClick={() => navigate('/training')}
+          onClick={() => navigate('/Training')}
           className="bg-white text-black w-12 h-12 rounded-full shadow-2xl flex items-center justify-center hover:bg-[#0077B6] hover:text-white transition-all"
         >
           <GraduationCap size={20} />

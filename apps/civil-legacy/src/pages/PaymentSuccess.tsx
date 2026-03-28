@@ -20,7 +20,7 @@ const PaymentSuccess = () => {
         Your transaction has been processed successfully. Our team will contact you shortly to begin the service delivery.
       </p>
       <Button
-         onClick={() => navigate('/')}
+         onClick={() => navigate('/Home')}
          className="bg-white text-black px-12 h-16 font-black uppercase tracking-widest rounded-2xl hover:bg-[#0077B6] hover:text-white transition-all"
       >
         Return Home

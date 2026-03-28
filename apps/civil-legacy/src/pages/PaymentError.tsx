@@ -20,7 +20,7 @@ const PaymentError = () => {
         We couldn't process your payment. Please check your credentials and try again, or contact support if the issue persists.
       </p>
       <Button
-         onClick={() => navigate('/services')}
+         onClick={() => navigate('/Services')}
          className="bg-[#0077B6] text-white px-12 h-16 font-black uppercase tracking-widest rounded-2xl"
       >
         Return to Store

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Instagram, Mail } from 'lucide-react';
+import { FaWhatsapp, FaTiktok } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CONFIG } from '@/config';
 import { useToast } from '@/hooks/use-toast';
@@ -7,7 +8,15 @@ import { useToast } from '@/hooks/use-toast';
 const BLUE = '#0077B6';
 
 const Footer = () => {
-  const SOCIAL_ICONS = [Facebook, Twitter, Linkedin, Instagram];
+  const socialLinks = [
+    { Icon: Facebook, url: CONFIG.CONTACT.SOCIALS.FACEBOOK },
+    { Icon: Twitter, url: CONFIG.CONTACT.SOCIALS.TWITTER },
+    { Icon: Linkedin, url: CONFIG.CONTACT.SOCIALS.LINKEDIN },
+    { Icon: Instagram, url: CONFIG.CONTACT.SOCIALS.INSTAGRAM },
+    { Icon: FaTiktok, url: CONFIG.CONTACT.SOCIALS.TIKTOK },
+    { Icon: FaWhatsapp, url: CONFIG.CONTACT.SOCIALS.WHATSAPP },
+    { Icon: Mail, url: CONFIG.CONTACT.SOCIALS.EMAIL },
+  ];
   const { toast } = useToast();
 
   const copyPhone = () => {
@@ -16,12 +25,12 @@ const Footer = () => {
   };
 
   const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'About Us', path: '/about' },
-    { label: 'Services', path: '/services' },
-    { label: 'Projects', path: '/projects' },
-    { label: 'Team', path: '/team' },
-    { label: 'Contact', path: '/contact' },
+    { label: 'Home', path: '/Home' },
+    { label: 'About Us', path: '/About' },
+    { label: 'Services', path: '/Services' },
+    { label: 'Projects', path: '/Projects' },
+    { label: 'Team', path: '/Team' },
+    { label: 'Contact', path: '/Contact' },
   ];
 
   return (
@@ -38,22 +47,20 @@ const Footer = () => {
             <p className="text-gray-500 text-sm leading-relaxed mb-8">
               Zimbabwe's premier engineering legacy built on structural precision and water management excellence.
             </p>
-            {/* Trust Elements */}
-            <div className="mb-8 p-4 border border-white/10 rounded-xl bg-white/5 inline-block">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: BLUE }}>Accreditations</h4>
-              <p className="text-xs font-bold text-white tracking-widest">{String(CONFIG.BRAND.REGISTRATION)}</p>
-            </div>
-            <div className="flex gap-4">
-              {SOCIAL_ICONS.map((Icon, idx) => (
-                <div
+            <div className="flex flex-wrap gap-4 mb-8">
+              {socialLinks.map(({ Icon, url }, idx) => (
+                <a
                   key={idx}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 flex items-center justify-center text-gray-500 cursor-pointer border border-white/5 rounded-full transition-all hover:text-white"
                   style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLDivElement).style.backgroundColor = BLUE)}
-                  onMouseLeave={e => ((e.currentTarget as HTMLDivElement).style.backgroundColor = 'rgba(255,255,255,0.05)')}
+                  onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.backgroundColor = BLUE)}
+                  onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255,255,255,0.05)')}
                 >
                   <Icon size={16} />
-                </div>
+                </a>
               ))}
             </div>
           </div>
@@ -123,7 +130,7 @@ const Footer = () => {
 
         <div className="border-t border-white/5 pt-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-gray-600 text-[10px] uppercase tracking-[0.4em] font-bold">
           <p>© 2026 {CONFIG.BRAND.NAME_1} {CONFIG.BRAND.NAME_2} CONSULTANCY</p>
-          <p>CHIPINGE | GWERU | HARARE</p>
+          <p>GWERU | CHIREDZI | CHIPINGE | HARARE</p>
         </div>
       </div>
     </footer>

@@ -88,7 +88,7 @@ const Checkout = () => {
         </Helmet>
         <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-8">Your Cart is Empty</h2>
         <Button
-          onClick={() => navigate('/services')}
+          onClick={() => navigate('/Services')}
           className="bg-[#0077B6] text-white px-12 h-16 font-black uppercase tracking-widest rounded-2xl"
         >
           Browse Services

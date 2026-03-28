@@ -214,7 +214,7 @@ const Home = () => {
         subtitle="Zimbabwe's leading civil engineering consultancy delivering high-impact water and infrastructure solutions across the region."
         bgImage="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1600"
         ctaLabel="View Reference List"
-        onCta={() => navigate('/projects')}
+        onCta={() => navigate('/Projects')}
       />
 
       <ScrollingBanner />

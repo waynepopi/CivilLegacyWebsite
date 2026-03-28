@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FaWhatsapp } from 'react-icons/fa';
 import { Toaster } from '@/components/ui/toaster';
@@ -44,17 +44,18 @@ export default function App() {
             transition={{ duration: 0.35 }}
           >
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/services" element={<Storefront />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/training" element={<TrainingHub />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/mock-payment-gateway" element={<MockGateway />} />
-              <Route path="/payment/success" element={<PaymentSuccess />} />
-              <Route path="/payment/error" element={<PaymentError />} />
+              <Route path="/" element={<Navigate to="/Home" replace />} />
+              <Route path="/Home" element={<Home />} />
+              <Route path="/About" element={<About />} />
+              <Route path="/Team" element={<Team />} />
+              <Route path="/Services" element={<Storefront />} />
+              <Route path="/Projects" element={<Projects />} />
+              <Route path="/Contact" element={<Contact />} />
+              <Route path="/Training" element={<TrainingHub />} />
+              <Route path="/Checkout" element={<Checkout />} />
+              <Route path="/Mock-Payment-Gateway" element={<MockGateway />} />
+              <Route path="/Payment/Success" element={<PaymentSuccess />} />
+              <Route path="/Payment/Error" element={<PaymentError />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </motion.div>
