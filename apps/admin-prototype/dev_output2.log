@@ -1,0 +1,10 @@
+
+> @workspace/admin-prototype@0.0.0 dev /app/apps/admin-prototype
+> vite --config vite.config.ts --host 0.0.0.0
+
+
+  VITE v7.3.1  ready in 923 ms
+
+  ➜  Local:   http://localhost:5000/
+  ➜  Network: http://192.168.0.2:5000/
+ ELIFECYCLE  Command failed with exit code 143.
