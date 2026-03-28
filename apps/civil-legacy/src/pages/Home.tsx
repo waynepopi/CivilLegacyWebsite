@@ -247,7 +247,7 @@ const Home = () => {
                 <motion.div
                   key={pillar.id}
                   whileHover={{ y: -10 }}
-                  onClick={() => navigate(`/Services#${pillar.id}`)}
+                  onClick={() => navigate('/Services')}
                   className="bg-white/5 p-10 flex flex-col group border border-white/10 shadow-2xl rounded-2xl cursor-pointer"
                 >
                   <div className="mb-8 transform group-hover:scale-110 origin-left transition-transform" style={{ color: BLUE }}>
