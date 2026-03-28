@@ -59,8 +59,8 @@ const Contact = () => {
     );
     
     toast({
-      title: "Inquiry Initialized",
-      description: "Redirecting to WhatsApp for secure transmission.",
+      title: "Inquiry Submitted",
+      description: "Redirecting to WhatsApp.",
     });
   };
 
@@ -85,14 +85,15 @@ const Contact = () => {
           {/* Left: info */}
           <div>
             <SectionHeader
-              title="Transmission"
-              subtitle="Connect with technical headquarters for project consultations and training cohorts."
+              title="Contact Us"
+              subtitle="Get in touch with us for project consultations and corporate training."
               light
+              eyebrow="Get In Touch"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
               <div>
                 <h5 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4" style={{ color: BLUE }}>
-                  Direct Feed
+                  Phone
                 </h5>
                 <button
                   onClick={copyPhone}
@@ -104,7 +105,7 @@ const Contact = () => {
               </div>
               <div>
                 <h5 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4" style={{ color: BLUE }}>
-                  Network Node
+                  Email
                 </h5>
                 <a
                   href={`mailto:${String(CONFIG.CONTACT.EMAIL)}`}
@@ -117,7 +118,7 @@ const Contact = () => {
             
             <div className="mt-16 bg-white/5 p-10 rounded-[2.5rem] border border-white/10">
               <h4 className="text-[10px] font-black uppercase tracking-[0.4em] mb-8" style={{ color: BLUE }}>
-                Satellite Links
+                Social Media
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
@@ -149,10 +150,10 @@ const Contact = () => {
               style={{ backgroundColor: BLUE }}
             />
             <h3 className="text-4xl font-black text-white uppercase tracking-tighter mb-4">
-              Secure Uplink
+              WhatsApp your enquiries here
             </h3>
             <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-12">
-               Encryption-ready technical inquiry portal
+               Send us a message below
             </p>
 
             <Form {...form}>
@@ -162,9 +163,9 @@ const Contact = () => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">FullName</FormLabel>
+                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="DESIGNATION / NAME" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
+                        <Input placeholder="YOUR NAME" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
                       </FormControl>
                       <FormMessage className="text-[10px] uppercase font-bold" />
                     </FormItem>
@@ -176,9 +177,9 @@ const Contact = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">EmailAddress</FormLabel>
+                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Email Address</FormLabel>
                       <FormControl>
-                        <Input placeholder="NODE@NETWORK.COM" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
+                        <Input placeholder="HELLO@EXAMPLE.COM" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
                       </FormControl>
                       <FormMessage className="text-[10px] uppercase font-bold" />
                     </FormItem>
@@ -190,11 +191,11 @@ const Contact = () => {
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">InquiryRouting</FormLabel>
+                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Inquiry Type</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]">
-                            <SelectValue placeholder="SELECT ROUTE" />
+                            <SelectValue placeholder="SELECT INQUIRY TYPE" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-black border-white/10 text-white uppercase font-bold">
@@ -213,10 +214,10 @@ const Contact = () => {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">ProjectParameters</FormLabel>
+                      <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Message Details</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="DESCRIBE TECHNICAL REQUIREMENTS..." 
+                          placeholder="HOW CAN WE HELP YOU?" 
                           className="bg-transparent border-white/10 text-white font-bold rounded-xl focus:border-[#0077B6] min-h-[120px] resize-none" 
                           {...field} 
                         />
@@ -230,7 +231,7 @@ const Contact = () => {
                   type="submit" 
                   className="w-full h-16 bg-[#0077B6] hover:bg-[#0077B6]/80 text-white font-black uppercase tracking-[0.4em] rounded-xl transition-all duration-300"
                 >
-                  Initiate Secure Transmission
+                  Send Enquiry
                 </Button>
               </form>
             </Form>

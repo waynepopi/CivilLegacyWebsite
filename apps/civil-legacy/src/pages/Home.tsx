@@ -11,10 +11,12 @@ export const SectionHeader = ({
   title,
   subtitle,
   light = false,
+  eyebrow = "Civil Legacy",
 }: {
   title: string;
   subtitle: string;
   light?: boolean;
+  eyebrow?: string;
 }) => (
   <div className="mb-20 text-left">
     <div className="flex items-center gap-4 mb-4">
@@ -23,7 +25,7 @@ export const SectionHeader = ({
         className="text-[10px] font-black uppercase tracking-[0.5em]"
         style={{ color: light ? '#9ca3af' : BLUE }}
       >
-        Technical Specification
+        {eyebrow}
       </span>
     </div>
     <h2
@@ -213,7 +215,7 @@ const Home = () => {
         titleLine2="LEGACY."
         subtitle="Zimbabwe's leading civil engineering consultancy delivering high-impact water and infrastructure solutions across the region."
         bgImage="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1600"
-        ctaLabel="View Reference List"
+        ctaLabel="View Our Projects"
         onCta={() => navigate('/Projects')}
       />
 
@@ -222,7 +224,7 @@ const Home = () => {
       {/* Banner */}
       <section className="bg-[#0077B6] py-16 px-6 lg:px-12 text-center border-y border-white/10">
         <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4 drop-shadow-sm">
-          Technical Documentation Services
+          Documentation Services
         </h3>
         <p className="text-white/80 font-bold tracking-widest uppercase text-xs md:text-sm">
           Comprehensive reporting, civil drawings, and regulatory submissions.
@@ -236,6 +238,7 @@ const Home = () => {
             title="Our Pillars"
             subtitle="Three core disciplines ensuring a complete infrastructure life cycle."
             light
+            eyebrow="What We Do"
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 text-left">
             {SERVICE_CATEGORIES.map((pillar) => {
@@ -262,7 +265,7 @@ const Home = () => {
       <section className="py-32 bg-black border-y border-white/5">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center gap-6 mb-20">
-            <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Core Capabilities</h2>
+            <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Our Expertise</h2>
             <div className="h-[2px] flex-grow bg-white/10" />
           </div>
           <div className="border-t border-white/10">
@@ -288,6 +291,7 @@ const Home = () => {
               title="Engineering Resilience"
               subtitle="Leveraging cutting-edge methodologies and a client-centric ethos to ensure resilient systems that serve communities for generations."
               light
+              eyebrow="Who We Are"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20 text-left">
               <div className="space-y-4">
@@ -318,7 +322,7 @@ const Home = () => {
                 15+
               </h3>
               <p className="text-xs font-black uppercase tracking-[0.4em] mb-12 relative z-10" style={{ color: BLUE }}>
-                Verified Projects
+                Successful Projects
               </p>
               <div className="space-y-6 border-t border-white/10 pt-8 relative z-10">
                 <p className="text-gray-400 italic font-light text-lg leading-relaxed">

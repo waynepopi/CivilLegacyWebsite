@@ -87,7 +87,7 @@ const Footer = () => {
           {/* Offices */}
           <div>
             <h4 className="text-xs font-black uppercase tracking-[0.3em] mb-8" style={{ color: BLUE }}>
-              Operational Hubs
+              Branches
             </h4>
             <ul className="space-y-6 text-sm text-gray-400 font-light">
               {CONFIG.CONTACT.OFFICES.map((off, idx) => (
@@ -104,7 +104,7 @@ const Footer = () => {
           {/* Contact */}
           <div>
             <h4 className="text-xs font-black uppercase tracking-[0.3em] mb-8" style={{ color: BLUE }}>
-              Transmission
+              Contact Us
             </h4>
             <ul className="space-y-4 text-sm font-mono text-gray-400">
               <li>

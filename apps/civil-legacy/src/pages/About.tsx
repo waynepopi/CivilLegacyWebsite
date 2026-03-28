@@ -18,6 +18,7 @@ const About = () => (
             title="Engineering Resilience"
             subtitle="Leveraging cutting-edge methodologies and a client-centric ethos to ensure resilient systems that serve communities for generations."
             light
+            eyebrow="Our Story"
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20 text-left">
             <div className="space-y-4">
@@ -47,7 +48,7 @@ const About = () => (
               15+
             </h3>
             <p className="text-xs font-black uppercase tracking-[0.4em] mb-12 relative z-10" style={{ color: BLUE }}>
-              Verified Projects
+              Successful Projects
             </p>
             <div className="space-y-6 border-t border-white/10 pt-8 relative z-10">
               <p className="text-gray-400 italic font-light text-lg leading-relaxed">

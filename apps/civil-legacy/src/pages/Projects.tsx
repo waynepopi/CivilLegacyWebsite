@@ -14,13 +14,14 @@ const Projects = () => (
   <div className="pt-24 bg-black min-h-screen px-6 lg:px-12 text-left text-white">
     <Helmet>
       <title>Projects | Civil Legacy Consultancy</title>
-      <meta name="description" content="View our comprehensive structural and civil assignments across Zimbabwe." />
+      <meta name="description" content="View our comprehensive structural and civil engineering projects across Zimbabwe." />
     </Helmet>
     <div className="max-w-[1600px] mx-auto py-32">
       <SectionHeader
-        title="Project Reference"
-        subtitle="Comprehensive structural and civil assignments across Zimbabwe."
+        title="Our Projects"
+        subtitle="Comprehensive structural and civil engineering projects across Zimbabwe."
         light
+        eyebrow="Portfolio"
       />
       
       {/* Featured Projects Carousel */}

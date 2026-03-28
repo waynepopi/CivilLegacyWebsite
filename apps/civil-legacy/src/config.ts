@@ -239,7 +239,7 @@ export const CONFIG = {
     { name: 'Eng. Dereck M. Popi', role: 'Company Director', id: 'ZIE 198098 | ECZ 151080', creds: 'BSc (Hons), MBA, Pr Eng', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600' },
     { name: 'Simbarashe Musakwembewa', role: 'Structural Expert', id: 'ZIE 084408 | ECZ 150285', creds: 'BSc (Hons), Pr. Eng, MECZ', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600' },
     { name: 'Eng. Byron Muzovaka', role: 'GeoTech Expert', id: 'ZIE 144395 | ECZ 100645', creds: 'BSc (Hons), ECZ, Pr. Eng', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600' },
-    { name: 'Eng. Panashe Gora', role: 'Lead Engineer', id: 'ZIE 144446 | ECZ 100446', creds: 'BSc (Hons), ECZ, Pr. Eng', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600' },
+    { name: 'Panashe Gora', role: 'Lead Engineer', id: 'ZIE 144446 | ECZ 100446', creds: 'BSc (Hons), ECZ, Pr. Eng, Machine Learning, Artificial Intelligence', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600' },
     { name: 'Tawanda Mvarume', role: 'Civil & Water Engineer', id: 'ZIE 150410 | ECZ 120511', creds: 'BSc (Hons), Civil Design Specialist', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=600' },
   ],
   SCROLL_IMAGES: [

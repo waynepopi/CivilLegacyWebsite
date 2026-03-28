@@ -17,6 +17,7 @@ const Team = () => (
         title="Expertise"
         subtitle="Our multidisciplinary board of registered Professional Engineers."
         light
+        eyebrow="Our Expert Engineering Team"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20">
         {CONFIG.TEAM.map((member, i) => (
