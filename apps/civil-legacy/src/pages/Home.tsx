@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { CONFIG, SERVICE_CATEGORIES } from '@/config';
@@ -52,50 +52,79 @@ export const Hero = ({
   onCta,
 }: {
   titleLine1: string;
-  titleLine2: string;
+  titleLine2: string | string[];
   subtitle: string;
   bgImage: string;
   ctaLabel: string;
   onCta: () => void;
-}) => (
-  <section className="relative h-[90vh] min-h-[600px] flex items-center bg-black overflow-hidden px-6 lg:px-12 border-b border-white/10">
-    <div className="absolute inset-0 z-0">
-      <img
-        src={bgImage}
-        alt="Hero"
-        className="w-full h-full object-cover"
-        style={{ filter: 'grayscale(1) brightness(0.3) contrast(1.25)', transform: 'scale(1.05)' }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-    </div>
+}) => {
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
-    <div className="relative z-10 max-w-[1600px] mx-auto w-full">
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        className="max-w-4xl text-left"
-      >
-        <h1 className="text-6xl md:text-[10rem] font-black text-white leading-[0.85] tracking-tighter uppercase mb-12">
-          {titleLine1}
-          <br />
-          <span style={{ color: BLUE }}>{titleLine2}</span>
-        </h1>
-        <p className="text-xl md:text-2xl text-gray-400 font-light max-w-xl mb-12 tracking-tight">
-          {subtitle}
-        </p>
-        <button
-          onClick={onCta}
-          className="group flex items-center gap-3 px-12 py-6 font-black uppercase tracking-[0.3em] text-xs text-white transition-all duration-500 hover:bg-white hover:text-black shadow-2xl"
-          style={{ backgroundColor: BLUE }}
+  useEffect(() => {
+    if (!Array.isArray(titleLine2)) return undefined;
+    
+    const interval = setInterval(() => {
+      setCurrentTextIndex((prev) => (prev + 1) % titleLine2.length);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [titleLine2]);
+
+  const currentText = Array.isArray(titleLine2) ? titleLine2[currentTextIndex] : titleLine2;
+
+  return (
+    <section className="relative h-[90vh] min-h-[600px] flex items-center bg-black overflow-hidden px-6 lg:px-12 border-b border-white/10">
+      <div className="absolute inset-0 z-0">
+        <img
+          src={bgImage}
+          alt="Hero"
+          className="w-full h-full object-cover"
+          style={{ filter: 'grayscale(1) brightness(0.3) contrast(1.25)', transform: 'scale(1.05)' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+      </div>
+
+      <div className="relative z-10 max-w-[1600px] mx-auto w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="max-w-4xl text-left"
         >
-          {ctaLabel}
-          <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
-        </button>
-      </motion.div>
-    </div>
-  </section>
-);
+          <h1 className="text-[clamp(1.75rem,7.5vw,10rem)] font-black text-white leading-[0.85] tracking-tighter uppercase mb-8 md:mb-12 flex flex-col items-start">
+            {titleLine1}
+            <span className="relative h-[1.15em] overflow-hidden inline-flex items-center pb-1" style={{ color: BLUE }}>
+              <span className="invisible whitespace-nowrap">{currentText}</span>
+              <AnimatePresence mode="popLayout">
+                <motion.span
+                  key={currentText}
+                  initial={{ y: "100%", opacity: 0 }}
+                  animate={{ y: "0%", opacity: 1 }}
+                  exit={{ y: "-100%", opacity: 0 }}
+                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                  className="absolute left-0 top-0 whitespace-nowrap"
+                >
+                  {currentText}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-400 font-light max-w-xl mb-12 tracking-tight">
+            {subtitle}
+          </p>
+          <button
+            onClick={onCta}
+            className="group flex items-center gap-3 px-12 py-6 font-black uppercase tracking-[0.3em] text-xs text-white transition-all duration-500 hover:bg-white hover:text-black shadow-2xl"
+            style={{ backgroundColor: BLUE }}
+          >
+            {ctaLabel}
+            <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
+          </button>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
 
 export const ScrollingBanner = () => {
   const doubled = useMemo(
@@ -212,7 +241,7 @@ const Home = () => {
 
       <Hero
         titleLine1="SHAPING"
-        titleLine2="LEGACY."
+        titleLine2={["LEGACY.", "CONSTRUCTION.", "CONSULTANCY.", "EXCELLENCE.", "PROFESSIONALISM.", "PROJECT MANAGEMENT."]}
         subtitle="Zimbabwe's leading civil engineering consultancy delivering high-impact water and infrastructure solutions across the region."
         bgImage="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1600"
         ctaLabel="View Our Projects"
