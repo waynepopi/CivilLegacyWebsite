@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "echo Use pnpm instead",
-    "dev": "pnpm -r --filter \"@workspace/api-server\" --filter \"@workspace/civil-legacy\" --parallel dev",
+    "dev": "pnpm -r --filter \"@workspace/api-server\" --filter \"@workspace/civil-legacy\" --filter \"@workspace/admin-prototype\" --parallel dev",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./apps/**\" --filter \"./scripts\" --if-present run typecheck"
