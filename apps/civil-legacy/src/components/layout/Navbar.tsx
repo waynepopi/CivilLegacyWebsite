@@ -63,9 +63,10 @@ const Navbar = () => {
               className="h-16 w-auto object-contain"
             />
             <div>
-              <div className="text-2xl font-black text-white tracking-tighter uppercase leading-none">
-                {CONFIG.BRAND.NAME_1}
-                <span style={{ color: BLUE }}>{CONFIG.BRAND.NAME_2}</span>
+              <div className="text-2xl font-black tracking-tighter uppercase leading-none">
+                <span style={{ color: BLUE }}>{CONFIG.BRAND.NAME_1}</span>
+                {" "}
+                <span className="text-white">{CONFIG.BRAND.NAME_2}</span>
               </div>
               <div
                 className="text-[9px] font-bold tracking-[0.4em] uppercase mt-1"
