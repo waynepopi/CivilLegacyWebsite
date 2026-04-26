@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, ShoppingCart, GraduationCap } from 'lucide-react';
+import { Menu, ShoppingCart, GraduationCap, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { CONFIG, SERVICE_CATEGORIES } from '@/config';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
@@ -37,6 +37,14 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.classList.add('mobile-menu-open');
+    } else {
+      document.body.classList.remove('mobile-menu-open');
+    }
+  }, [isMobileMenuOpen]);
 
   const showCart = ['/Services', '/Checkout', '/Mock-Payment-Gateway', '/Payment/Success', '/Payment/Error'].includes(location.pathname);
 
@@ -181,12 +189,13 @@ const Navbar = () => {
               </Link>
             )}
 
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <button className="text-black dark:text-white p-2 border border-black/20 dark:border-white/20 rounded focus:outline-none">
-                  <Menu size={20} />
-                </button>
-              </SheetTrigger>
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen} modal={false}>
+              <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="relative z-[110] text-black dark:text-white p-2 border border-black/20 dark:border-white/20 rounded focus:outline-none bg-white/50 dark:bg-black/50 backdrop-blur-sm"
+              >
+                {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
               <SheetContent side="left" className="w-full sm:w-[400px] bg-white dark:bg-black border-r border-black/10 dark:border-white/10 p-0 text-black dark:text-white">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <SheetDescription className="sr-only">Main navigation for the application</SheetDescription>

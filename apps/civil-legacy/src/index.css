@@ -289,3 +289,11 @@
     inset: -1px;
   }
 }
+
+/* Mobile Menu Utilities */
+.mobile-menu-open .whatsapp-widget {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.3s ease;
+}
