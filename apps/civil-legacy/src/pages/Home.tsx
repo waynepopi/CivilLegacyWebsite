@@ -141,7 +141,7 @@ export const ScrollingBanner = () => {
           <div
             key={i}
             className="min-w-[500px] h-[350px] overflow-hidden flex-shrink-0 rounded-2xl border border-black/10 dark:border-white/10"
-            style={{ filter: 'grayscale(1) brightness(0.75)' }}
+            style={{ filter: 'brightness(0.75)' }}
           >
             <img src={src} alt="Project" className="w-full h-full object-cover" />
           </div>
