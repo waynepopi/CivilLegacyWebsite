@@ -76,7 +76,7 @@ export const Hero = ({
           src={bgImage}
           alt="Hero"
           className="w-full h-full object-cover"
-          style={{ filter: 'grayscale(1) brightness(0.3) contrast(1.25)', transform: 'scale(1.05)' }}
+          style={{ filter: 'brightness(0.3) contrast(1.25)', transform: 'scale(1.05)' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
       </div>
@@ -194,7 +194,7 @@ export const AccordionItem = ({
             <p className="text-gray-600 dark:text-gray-400 text-lg font-light leading-relaxed">{content}</p>
             <div
               className="h-64 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-2xl"
-              style={{ filter: 'grayscale(1) brightness(0.5) contrast(1.25)' }}
+              style={{ filter: 'brightness(0.5) contrast(1.25)' }}
             >
               <img src={image} alt={title} className="w-full h-full object-cover" />
             </div>
@@ -356,7 +356,7 @@ const Home = () => {
                   <img
                     src={CONFIG.TEAM[0].img}
                     className="w-12 h-12 rounded-full object-cover"
-                    style={{ filter: 'grayscale(1)' }}
+                    style={{ }}
                     alt={CONFIG.TEAM[0].name}
                   />
                   <div>

@@ -26,7 +26,7 @@ const MockGateway = () => {
         <title>Mock Payment Gateway | Civil Legacy</title>
       </Helmet>
       <Card className="max-w-md w-full p-12 bg-white shadow-2xl rounded-[3rem] text-center border-none">
-        <img src="/logo-full.png" alt="Civil Legacy" className="h-12 mx-auto mb-12 grayscale" />
+        <img src="/logo-full.png" alt="Civil Legacy" className="h-12 mx-auto mb-12" />
         <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 text-black">Paynow <span className="text-blue-600">Mock</span> Gateway</h2>
         <p className="text-gray-500 text-sm mb-8 font-medium">This is a simulation for testing the Paynow integration flow.</p>
         

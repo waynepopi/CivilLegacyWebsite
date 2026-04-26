@@ -23,7 +23,7 @@ const StorefrontHero = ({
         src="https://images.unsplash.com/photo-1504307651254-35680f3366d4?auto=format&fit=crop&q=80&w=1600"
         alt="Engineering Services"
         className="w-full h-full object-cover"
-        style={{ filter: 'grayscale(1) brightness(0.18) contrast(1.2)' }}
+        style={{ filter: 'brightness(0.18) contrast(1.2)' }}
       />
     </div>
     <div className="relative z-10 w-full max-w-4xl text-center px-6">

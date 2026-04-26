@@ -75,7 +75,7 @@ const TrainingHub = () => {
                       <img
                         src={course.image}
                         alt={course.title}
-                        className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-1000 scale-105 group-hover:scale-100"
+                        className="w-full h-full object-cover brightness-50 group-hover:brightness-100 transition-all duration-1000 scale-105 group-hover:scale-100"
                       />
                     </div>
                   </div>

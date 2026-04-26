@@ -25,7 +25,7 @@ const Team = () => (
             key={i}
             className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 hover:border-[#0077B6]/50 transition-all duration-500 overflow-hidden group rounded-[2rem] h-full flex flex-col text-left"
           >
-            <div className="relative aspect-square overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
+            <div className="relative aspect-square overflow-hidden transition-all duration-700">
               <img
                 src={member.img}
                 alt={String(member.name)}

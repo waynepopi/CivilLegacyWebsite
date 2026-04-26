@@ -57,7 +57,7 @@ const About = () => (
                 <img
                   src={CONFIG.TEAM[0].img}
                   className="w-12 h-12 rounded-full object-cover"
-                  style={{ filter: 'grayscale(1)' }}
+                  style={{ }}
                   alt={CONFIG.TEAM[0].name}
                 />
                 <div>
