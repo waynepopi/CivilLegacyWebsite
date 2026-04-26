@@ -237,12 +237,11 @@ export const CONFIG = {
     { name: 'Tawanda Mvarume', role: 'Civil & Water Engineer', id: 'ZIE 150410 | ECZ 120511', creds: 'BSc (Hons), Civil Design Specialist', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=600' },
   ],
   SCROLL_IMAGES: [
-    'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1504307651254-35680f3366d4?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1517089535819-3d8569aa83fa?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=800',
-    'https://images.unsplash.com/photo-1503387762-592dea58ef21?auto=format&fit=crop&q=80&w=800',
+    '/scroll/scroll-1.jpg',
+    '/scroll/scroll-2.jpg',
+    '/scroll/scroll-3.jpg',
+    '/scroll/scroll-4.jpg',
+    '/scroll/scroll-5.jpg',
   ],
 } as const;
 

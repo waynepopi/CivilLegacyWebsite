@@ -228,7 +228,7 @@ const Home = () => {
     {
       title: 'Industrial Excellence',
       content: 'From fuel stations in high-temperature environments to large-span industrial buildings, we maintain structural durability under operational loads.',
-      image: CONFIG.SCROLL_IMAGES[5],
+      image: CONFIG.SCROLL_IMAGES[4],
     },
   ];
 
