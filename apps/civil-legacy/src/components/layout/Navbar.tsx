@@ -211,10 +211,16 @@ const Navbar = () => {
                       <GraduationCap size={16} /> Training Hub
                     </Link>
                   </div>
+
+                  <div className="mt-auto pb-12 border-t border-black/5 dark:border-white/5 pt-8 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+                      Switch Theme
+                    </span>
+                    <ThemeToggle />
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
-            <ThemeToggle />
           </div>
         </div>
       </div>
