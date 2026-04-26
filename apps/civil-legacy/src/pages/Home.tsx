@@ -47,6 +47,7 @@ export const Hero = ({
   bgImage,
   ctaLabel,
   onCta,
+  children,
 }: {
   titleLine1: string;
   titleLine2: string | string[];
@@ -54,6 +55,7 @@ export const Hero = ({
   bgImage: string;
   ctaLabel: string;
   onCta: () => void;
+  children?: React.ReactNode;
 }) => {
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
@@ -109,14 +111,23 @@ export const Hero = ({
           <p className="text-xl md:text-2xl text-gray-400 font-light max-w-xl mb-12 tracking-tight">
             {subtitle}
           </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="flex flex-col lg:flex-row flex-wrap gap-4 mt-8"
+        >
           <button
             onClick={onCta}
-            className="group flex items-center gap-3 px-12 py-6 font-black uppercase tracking-[0.3em] text-xs text-white transition-all duration-500 hover:bg-white hover:text-black shadow-2xl"
+            className="group flex items-center justify-center gap-3 px-7 py-4 font-black uppercase tracking-[0.3em] text-xs text-white transition-all duration-500 hover:scale-105 shadow-2xl rounded-full"
             style={{ backgroundColor: BLUE }}
           >
             {ctaLabel}
-            <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
+            <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
           </button>
+          {children}
         </motion.div>
       </div>
     </section>
@@ -256,7 +267,22 @@ const Home = () => {
         bgImage="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1600"
         ctaLabel="View Our Projects"
         onCta={() => navigate('/Projects')}
-      />
+      >
+        <button
+          onClick={() => navigate('/Services')}
+          className="group flex items-center justify-center gap-3 px-7 py-4 font-black uppercase tracking-[0.3em] text-xs text-gray-800 transition-all duration-500 hover:scale-105 shadow-2xl bg-gradient-to-r from-[#0077B6] to-white/70 rounded-full"
+        >
+          <span>Build with US</span>
+          <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
+        </button>
+        <button
+          onClick={() => navigate('/TrainingHub')}
+          className="group flex items-center justify-center gap-3 px-7 py-4 font-black uppercase tracking-[0.3em] text-xs text-black transition-all duration-500 hover:scale-105 shadow-2xl bg-white rounded-full"
+        >
+          Join Training Now
+          <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
+        </button>
+      </Hero>
 
       <ScrollingBanner />
 
