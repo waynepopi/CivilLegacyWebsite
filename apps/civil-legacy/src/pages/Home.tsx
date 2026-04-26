@@ -124,29 +124,44 @@ export const Hero = ({
 };
 
 export const ScrollingBanner = () => {
-  const doubled = useMemo(
-    () => [...CONFIG.SCROLL_IMAGES, ...CONFIG.SCROLL_IMAGES],
-    [],
-  );
-  const totalOffset = CONFIG.SCROLL_IMAGES.length * 548;
+  const images = CONFIG.SCROLL_IMAGES;
+  const count = images.length;
+
+  // Tile 4 copies so the seam never shows
+  const tiled = useMemo(() => [...images, ...images, ...images, ...images], [images]);
+
+  const loopPx  = count * (512 + 48); // card width + gap
+  const duration = loopPx / 35; // ~35 px/s
 
   return (
-    <div className="py-20  overflow-hidden border-y border-black/5 dark:border-white/5">
-      <motion.div
-        className="flex gap-12 px-6"
-        animate={{ x: [0, -totalOffset] }}
-        transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-      >
-        {doubled.map((src, i) => (
+    <div className="py-20 overflow-hidden border-y border-black/5 dark:border-white/5">
+      <style>{`
+        @keyframes cl-scroll {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-${loopPx}px); }
+        }
+        .cl-strip {
+          animation: cl-scroll ${duration}s linear infinite;
+        }
+      `}</style>
+
+      <div className="cl-strip flex gap-12 px-6 will-change-transform">
+        {tiled.map((src, i) => (
           <div
             key={i}
-            className="min-w-[500px] h-[350px] overflow-hidden flex-shrink-0 rounded-2xl border border-black/10 dark:border-white/10"
-            style={{ filter: 'brightness(0.75)' }}
+            className="min-w-[500px] h-[350px] overflow-hidden flex-shrink-0 rounded-2xl border border-black/10 dark:border-white/10 cursor-pointer"
+            style={{ filter: 'brightness(0.75)', transition: 'transform 0.4s cubic-bezier(0.23,1,0.32,1)' }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.045)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
+            }}
           >
             <img src={src} alt="Project" className="w-full h-full object-cover" />
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 };
