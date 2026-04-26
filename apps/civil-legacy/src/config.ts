@@ -239,7 +239,7 @@ export const CONFIG = {
     { name: 'Farai Likalawe', role: 'Planner', id: '', creds: '', img: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=600' },
     { name: 'Tanyaradzwa Mwapenya', role: 'Quantity Surveying Technician', id: '', creds: '', img: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=600' },
     { name: 'Bridget Makonese', role: 'Water Resources Technician', id: '', creds: '', img: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?auto=format&fit=crop&q=80&w=600' },
-    { name: 'Wayne M Popi', role: 'Software Engineer', id: '', creds: '', img: 'https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?auto=format&fit=crop&q=80&w=600' },
+    { name: 'Wayne M Popi', role: 'Software Engineer', id: '', creds: '', img: '/team/wayne-m-popi.jpg', pos: 'center top' },
   ],
   SCROLL_IMAGES: [
     '/scroll/scroll-1.jpg',

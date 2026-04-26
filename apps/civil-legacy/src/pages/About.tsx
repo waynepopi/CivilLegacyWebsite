@@ -57,7 +57,7 @@ const About = () => (
                 <img
                   src={CONFIG.TEAM[0].img}
                   className="w-12 h-12 rounded-full object-cover"
-                  style={{ }}
+                  style={{ objectPosition: (CONFIG.TEAM[0] as any).pos || 'center' }}
                   alt={CONFIG.TEAM[0].name}
                 />
                 <div>
