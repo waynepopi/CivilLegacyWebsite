@@ -190,7 +190,7 @@ export const CONFIG = {
     NAME_1: 'CIVIL',
     NAME_2: 'LEGACY',
     TAGLINE: 'Consultancy',
-    REGISTRATION: 'ZIE 198098 | ECZ 151080',
+    REGISTRATION: '',
   },
   CONTACT: {
     MAIN_LINE: '0718 246 433',
