@@ -33,7 +33,7 @@ const TrainingHub = () => {
   ];
 
   return (
-    <div className="bg-black">
+    <div className="">
       <Helmet>
         <title>Training Hub | Civil Legacy Consultancy</title>
         <meta name="description" content="Empowering the next generation of engineers through rigorous software mastery and technical documentation mentorship." />
@@ -50,7 +50,7 @@ const TrainingHub = () => {
         }}
       />
 
-      <section id="courses" className="py-32 bg-black px-6 lg:px-12 text-left">
+      <section id="courses" className="py-32  px-6 lg:px-12 text-left">
         <div className="max-w-[1600px] mx-auto">
           <SectionHeader
             title="Curriculum"
@@ -71,7 +71,7 @@ const TrainingHub = () => {
                 <div className="lg:w-1/2">
                   <div className="relative group">
                     <div className="absolute -inset-4 bg-[#0077B6]/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    <div className="relative aspect-video overflow-hidden rounded-[3rem] border border-white/10">
+                    <div className="relative aspect-video overflow-hidden rounded-[3rem] border border-black/10 dark:border-white/10">
                       <img
                         src={course.image}
                         alt={course.title}
@@ -86,10 +86,10 @@ const TrainingHub = () => {
                     <span className="text-[12px] font-black text-[#0077B6] uppercase tracking-[0.4em]">Module 0{idx + 1}</span>
                     <div className="h-px w-12 bg-white/20" />
                   </div>
-                  <h3 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter mb-8 leading-none">
+                  <h3 className="text-5xl md:text-7xl font-black  uppercase tracking-tighter mb-8 leading-none">
                     {course.title}
                   </h3>
-                  <p className="text-xl text-gray-400 font-light leading-relaxed mb-12 max-w-xl">
+                  <p className="text-xl text-gray-600 dark:text-gray-400 font-light leading-relaxed mb-12 max-w-xl">
                     {course.description}
                   </p>
                   
@@ -105,7 +105,7 @@ const TrainingHub = () => {
                   <a
                     href="#"
                     target="_blank"
-                    className="inline-flex items-center gap-4 px-10 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] rounded-xl hover:bg-[#0077B6] hover:text-white transition-all duration-500 group"
+                    className="inline-flex items-center gap-4 px-10 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] rounded-xl hover:bg-[#0077B6] hover: transition-all duration-500 group"
                   >
                     Enroll Now
                     <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
@@ -118,19 +118,19 @@ const TrainingHub = () => {
       </section>
 
       {/* Certification CTA */}
-      <section className="py-32 bg-black border-y border-white/5">
+      <section className="py-32  border-y border-black/5 dark:border-white/5">
         <div className="max-w-[1600px] mx-auto px-6 lg:px-12 text-center">
-          <div className="bg-gradient-to-r from-white/5 to-transparent p-12 md:p-24 rounded-[4rem] border border-white/10 text-center relative overflow-hidden">
+          <div className="bg-gradient-to-r from-white/5 to-transparent p-12 md:p-24 rounded-[4rem] border border-black/10 dark:border-white/10 text-center relative overflow-hidden">
              <div className="absolute top-0 right-0 w-96 h-96 bg-[#0077B6]/5 rounded-full blur-3xl -mr-48 -mt-48" />
              <GraduationCap size={64} className="mx-auto text-[#0077B6] mb-8" />
-             <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-8">Ready to Elevate Your Career?</h2>
-             <p className="text-xl text-gray-400 font-light max-w-2xl mx-auto mb-12">
+             <h2 className="text-4xl md:text-6xl font-black  uppercase tracking-tighter mb-8">Ready to Elevate Your Career?</h2>
+             <p className="text-xl text-gray-600 dark:text-gray-400 font-light max-w-2xl mx-auto mb-12">
                Join our cohort of engineering professionals and gain the practical skills that top-tier consultancies demand.
              </p>
              <a
                href="#"
                target="_blank"
-               className="inline-flex items-center gap-4 px-12 py-6 bg-[#0077B6] text-white font-black uppercase tracking-[0.3em] text-xs rounded-xl hover:bg-white hover:text-black transition-all duration-500 shadow-2xl"
+               className="inline-flex items-center gap-4 px-12 py-6 bg-[#0077B6]  font-black uppercase tracking-[0.3em] text-xs rounded-xl hover:bg-white hover:text-black transition-all duration-500 shadow-2xl"
              >
                Apply for Cohort
                <ChevronRight size={18} />

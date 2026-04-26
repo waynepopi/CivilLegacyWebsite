@@ -1,26 +1,26 @@
 import React from 'react';
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from"react-hook-form";
+import * as z from"zod";
+import { zodResolver } from"@hookform/resolvers/zod";
 import { Mail, MapPin } from 'lucide-react';
 import { FaTiktok, FaInstagram, FaLinkedinIn, FaFacebookF, FaWhatsapp } from 'react-icons/fa';
 import { useToast } from '@/hooks/use-toast';
 import { CONFIG } from '@/config';
 import { SectionHeader } from './Home';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from"@/components/ui/form";
+import { Input } from"@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from"@/components/ui/select";
+import { Textarea } from"@/components/ui/textarea";
+import { Button } from"@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
 
 const BLUE = '#0077B6';
 
 const contactSchema = z.object({
-  name: z.string().min(2, "Name is too short"),
+  name: z.string().min(2,"Name is too short"),
   email: z.string().email("Invalid email address"),
-  type: z.enum(["General Inquiry", "RFQ", "Corporate Training"]),
-  message: z.string().min(10, "Please provide more details"),
+  type: z.enum(["General Inquiry","RFQ","Corporate Training"]),
+  message: z.string().min(10,"Please provide more details"),
 });
 
 type ContactValues = z.infer<typeof contactSchema>;
@@ -30,10 +30,10 @@ const Contact = () => {
   const form = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      type: "General Inquiry",
-      message: "",
+      name:"",
+      email:"",
+      type:"General Inquiry",
+      message:"",
     },
   });
 
@@ -59,8 +59,8 @@ const Contact = () => {
     );
     
     toast({
-      title: "Inquiry Submitted",
-      description: "Redirecting to WhatsApp.",
+      title:"Inquiry Submitted",
+      description:"Redirecting to WhatsApp.",
     });
   };
 
@@ -75,7 +75,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="pt-24 bg-black min-h-screen px-6 lg:px-12 text-left text-white">
+    <div className="pt-24  min-h-screen px-6 lg:px-12 text-left">
       <Helmet>
         <title>Contact Us | Civil Legacy Consultancy</title>
         <meta name="description" content="Connect with technical headquarters for project consultations and training cohorts." />
@@ -97,7 +97,7 @@ const Contact = () => {
                 </h5>
                 <button
                   onClick={copyPhone}
-                  className="text-4xl font-black text-white hover:text-[#0077B6] transition-colors cursor-pointer tracking-tighter"
+                  className="text-4xl font-black  hover:text-[#0077B6] transition-colors cursor-pointer tracking-tighter"
                   title="Click to copy"
                 >
                   {String(CONFIG.CONTACT.MAIN_LINE)}
@@ -109,14 +109,14 @@ const Contact = () => {
                 </h5>
                 <a
                   href={`mailto:${String(CONFIG.CONTACT.EMAIL)}`}
-                  className="text-2xl font-black text-white break-all hover:text-[#0077B6] transition-colors tracking-tighter"
+                  className="text-2xl font-black  break-all hover:text-[#0077B6] transition-colors tracking-tighter"
                 >
                   {String(CONFIG.CONTACT.EMAIL)}
                 </a>
               </div>
             </div>
             
-            <div className="mt-16 bg-white/5 p-10 rounded-[2.5rem] border border-white/10">
+            <div className="mt-16 bg-black/5 dark:bg-white/5 p-10 rounded-[2.5rem] border border-black/10 dark:border-white/10">
               <h4 className="text-[10px] font-black uppercase tracking-[0.4em] mb-8" style={{ color: BLUE }}>
                 Social Media
               </h4>
@@ -127,12 +127,12 @@ const Contact = () => {
                     href={href} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-[#0077B6]/60 hover:bg-white/5 transition-all group"
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 hover:border-[#0077B6]/60 hover:bg-black/5 dark:bg-white/5 transition-all group"
                   >
-                    <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 group-hover:bg-[#0077B6]/20 transition-colors text-gray-400 group-hover:text-white">
+                    <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/5 dark:bg-white/5 group-hover:bg-[#0077B6]/20 transition-colors text-gray-600 dark:text-gray-400 group-hover:">
                       <Icon size={18} />
                     </span>
-                    <span className="text-xs font-black text-gray-400 group-hover:text-white uppercase tracking-widest transition-colors">
+                    <span className="text-xs font-black text-gray-600 dark:text-gray-400 group-hover: uppercase tracking-widest transition-colors">
                       {label}
                     </span>
                   </a>
@@ -143,13 +143,13 @@ const Contact = () => {
 
           {/* Right: Hook Form */}
           <div
-            className="p-12 lg:p-16 rounded-[3rem] border border-white/5 relative bg-white/5 overflow-hidden"
+            className="p-12 lg:p-16 rounded-[3rem] border border-black/5 dark:border-white/5 relative bg-black/5 dark:bg-white/5 overflow-hidden"
           >
             <div
               className="absolute top-0 right-0 w-64 h-64 opacity-5 rounded-bl-full"
               style={{ backgroundColor: BLUE }}
             />
-            <h3 className="text-4xl font-black text-white uppercase tracking-tighter mb-4">
+            <h3 className="text-4xl font-black  uppercase tracking-tighter mb-4">
               WhatsApp your enquiries here
             </h3>
             <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-12">
@@ -165,7 +165,7 @@ const Contact = () => {
                     <FormItem>
                       <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="YOUR NAME" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
+                        <Input placeholder="YOUR NAME" {...field} className="bg-transparent border-black/10 dark:border-white/10  font-bold h-14 rounded-xl focus:border-[#0077B6]" />
                       </FormControl>
                       <FormMessage className="text-[10px] uppercase font-bold" />
                     </FormItem>
@@ -179,7 +179,7 @@ const Contact = () => {
                     <FormItem>
                       <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Email Address</FormLabel>
                       <FormControl>
-                        <Input placeholder="HELLO@EXAMPLE.COM" {...field} className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]" />
+                        <Input placeholder="HELLO@EXAMPLE.COM" {...field} className="bg-transparent border-black/10 dark:border-white/10  font-bold h-14 rounded-xl focus:border-[#0077B6]" />
                       </FormControl>
                       <FormMessage className="text-[10px] uppercase font-bold" />
                     </FormItem>
@@ -194,11 +194,11 @@ const Contact = () => {
                       <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Inquiry Type</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-transparent border-white/10 text-white font-bold h-14 rounded-xl focus:border-[#0077B6]">
+                          <SelectTrigger className="bg-transparent border-black/10 dark:border-white/10  font-bold h-14 rounded-xl focus:border-[#0077B6]">
                             <SelectValue placeholder="SELECT INQUIRY TYPE" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-black border-white/10 text-white uppercase font-bold">
+                        <SelectContent className="border-black/10 dark:border-white/10  uppercase font-bold">
                           <SelectItem value="General Inquiry">General Inquiry</SelectItem>
                           <SelectItem value="RFQ">Request for Quotation (RFQ)</SelectItem>
                           <SelectItem value="Corporate Training">Corporate Training Cohort</SelectItem>
@@ -218,7 +218,7 @@ const Contact = () => {
                       <FormControl>
                         <Textarea 
                           placeholder="HOW CAN WE HELP YOU?" 
-                          className="bg-transparent border-white/10 text-white font-bold rounded-xl focus:border-[#0077B6] min-h-[120px] resize-none" 
+                          className="bg-transparent border-black/10 dark:border-white/10  font-bold rounded-xl focus:border-[#0077B6] min-h-[120px] resize-none" 
                           {...field} 
                         />
                       </FormControl>
@@ -229,7 +229,7 @@ const Contact = () => {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-16 bg-[#0077B6] hover:bg-[#0077B6]/80 text-white font-black uppercase tracking-[0.4em] rounded-xl transition-all duration-300"
+                  className="w-full h-16 bg-[#0077B6] hover:bg-[#0077B6]/80  font-black uppercase tracking-[0.4em] rounded-xl transition-all duration-300"
                 >
                   Send Enquiry
                 </Button>

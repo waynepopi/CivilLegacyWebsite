@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from"@/components/ui/card";
+import { Button } from"@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
 
 const MockGateway = () => {
@@ -32,11 +32,11 @@ const MockGateway = () => {
         
         {ref && (
           <div className="mb-8 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Transaction Ref</p>
+            <p className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-widest mb-1">Transaction Ref</p>
             <p className="text-lg font-black text-black">{ref}</p>
             {amount && (
               <div className="mt-4">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Amount</p>
+                <p className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-widest mb-1">Amount</p>
                 <p className="text-2xl font-black text-blue-600">${parseFloat(amount).toLocaleString()}</p>
               </div>
             )}
@@ -47,14 +47,14 @@ const MockGateway = () => {
           <Button
             onClick={() => simulate('success')}
             disabled={loading}
-            className="w-full h-16 bg-green-600 hover:bg-green-700 text-white font-black uppercase tracking-widest rounded-2xl"
+            className="w-full h-16 bg-green-600 hover:bg-green-700  font-black uppercase tracking-widest rounded-2xl"
           >
             {loading ? 'Processing...' : 'Simulate Successful Payment'}
           </Button>
           <Button
             onClick={() => simulate('error')}
             disabled={loading}
-            className="w-full h-16 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest rounded-2xl"
+            className="w-full h-16 bg-red-600 hover:bg-red-700  font-black uppercase tracking-widest rounded-2xl"
           >
             {loading ? 'Processing...' : 'Simulate Failure'}
           </Button>

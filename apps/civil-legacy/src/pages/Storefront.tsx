@@ -17,7 +17,7 @@ const StorefrontHero = ({
   searchQuery: string;
   setSearchQuery: (q: string) => void;
 }) => (
-  <section className="relative h-[58vh] min-h-[380px] flex items-center justify-center bg-black overflow-hidden border-b border-white/10">
+  <section className="relative h-[58vh] min-h-[380px] flex items-center justify-center overflow-hidden border-b border-black/10 dark:border-white/10">
     <div className="absolute inset-0 z-0">
       <img
         src="https://images.unsplash.com/photo-1504307651254-35680f3366d4?auto=format&fit=crop&q=80&w=1600"
@@ -40,7 +40,7 @@ const StorefrontHero = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-8 leading-tight"
+        className="text-4xl md:text-6xl font-black text-black dark:text-white uppercase tracking-tighter mb-8 leading-tight"
       >
         Engineering <span style={{ color: BLUE }}>Services</span>
       </motion.h1>
@@ -48,7 +48,7 @@ const StorefrontHero = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.35 }}
-        className="text-gray-400 text-sm font-light mb-10 max-w-xl mx-auto"
+        className="text-gray-600 dark:text-gray-400 text-sm font-light mb-10 max-w-xl mx-auto"
       >
         Browse our full suite of civil engineering and consultancy services. Select a category below to explore individual offerings and request a tailored quote.
       </motion.p>
@@ -63,7 +63,7 @@ const StorefrontHero = ({
           placeholder="Search services…"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full h-16 bg-white/8 backdrop-blur-md border border-white/15 rounded-2xl px-6 pr-14 text-white font-medium tracking-wide placeholder:text-gray-600 focus:outline-none focus:border-[#0077B6] transition-all text-sm"
+          className="w-full h-16 bg-white/60 dark:bg-white/8 backdrop-blur-xl border border-black/10 dark:border-white/15 rounded-2xl px-6 pr-14 text-black dark:text-white font-medium tracking-wide placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#0077B6] transition-all text-sm shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)]"
         />
         <div className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">
           <Search size={20} />
@@ -100,14 +100,14 @@ const CategoryTabs = ({
               className={`flex items-center gap-2.5 px-6 py-3.5 rounded-2xl font-black uppercase tracking-[0.12em] text-[10px] transition-all duration-300 border whitespace-nowrap ${
                 isActive
                   ? 'bg-[#0077B6] border-[#0077B6] text-white shadow-lg shadow-[#0077B6]/20'
-                  : 'bg-white/5 border-white/10 text-gray-400 hover:border-[#0077B6]/40 hover:text-white'
+                  : 'bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-[#0077B6]/40 hover:'
               }`}
             >
               {tab.Icon && <tab.Icon size={14} />}
               {tab.title}
               <span
                 className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-white/8 text-gray-500'
+                  isActive ? 'bg-white/20 ' : 'bg-white/8 text-gray-500'
                 }`}
               >
                 {count}
@@ -131,14 +131,14 @@ const CategoryBanner = ({ categoryId }: { categoryId: CategoryId }) => {
       key={categoryId}
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-start gap-5 p-6 rounded-3xl border border-white/8 bg-white/3 mb-10"
+      className="flex items-start gap-5 p-6 rounded-3xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 mb-10"
     >
       <div className="p-3.5 rounded-2xl shrink-0" style={{ background: `${BLUE}18` }}>
         <cat.Icon size={26} color={BLUE} />
       </div>
       <div>
-        <h2 className="text-lg font-black uppercase tracking-tighter text-white mb-1">{cat.title}</h2>
-        <p className="text-gray-400 text-sm font-light leading-relaxed max-w-2xl">{cat.summary}</p>
+        <h2 className="text-lg font-black uppercase tracking-tighter  mb-1">{cat.title}</h2>
+        <p className="text-gray-600 dark:text-gray-400 text-sm font-light leading-relaxed max-w-2xl">{cat.summary}</p>
       </div>
       {/* Intentionally NO price or CTA here — categories are informational only */}
     </motion.div>
@@ -165,7 +165,7 @@ const ServiceCard = ({
       transition={{ duration: 0.25 }}
       className="flex flex-col h-full"
     >
-      <div className="group flex flex-col h-full bg-white/4 border border-white/8 rounded-[2rem] overflow-hidden hover:border-[#0077B6]/50 transition-all duration-500 hover:shadow-xl hover:shadow-[#0077B6]/10">
+      <div className="group flex flex-col h-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-[2rem] overflow-hidden hover:border-[#0077B6]/50 transition-all duration-500 hover:shadow-xl hover:shadow-[#0077B6]/10">
         {/* Card header */}
         <div className="p-8 pb-5">
           <div className="flex items-start justify-between mb-6">
@@ -175,11 +175,11 @@ const ServiceCard = ({
             >
               <service.Icon size={28} color={BLUE} />
             </div>
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 border border-white/10 rounded-full px-3 py-1">
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 border border-black/10 dark:border-white/10 rounded-full px-3 py-1">
               {categoryLabel}
             </span>
           </div>
-          <h3 className="text-xl font-black uppercase tracking-tighter text-white mb-2">{service.title}</h3>
+          <h3 className="text-xl font-black uppercase tracking-tighter  mb-2">{service.title}</h3>
           <p className="text-gray-500 text-sm font-light leading-relaxed">{service.summary}</p>
         </div>
 
@@ -187,7 +187,7 @@ const ServiceCard = ({
         <div className="px-8 pb-5 flex-grow">
           <div className="space-y-2.5">
             {service.details.map((detail, idx) => (
-              <div key={idx} className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              <div key={idx} className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400">
                 <CheckCircle2 size={12} className="shrink-0 text-[#0077B6]" />
                 {detail}
               </div>
@@ -196,13 +196,13 @@ const ServiceCard = ({
         </div>
 
         {/* Price + CTA (child services only) */}
-        <div className="px-8 pb-8 pt-4 border-t border-white/6 mt-2">
+        <div className="px-8 pb-8 pt-4 border-t border-black/10 dark:border-white/10 mt-2">
           <div className="flex items-end justify-between mb-5">
             <div>
               <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 mb-1">
                 {isPM ? 'Pricing' : 'Est. Starting Price'}
               </p>
-              <p className={`font-black text-white tracking-tight ${isPM ? 'text-lg mt-1' : 'text-3xl'}`}>
+              <p className={`font-black  tracking-tight ${isPM ? 'text-lg mt-1' : 'text-3xl'}`}>
                 {isPM ? (
                   'Request a Quote below'
                 ) : (
@@ -222,26 +222,26 @@ const ServiceCard = ({
             <a
               href="#"
               onClick={(e) => e.preventDefault()}
-              className="group/btn w-full h-14 flex items-center justify-center gap-2 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] transition-all duration-300 text-white relative overflow-hidden cursor-pointer"
+              className="group/btn w-full h-14 flex items-center justify-center gap-2 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] text-white transition-all duration-300  relative overflow-hidden cursor-pointer"
               style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #005f8f 100%)` }}
             >
               <span className="relative z-10 flex items-center gap-2">
                 Request Quote
                 <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
               </span>
-              <span className="absolute inset-0 bg-white/0 group-hover/btn:bg-white/10 transition-all duration-300" />
+              <span className="absolute inset-0 bg-white/0 group-hover/btn:bg-black/10 dark:bg-white/10 transition-all duration-300" />
             </a>
           ) : (
             <button
               onClick={() => onAddToCart(service)}
-              className="group/btn w-full h-14 flex items-center justify-center gap-3 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] transition-all duration-300 text-white relative overflow-hidden"
+              className="group/btn w-full h-14 flex items-center justify-center gap-3 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] text-white transition-all duration-300  relative overflow-hidden"
               style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #005f8f 100%)` }}
             >
               <span className="relative z-10 flex items-center gap-2">
                 <ShoppingCart size={14} />
                 Add to Cart
               </span>
-              <span className="absolute inset-0 bg-white/0 group-hover/btn:bg-white/10 transition-all duration-300" />
+              <span className="absolute inset-0 bg-white/0 group-hover/btn:bg-black/10 dark:bg-white/10 transition-all duration-300" />
             </button>
           )}
         </div>
@@ -289,7 +289,7 @@ const Storefront = () => {
   };
 
   return (
-    <div className="bg-black min-h-screen text-white">
+    <div className="min-h-screen">
       <Helmet>
         <title>Services | Civil Legacy Consultancy</title>
         <meta name="description" content="Explore Civil Legacy's engineering services: Construction, Consultancy, and Project Management. Request a quote today." />
@@ -315,14 +315,14 @@ const Storefront = () => {
             <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-1" style={{ color: BLUE }}>
               {activeCategory === 'all' ? 'All Categories' : SERVICE_CATEGORIES.find((c) => c.id === activeCategory)?.title}
             </p>
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-white">
+            <h2 className="text-2xl font-black uppercase tracking-tighter">
               {filteredServices.length} Service{filteredServices.length !== 1 ? 's' : ''} Available
             </h2>
           </div>
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+              className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover: transition-colors"
             >
               Clear Search ✕
             </button>
@@ -350,7 +350,7 @@ const Storefront = () => {
             <p className="text-gray-700 mt-2 text-sm">Try adjusting your search term or selecting a different category.</p>
             <button
               onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
-              className="mt-6 px-6 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:border-white/20 transition-all"
+              className="mt-6 px-6 py-3 rounded-xl border border-black/10 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 hover: hover:border-black/20 dark:border-white/20 transition-all"
             >
               Reset Filters
             </button>
@@ -362,7 +362,7 @@ const Storefront = () => {
       <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[90] hidden md:block">
         <button
           onClick={() => navigate('/Training')}
-          className="bg-white text-black border-y border-l border-white/10 px-5 py-6 rounded-l-3xl shadow-2xl flex flex-col items-center gap-4 hover:bg-[#0077B6] hover:text-white transition-all duration-500 group"
+          className="bg-white text-black border-y border-l border-black/10 dark:border-white/10 px-5 py-6 rounded-l-3xl shadow-2xl flex flex-col items-center gap-4 hover:bg-[#0077B6] hover: transition-all duration-500 group"
         >
           <GraduationCap size={22} className="group-hover:scale-110 transition-transform" />
           <span className="[writing-mode:vertical-lr] font-black uppercase tracking-[0.3em] text-[10px]">Training Hub</span>
@@ -373,7 +373,7 @@ const Storefront = () => {
       <div className="fixed left-4 bottom-24 z-[100] md:hidden">
         <button
           onClick={() => navigate('/Training')}
-          className="bg-white text-black w-12 h-12 rounded-full shadow-2xl flex items-center justify-center hover:bg-[#0077B6] hover:text-white transition-all"
+          className="bg-white text-black w-12 h-12 rounded-full shadow-2xl flex items-center justify-center hover:bg-[#0077B6] hover: transition-all"
         >
           <GraduationCap size={20} />
         </button>

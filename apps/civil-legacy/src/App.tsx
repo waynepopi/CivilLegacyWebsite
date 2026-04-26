@@ -29,7 +29,7 @@ export default function App() {
 
   return (
     <div
-      className="antialiased text-black bg-black min-h-screen overflow-x-hidden"
+      className="antialiased text-foreground bg-gray-50 dark:bg-[#0a0a0a] min-h-screen overflow-x-hidden"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
       <Navbar />

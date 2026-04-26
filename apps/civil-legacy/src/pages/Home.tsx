@@ -11,7 +11,7 @@ export const SectionHeader = ({
   title,
   subtitle,
   light = false,
-  eyebrow = "Civil Legacy",
+  eyebrow ="Civil Legacy",
 }: {
   title: string;
   subtitle: string;
@@ -22,21 +22,18 @@ export const SectionHeader = ({
     <div className="flex items-center gap-4 mb-4">
       <div className="w-12 h-1" style={{ backgroundColor: BLUE }} />
       <span
-        className="text-[10px] font-black uppercase tracking-[0.5em]"
-        style={{ color: light ? '#9ca3af' : BLUE }}
+        className={`text-[10px] font-black uppercase tracking-[0.5em] ${light ? 'text-gray-500 dark:text-gray-600 dark:text-gray-400' : 'text-[#0077B6]'}`}
       >
         {eyebrow}
       </span>
     </div>
     <h2
-      className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6"
-      style={{ color: light ? '#ffffff' : '#000000' }}
+      className={`text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6 ${light ? 'text-black dark:text-white' : 'text-black dark:text-white'}`}
     >
       {title}
     </h2>
     <p
-      className="text-xl font-light max-w-2xl leading-relaxed"
-      style={{ color: light ? '#9ca3af' : '#4b5563' }}
+      className={`text-xl font-light max-w-2xl leading-relaxed ${light ? 'text-gray-600 dark:text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}
     >
       {subtitle}
     </p>
@@ -73,7 +70,7 @@ export const Hero = ({
   const currentText = Array.isArray(titleLine2) ? titleLine2[currentTextIndex] : titleLine2;
 
   return (
-    <section className="relative h-[90vh] min-h-[600px] flex items-center bg-black overflow-hidden px-6 lg:px-12 border-b border-white/10">
+    <section className="relative h-[90vh] min-h-[600px] flex items-center overflow-hidden px-6 lg:px-12 border-b border-black/10 dark:border-white/10">
       <div className="absolute inset-0 z-0">
         <img
           src={bgImage}
@@ -98,9 +95,9 @@ export const Hero = ({
               <AnimatePresence mode="popLayout">
                 <motion.span
                   key={currentText}
-                  initial={{ y: "100%", opacity: 0 }}
-                  animate={{ y: "0%", opacity: 1 }}
-                  exit={{ y: "-100%", opacity: 0 }}
+                  initial={{ y:"100%", opacity: 0 }}
+                  animate={{ y:"0%", opacity: 1 }}
+                  exit={{ y:"-100%", opacity: 0 }}
                   transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                   className="absolute left-0 top-0 whitespace-nowrap"
                 >
@@ -134,7 +131,7 @@ export const ScrollingBanner = () => {
   const totalOffset = CONFIG.SCROLL_IMAGES.length * 548;
 
   return (
-    <div className="py-20 bg-black overflow-hidden border-y border-white/5">
+    <div className="py-20  overflow-hidden border-y border-black/5 dark:border-white/5">
       <motion.div
         className="flex gap-12 px-6"
         animate={{ x: [0, -totalOffset] }}
@@ -143,7 +140,7 @@ export const ScrollingBanner = () => {
         {doubled.map((src, i) => (
           <div
             key={i}
-            className="min-w-[500px] h-[350px] overflow-hidden flex-shrink-0 rounded-2xl border border-white/10"
+            className="min-w-[500px] h-[350px] overflow-hidden flex-shrink-0 rounded-2xl border border-black/10 dark:border-white/10"
             style={{ filter: 'grayscale(1) brightness(0.75)' }}
           >
             <img src={src} alt="Project" className="w-full h-full object-cover" />
@@ -167,22 +164,20 @@ export const AccordionItem = ({
   isOpen: boolean;
   onToggle: () => void;
 }) => (
-  <div className={`border-b border-white/10 transition-colors duration-500 ${isOpen ? 'bg-white/5' : ''}`}>
+  <div className={`border-b border-black/10 dark:border-white/10 transition-colors duration-500 ${isOpen ? 'bg-black/5 dark:bg-white/5' : ''}`}>
     <button
       onClick={onToggle}
       className="w-full py-10 px-8 flex items-center justify-between text-left focus:outline-none"
     >
       <span
-        className="text-2xl font-black uppercase tracking-tighter transition-all"
-        style={{ color: isOpen ? BLUE : '#ffffff' }}
+        className={`text-2xl font-black uppercase tracking-tighter transition-all ${isOpen ? 'text-[#0077B6]' : 'text-black dark:text-white'}`}
       >
         {title}
       </span>
       <ChevronDown
         size={32}
         strokeWidth={3}
-        className={`transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`}
-        style={{ color: isOpen ? BLUE : '#4b5563' }}
+        className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-[#0077B6]' : 'text-gray-600 dark:text-gray-400'}`}
       />
     </button>
     <AnimatePresence>
@@ -196,9 +191,9 @@ export const AccordionItem = ({
           className="overflow-hidden"
         >
           <div className="px-8 pb-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <p className="text-gray-400 text-lg font-light leading-relaxed">{content}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-lg font-light leading-relaxed">{content}</p>
             <div
-              className="h-64 border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+              className="h-64 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-2xl"
               style={{ filter: 'grayscale(1) brightness(0.5) contrast(1.25)' }}
             >
               <img src={image} alt={title} className="w-full h-full object-cover" />
@@ -233,7 +228,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="bg-black">
+    <div className="">
       <Helmet>
         <title>Home | Civil Legacy Consultancy</title>
         <meta name="description" content="Zimbabwe's leading civil engineering consultancy delivering high-impact water and infrastructure solutions across the region." />
@@ -241,7 +236,7 @@ const Home = () => {
 
       <Hero
         titleLine1="SHAPING"
-        titleLine2={["LEGACY.", "CONSTRUCTION.", "CONSULTANCY.", "EXCELLENCE.", "PROFESSIONALISM.", "PROJECT MANAGEMENT."]}
+        titleLine2={["LEGACY.","CONSTRUCTION.","CONSULTANCY.","EXCELLENCE.","PROFESSIONALISM.","PROJECT MANAGEMENT."]}
         subtitle="Zimbabwe's leading civil engineering consultancy delivering high-impact water and infrastructure solutions across the region."
         bgImage="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1600"
         ctaLabel="View Our Projects"
@@ -251,17 +246,17 @@ const Home = () => {
       <ScrollingBanner />
 
       {/* Banner */}
-      <section className="bg-[#0077B6] py-16 px-6 lg:px-12 text-center border-y border-white/10">
-        <h3 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4 drop-shadow-sm">
+      <section className="bg-[#0077B6] py-16 px-6 lg:px-12 text-center border-y border-black/10 dark:border-white/10">
+        <h3 className="text-3xl md:text-5xl font-black  uppercase tracking-tighter mb-4 drop-shadow-sm">
           Documentation Services
         </h3>
-        <p className="text-white/80 font-bold tracking-widest uppercase text-xs md:text-sm">
+        <p className="/80 font-bold tracking-widest uppercase text-xs md:text-sm">
           Comprehensive reporting, civil drawings, and regulatory submissions.
         </p>
       </section>
 
       {/* Service Pillars */}
-      <section className="py-32 bg-black px-6 lg:px-12">
+      <section className="py-32  px-6 lg:px-12">
         <div className="max-w-[1600px] mx-auto">
           <SectionHeader
             title="Our Pillars"
@@ -277,13 +272,13 @@ const Home = () => {
                   key={pillar.id}
                   whileHover={{ y: -10 }}
                   onClick={() => navigate('/Services')}
-                  className="bg-white/5 p-10 flex flex-col group border border-white/10 shadow-2xl rounded-2xl cursor-pointer"
+                  className="bg-black/5 dark:bg-white/5 p-10 flex flex-col group border border-black/10 dark:border-white/10 shadow-2xl rounded-2xl cursor-pointer"
                 >
                   <div className="mb-8 transform group-hover:scale-110 origin-left transition-transform" style={{ color: BLUE }}>
                     <Icon size={40} />
                   </div>
-                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 text-white">{pillar.title}</h3>
-                  <p className="text-gray-400 text-sm font-light leading-relaxed flex-grow">{pillar.summary}</p>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-4">{pillar.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm font-light leading-relaxed flex-grow">{pillar.summary}</p>
                 </motion.div>
               );
             })}
@@ -292,13 +287,13 @@ const Home = () => {
       </section>
 
       {/* Core capabilities accordion */}
-      <section className="py-32 bg-black border-y border-white/5">
+      <section className="py-32  border-y border-black/5 dark:border-white/5">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex items-center gap-6 mb-20">
-            <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Our Expertise</h2>
-            <div className="h-[2px] flex-grow bg-white/10" />
+            <h2 className="text-4xl font-black  uppercase tracking-tighter">Our Expertise</h2>
+            <div className="h-[2px] flex-grow bg-black/10 dark:bg-white/10" />
           </div>
-          <div className="border-t border-white/10">
+          <div className="border-t border-black/10 dark:border-white/10">
             {ACCORDION.map((item, idx) => (
               <AccordionItem
                 key={idx}
@@ -314,7 +309,7 @@ const Home = () => {
       </section>
 
       {/* Resilience Teaser (Duplicated at bottom) */}
-      <section className="py-32 bg-black px-6 lg:px-12 border-t border-white/5">
+      <section className="py-32  px-6 lg:px-12 border-t border-black/5 dark:border-white/5">
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">
           <div className="lg:col-span-7">
             <SectionHeader
@@ -325,14 +320,14 @@ const Home = () => {
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-20 text-left">
               <div className="space-y-4">
-                <h4 className="text-2xl font-black uppercase tracking-tighter text-white">Our Mission</h4>
-                <p className="text-gray-400 font-light leading-relaxed">
+                <h4 className="text-2xl font-black uppercase tracking-tighter">Our Mission</h4>
+                <p className="text-gray-600 dark:text-gray-400 font-light leading-relaxed">
                   To empower engineers and organisations with practical, design-focused training and consultancy that elevates standards across the region.
                 </p>
               </div>
               <div className="space-y-4">
-                <h4 className="text-2xl font-black uppercase tracking-tighter text-white">Our Vision</h4>
-                <p className="text-gray-400 font-light leading-relaxed">
+                <h4 className="text-2xl font-black uppercase tracking-tighter">Our Vision</h4>
+                <p className="text-gray-600 dark:text-gray-400 font-light leading-relaxed">
                   To be the premier provider of engineering excellence and professional development in Southern Africa.
                 </p>
               </div>
@@ -342,10 +337,10 @@ const Home = () => {
           {/* Stats card */}
           <div className="lg:col-span-5 flex flex-col justify-center">
             <div
-              className="bg-white/5 p-12 lg:p-20 text-white relative overflow-hidden text-left border border-white/10"
+              className="bg-black/5 dark:bg-white/5 p-12 lg:p-20  relative overflow-hidden text-left border border-black/10 dark:border-white/10"
               style={{ borderLeft: `12px solid ${BLUE}` }}
             >
-              <div className="text-[12rem] font-black leading-none tracking-tighter text-white opacity-5 absolute -top-10 right-0 pointer-events-none select-none">
+              <div className="text-[12rem] font-black leading-none tracking-tighter  opacity-5 absolute -top-10 right-0 pointer-events-none select-none">
                 15
               </div>
               <h3 className="text-7xl font-black tracking-tighter mb-4 relative z-10">
@@ -354,9 +349,8 @@ const Home = () => {
               <p className="text-xs font-black uppercase tracking-[0.4em] mb-12 relative z-10" style={{ color: BLUE }}>
                 Successful Projects
               </p>
-              <div className="space-y-6 border-t border-white/10 pt-8 relative z-10">
-                <p className="text-gray-400 italic font-light text-lg leading-relaxed">
-                  "We partner with municipalities to ensure infrastructure stands the test of time."
+              <div className="space-y-6 border-t border-black/10 dark:border-white/10 pt-8 relative z-10">
+                <p className="text-gray-600 dark:text-gray-400 italic font-light text-lg leading-relaxed">"We partner with municipalities to ensure infrastructure stands the test of time."
                 </p>
                 <div className="flex items-center gap-4">
                   <img
@@ -366,7 +360,7 @@ const Home = () => {
                     alt={CONFIG.TEAM[0].name}
                   />
                   <div>
-                    <p className="font-bold text-sm text-white">{String(CONFIG.TEAM[0].name)}</p>
+                    <p className="font-bold text-sm">{String(CONFIG.TEAM[0].name)}</p>
                     <p className="text-[10px] uppercase tracking-widest text-gray-500">
                       {String(CONFIG.TEAM[0].role)}
                     </p>

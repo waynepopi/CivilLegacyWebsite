@@ -5,7 +5,7 @@ import { CONFIG, SERVICE_CATEGORIES } from '@/config';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useCart } from '@/context/CartContext';
-
+import { ThemeToggle } from '../ThemeToggle';
 const BLUE = '#0077B6';
 
 const Navbar = () => {
@@ -40,7 +40,7 @@ const Navbar = () => {
 
   const showCart = ['/Services', '/Checkout', '/Mock-Payment-Gateway', '/Payment/Success', '/Payment/Error'].includes(location.pathname);
 
-  let navClasses = "fixed w-full z-[100] transition-all duration-300 border-b border-white/10 bg-black/85 ";
+  let navClasses = "fixed w-full z-[100] transition-all duration-300 border-b border-black/10 dark:border-white/10 bg-white/85 dark:bg-black/85 ";
   if (!scrolled) {
     navClasses += "backdrop-blur-sm";
   } else if (scrollDirection === 'down') {
@@ -66,7 +66,7 @@ const Navbar = () => {
               <div className="text-2xl font-black tracking-tighter uppercase leading-none">
                 <span style={{ color: BLUE }}>{CONFIG.BRAND.NAME_1}</span>
                 {" "}
-                <span className="text-white">{CONFIG.BRAND.NAME_2}</span>
+                <span className="text-black dark:text-white">{CONFIG.BRAND.NAME_2}</span>
               </div>
               <div
                 className="text-[9px] font-bold tracking-[0.4em] uppercase mt-1"
@@ -82,22 +82,22 @@ const Navbar = () => {
             <NavigationMenu>
               <NavigationMenuList className="space-x-8">
                 <NavigationMenuItem>
-                  <Link to="/Home" className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${isActive('/Home') ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                  <Link to="/Home" className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${isActive('/Home') ? 'text-[#0077B6]' : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}>
                     Home
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link to="/About" className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${isActive('/About') ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                  <Link to="/About" className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${isActive('/About') ? 'text-[#0077B6]' : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}>
                     About Us
                   </Link>
                 </NavigationMenuItem>
                 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-[11px] font-black uppercase tracking-[0.25em] text-gray-400 hover:text-white hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-white transition-colors h-auto p-0">
+                  <NavigationMenuTrigger className="bg-transparent text-[11px] font-black uppercase tracking-[0.25em] transition-colors h-auto p-0 hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white data-[state=open]:text-black dark:data-[state=open]:text-white">
                     Services
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-black/95 border border-white/10 rounded-xl shadow-2xl backdrop-blur-xl">
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 bg-white/95 dark:bg-black/95 border border-black/10 dark:border-white/10 rounded-xl shadow-2xl backdrop-blur-xl">
                       {SERVICE_CATEGORIES.map((category) => (
                         <li key={category.id}>
                           <NavigationMenuLink asChild>
@@ -105,8 +105,8 @@ const Navbar = () => {
                               to="/Services"
                               className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-white/10 text-left w-full"
                             >
-                              <div className="text-sm font-bold text-white uppercase tracking-tighter mb-1">{category.title}</div>
-                              <p className="line-clamp-2 text-xs leading-snug text-gray-400">
+                              <div className="text-sm font-bold text-black dark:text-white uppercase tracking-tighter mb-1">{category.title}</div>
+                              <p className="line-clamp-2 text-xs leading-snug text-gray-600 dark:text-gray-400">
                                 {category.summary}
                               </p>
                             </Link>
@@ -118,17 +118,17 @@ const Navbar = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <Link to="/Projects" className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${isActive('/Projects') ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                  <Link to="/Projects" className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${isActive('/Projects') ? 'text-[#0077B6]' : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}>
                     Projects
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link to="/Team" className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${isActive('/Team') ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                  <Link to="/Team" className={`text-[11px] font-black uppercase tracking-[0.25em] transition-all relative focus:outline-none ${isActive('/Team') ? 'text-[#0077B6]' : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}>
                     Team
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link to="/Contact" className={`text-[11px] font-black uppercase tracking-[0.2em] transition-all relative focus:outline-none ${isActive('/Contact') ? 'text-[#0077B6]' : 'text-gray-400 hover:text-white'}`}>
+                  <Link to="/Contact" className={`text-[11px] font-black uppercase tracking-[0.2em] transition-all relative focus:outline-none ${isActive('/Contact') ? 'text-[#0077B6]' : 'text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}>
                     Contact
                   </Link>
                 </NavigationMenuItem>
@@ -140,7 +140,7 @@ const Navbar = () => {
               {showCart && (
                 <Link
                   to="/Checkout"
-                  className="relative p-2 text-gray-400 hover:text-white transition-colors focus:outline-none group"
+                  className="relative p-2 text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors focus:outline-none group"
                 >
                   <ShoppingCart size={20} />
                   {cartCount > 0 && (
@@ -148,7 +148,7 @@ const Navbar = () => {
                       {cartCount}
                     </span>
                   )}
-                  <span className="absolute top-12 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">
+                  <span className="absolute top-12 left-1/2 -translate-x-1/2 bg-white text-black dark:bg-black dark:text-white text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-black/10 dark:border-white/10">
                     View Cart
                   </span>
                 </Link>
@@ -161,6 +161,7 @@ const Navbar = () => {
               >
                 <GraduationCap size={14} /> Training Hub
               </Link>
+              <ThemeToggle />
             </div>
           </div>
 
@@ -169,7 +170,7 @@ const Navbar = () => {
             {showCart && (
               <Link
                 to="/Checkout"
-                className="relative p-2 text-gray-400 hover:text-white transition-colors focus:outline-none"
+                className="relative p-2 text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors focus:outline-none"
               >
                 <ShoppingCart size={22} />
                 {cartCount > 0 && (
@@ -182,25 +183,25 @@ const Navbar = () => {
 
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <button className="text-white p-2 border border-white/20 rounded focus:outline-none">
+                <button className="text-black dark:text-white p-2 border border-black/20 dark:border-white/20 rounded focus:outline-none">
                   <Menu size={20} />
                 </button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-full sm:w-[400px] bg-black border-r border-white/10 p-0 text-white">
+              <SheetContent side="left" className="w-full sm:w-[400px] bg-white dark:bg-black border-r border-black/10 dark:border-white/10 p-0 text-black dark:text-white">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <SheetDescription className="sr-only">Main navigation for the application</SheetDescription>
                 <div className="pt-24 px-8 pb-4 h-full flex flex-col overflow-y-auto">
-                  <Link to="/Home" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Home</Link>
-                  <Link to="/About" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">About Us</Link>
-                  <Link to="/Services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Services</Link>
-                  <div className="pl-6 py-2 space-y-4 border-b border-white/5">
+                  <Link to="/Home" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Home</Link>
+                  <Link to="/About" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">About Us</Link>
+                  <Link to="/Services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Services</Link>
+                  <div className="pl-6 py-2 space-y-4 border-b border-black/5 dark:border-white/5">
                     {SERVICE_CATEGORIES.map(cat => (
-                      <Link key={cat.id} to="/Services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">{cat.title}</Link>
+                      <Link key={cat.id} to="/Services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-sm font-bold uppercase tracking-widest text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors">{cat.title}</Link>
                     ))}
                   </div>
-                  <Link to="/Projects" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Projects</Link>
-                  <Link to="/Team" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Team</Link>
-                  <Link to="/Contact" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-white hover:text-[#0077B6] transition-colors py-4 border-b border-white/5">Contact</Link>
+                  <Link to="/Projects" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Projects</Link>
+                  <Link to="/Team" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Team</Link>
+                  <Link to="/Contact" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Contact</Link>
                   <div className="mt-8 mb-8">
                     <Link
                       to="/Training"
@@ -213,6 +214,7 @@ const Navbar = () => {
                 </div>
               </SheetContent>
             </Sheet>
+            <ThemeToggle />
           </div>
         </div>
       </div>
