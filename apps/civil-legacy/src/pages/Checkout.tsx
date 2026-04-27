@@ -25,7 +25,7 @@ type CheckoutValues = z.infer<typeof checkoutSchema>;
 const Checkout = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { cart, removeFromCart, total } = useCart();
+  const { cart, removeFromCart, total, setCheckoutInfo } = useCart();
   const form = useForm<CheckoutValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -38,6 +38,9 @@ const Checkout = () => {
 
   const onSubmit = async (values: CheckoutValues) => {
     try {
+      // Persist customer info so it survives the redirect to the payment gateway
+      setCheckoutInfo(values);
+
       const response = await fetch('/api/paynow/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

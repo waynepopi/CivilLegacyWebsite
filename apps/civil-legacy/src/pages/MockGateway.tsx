@@ -16,7 +16,14 @@ const MockGateway = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      navigate(type === 'success' ? '/payment/success' : '/payment/error');
+      if (type === 'success') {
+        const params = new URLSearchParams();
+        if (ref) params.set('ref', ref);
+        if (amount) params.set('amount', amount);
+        navigate(`/payment/success${params.toString() ? '?' + params.toString() : ''}`);
+      } else {
+        navigate('/payment/error');
+      }
     }, 1500);
   };
 
