@@ -207,9 +207,9 @@ export const CONFIG = {
       TWITTER: 'https://twitter.com/civillegacy',
       LINKEDIN: 'https://linkedin.com/company/civillegacy',
       INSTAGRAM: 'https://instagram.com/civillegacy',
-      TIKTOK: 'https://tiktok.com/@civillegacy',
+      TIKTOK: 'https://www.tiktok.com/@civillegacyconsultancy?_r=1&_t=ZS-95spcq4QVVd',
       WHATSAPP: 'https://wa.me/263718246433',
-      EMAIL: 'mailto:info@civillegacy.com',
+      EMAIL: 'info@civillegacy.com',
     },
   },
   PROJECTS: [
