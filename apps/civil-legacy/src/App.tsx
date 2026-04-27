@@ -24,7 +24,10 @@ export default function App() {
   const location = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Skip scroll-to-top when a hash is present (let hash-based navigation handle it)
+    if (!location.hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }, [location.pathname]);
 
   return (

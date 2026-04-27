@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, ShoppingCart, GraduationCap, X } from 'lucide-react';
+import { Menu, ShoppingCart, GraduationCap, X, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { CONFIG, SERVICE_CATEGORIES } from '@/config';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
@@ -12,6 +12,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const lastScrollY = useRef(0);
   const location = useLocation();
   const { cartCount } = useCart();
@@ -110,7 +111,7 @@ const Navbar = () => {
                         <li key={category.id}>
                           <NavigationMenuLink asChild>
                             <Link
-                              to="/Services"
+                              to={`/Services#${category.id}`}
                               className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-white/10 text-left w-full"
                             >
                               <div className="text-sm font-bold text-black dark:text-white uppercase tracking-tighter mb-1">{category.title}</div>
@@ -202,11 +203,52 @@ const Navbar = () => {
                 <div className="pt-24 px-8 pb-4 h-full flex flex-col overflow-y-auto">
                   <Link to="/Home" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Home</Link>
                   <Link to="/About" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">About Us</Link>
-                  <Link to="/Services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Services</Link>
-                  <div className="pl-6 py-2 space-y-4 border-b border-black/5 dark:border-white/5">
-                    {SERVICE_CATEGORIES.map(cat => (
-                      <Link key={cat.id} to="/Services" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-sm font-bold uppercase tracking-widest text-gray-600 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors">{cat.title}</Link>
-                    ))}
+                  {/* Services row: text = navigate, chevron = toggle dropdown */}
+                  <div className="border-b border-black/5 dark:border-white/5">
+                    <div className="flex items-center justify-between py-4">
+                      <Link
+                        to="/Services"
+                        onClick={() => { setIsMobileMenuOpen(false); setIsMobileServicesOpen(false); }}
+                        className="text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors"
+                      >
+                        Services
+                      </Link>
+                      <button
+                        onClick={() => setIsMobileServicesOpen(prev => !prev)}
+                        aria-expanded={isMobileServicesOpen}
+                        aria-controls="mobile-services-submenu"
+                        className="p-2 -mr-2 text-gray-500 hover:text-black dark:hover:text-white transition-colors focus:outline-none"
+                      >
+                        <ChevronDown
+                          size={22}
+                          className={`transition-transform duration-300 ${isMobileServicesOpen ? 'rotate-180' : 'rotate-0'}`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Collapsible sub-services */}
+                    <div
+                      id="mobile-services-submenu"
+                      role="region"
+                      className="overflow-hidden transition-all duration-300 ease-in-out"
+                      style={{
+                        maxHeight: isMobileServicesOpen ? `${SERVICE_CATEGORIES.length * 48 + 16}px` : '0px',
+                        opacity: isMobileServicesOpen ? 1 : 0,
+                      }}
+                    >
+                      <div className="pl-6 pb-4 space-y-4">
+                        {SERVICE_CATEGORIES.map(cat => (
+                          <Link
+                            key={cat.id}
+                            to={`/Services#${cat.id}`}
+                            onClick={() => { setIsMobileMenuOpen(false); setIsMobileServicesOpen(false); }}
+                            className="block w-full text-left text-sm font-bold uppercase tracking-widest text-gray-600 hover:text-[#0077B6] dark:text-gray-400 dark:hover:text-[#0077B6] transition-colors"
+                          >
+                            {cat.title}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <Link to="/Projects" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Projects</Link>
                   <Link to="/Team" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-left text-3xl font-black uppercase tracking-tighter text-black dark:text-white hover:text-[#0077B6] dark:hover:text-[#0077B6] transition-colors py-4 border-b border-black/5 dark:border-white/5">Team</Link>

@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, GraduationCap, CheckCircle2, ArrowRight, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { SERVICE_CATEGORIES, CHILD_SERVICES } from '@/config';
 import { useCart } from '@/context/CartContext';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const BLUE = '#0077B6';
 
@@ -80,15 +80,17 @@ const CategoryTabs = ({
   active,
   setActive,
   counts,
+  tabsRef,
 }: {
   active: CategoryId;
   setActive: (id: CategoryId) => void;
   counts: Record<string, number>;
+  tabsRef?: React.Ref<HTMLDivElement>;
 }) => {
   const tabs = [{ id: 'all' as const, title: 'All Services', Icon: null }, ...SERVICE_CATEGORIES];
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto" ref={tabsRef}>
       <div className="flex gap-3 min-w-max mx-auto justify-center pb-2">
         {tabs.map((tab) => {
           const isActive = active === tab.id;
@@ -257,6 +259,28 @@ const Storefront = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<CategoryId>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const location = useLocation();
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  // ── Hash-based deep linking ───────────────────────────────────────────────
+  useEffect(() => {
+    const applyHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (!hash) return;
+      const validIds = SERVICE_CATEGORIES.map(c => c.id) as readonly string[];
+      if (validIds.includes(hash)) {
+        setActiveCategory(hash as CategoryId);
+        // Smooth-scroll to the tab bar after a tick so the DOM can settle
+        requestAnimationFrame(() => {
+          tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    };
+
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, [location]);
 
   // Counts per category for tab badges
   const counts = useMemo(() => {
@@ -301,7 +325,7 @@ const Storefront = () => {
 
         {/* ── Category Tab Bar (non-buyable) ─────────────────────────────────── */}
         <div className="mb-10">
-          <CategoryTabs active={activeCategory} setActive={setActiveCategory} counts={counts} />
+          <CategoryTabs active={activeCategory} setActive={setActiveCategory} counts={counts} tabsRef={tabsRef} />
         </div>
 
         {/* ── Category Info Banner (non-buyable — no price/CTA) ──────────────── */}
