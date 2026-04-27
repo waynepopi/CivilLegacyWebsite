@@ -169,7 +169,7 @@ export const ScrollingBanner = () => {
               (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
             }}
           >
-            <img src={src} alt="Project" className="w-full h-full object-cover" />
+            <img src={src} alt="Project" loading="lazy" width={500} height={350} className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
@@ -222,7 +222,7 @@ export const AccordionItem = ({
               className="h-64 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-2xl"
               style={{ filter: 'brightness(0.5) contrast(1.25)' }}
             >
-              <img src={image} alt={title} className="w-full h-full object-cover" />
+              <img src={image} alt={title} loading="lazy" className="w-full h-full object-cover" />
             </div>
           </div>
         </motion.div>
@@ -399,6 +399,9 @@ const Home = () => {
                     className="w-12 h-12 rounded-full object-cover"
                     style={{ objectPosition: (CONFIG.TEAM[0] as any).pos || 'center' }}
                     alt={CONFIG.TEAM[0].name}
+                    loading="lazy"
+                    width={48}
+                    height={48}
                   />
                   <div>
                     <p className="font-bold text-sm">{String(CONFIG.TEAM[0].name)}</p>
