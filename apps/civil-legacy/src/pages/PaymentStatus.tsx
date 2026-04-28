@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
 import { CheckCircle2, XCircle, Clock, AlertCircle, ArrowRight, Download, Home } from 'lucide-react';
-import { getPaymentStatusByOrderId } from '@/services/orderService';
+import { getPaymentStatusByOrderId, getReceiptData } from '@/services/orderService';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import ReceiptPdf from '@/components/pdf/ReceiptPdf';
+import type { ReceiptData } from '@/lib/receiptUtils';
 
 const BLUE = '#0077B6';
 
@@ -14,6 +17,8 @@ const PaymentStatus = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<any>(null);
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+  const [loadingReceipt, setLoadingReceipt] = useState(false);
 
   useEffect(() => {
     async function loadStatus() {
@@ -23,8 +28,18 @@ const PaymentStatus = () => {
         const statusData = await getPaymentStatusByOrderId(orderId);
         setData(statusData);
         
-        // If it's already PAID, we could auto-redirect to receipt, 
-        // but showing the success state here first is better UX.
+        // If it's already PAID and we have a receipt ID, fetch full receipt details for the PDF
+        if (statusData.latestPayment?.status === 'PAID' && statusData.receipt?.id) {
+          try {
+            setLoadingReceipt(true);
+            const fullReceipt = await getReceiptData(statusData.receipt.id);
+            setReceiptData(fullReceipt);
+          } catch (rErr) {
+            console.error("Failed to load full receipt data:", rErr);
+          } finally {
+            setLoadingReceipt(false);
+          }
+        }
       } catch (err: any) {
         setError(err.message || "Failed to load payment status");
       } finally {
@@ -115,16 +130,34 @@ const PaymentStatus = () => {
             </div>
           )}
 
-          {status === 'PAID' && receipt && (
-            <Button 
-              asChild 
-              className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-600/20"
-            >
-              <Link to={`/receipt/${receipt.id}`}>
-                <Download size={18} className="mr-2" />
-                Download Official Receipt
-              </Link>
-            </Button>
+          {status === 'PAID' && (
+            <div className="space-y-4">
+              {receiptData ? (
+                <PDFDownloadLink
+                  document={<ReceiptPdf data={receiptData} />}
+                  fileName={`${receiptData.receiptNo}.pdf`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  {({ loading: pdfLoading }) => (
+                    <Button 
+                      disabled={pdfLoading}
+                      className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-600/20 gap-3"
+                    >
+                      <Download size={18} />
+                      {pdfLoading ? 'Preparing PDF...' : 'Download Official Receipt'}
+                    </Button>
+                  )}
+                </PDFDownloadLink>
+              ) : (
+                <Button 
+                  disabled
+                  className="w-full h-16 bg-gray-400 text-white font-black uppercase tracking-widest rounded-2xl gap-3"
+                >
+                  <Download size={18} className="animate-pulse" />
+                  {loadingReceipt ? 'Fetching Receipt Data...' : 'Download Official Receipt'}
+                </Button>
+              )}
+            </div>
           )}
 
           {status === 'FAILED' && (
