@@ -487,6 +487,11 @@ const ReceiptPdf: React.FC<ReceiptPdfProps> = ({ data }) => {
             <View style={s.qrBlock}>
               <Image style={s.qrImage} src={data.qrCodeImage} />
               <Text style={s.qrLabel}>Scan for Verification</Text>
+              {data.verification_code && (
+                <Text style={{ fontSize: 6, color: '#999', marginTop: 4, fontFamily: 'Helvetica' }}>
+                  Code: {data.verification_code}
+                </Text>
+              )}
             </View>
           ) : null}
         </View>

@@ -19,6 +19,7 @@ import MockGateway from '@/pages/MockGateway';
 import ReceiptPage from '@/pages/PaymentSuccess'; // Renaming below to ReceiptPage, but file can stay as PaymentSuccess or we will rename the file.
 import PaymentError from '@/pages/PaymentError';
 import PaymentStatus from '@/pages/PaymentStatus';
+import VerifyReceipt from '@/pages/VerifyReceipt';
 import NotFound from '@/pages/not-found';
 
 export default function App() {
@@ -60,6 +61,7 @@ export default function App() {
               <Route path="/mock-payment/:orderId/:paymentId" element={<MockGateway />} />
               <Route path="/payment/status/:orderId" element={<PaymentStatus />} />
               <Route path="/receipt/:receiptId" element={<ReceiptPage />} />
+              <Route path="/verify-receipt/:code" element={<VerifyReceipt />} />
               <Route path="/Payment/Error" element={<PaymentError />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -8,6 +8,8 @@ import { getPaymentStatusByOrderId, getReceiptData } from '@/services/orderServi
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReceiptPdf from '@/components/pdf/ReceiptPdf';
 import type { ReceiptData } from '@/lib/receiptUtils';
+import { generateQrDataUrl, getVerificationUrl } from '@/lib/receiptUtils';
+import { QRCodeCanvas } from 'qrcode.react';
 
 const BLUE = '#0077B6';
 
@@ -33,6 +35,15 @@ const PaymentStatus = () => {
           try {
             setLoadingReceipt(true);
             const fullReceipt = await getReceiptData(statusData.receipt.id);
+            
+            // Generate QR Code for the PDF
+            if (fullReceipt.verification_code) {
+              const verifyUrl = getVerificationUrl(fullReceipt.verification_code);
+              const qrDataUrl = await generateQrDataUrl(verifyUrl);
+              fullReceipt.qrCodeImage = qrDataUrl;
+              fullReceipt.qr_url = verifyUrl;
+            }
+            
             setReceiptData(fullReceipt);
           } catch (rErr) {
             console.error("Failed to load full receipt data:", rErr);
@@ -131,7 +142,22 @@ const PaymentStatus = () => {
           )}
 
           {status === 'PAID' && (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {receiptData && receiptData.verification_code && (
+                <div className="p-6 bg-blue-50 dark:bg-white/5 rounded-[2rem] border border-blue-100 dark:border-white/10 flex flex-col items-center">
+                  <div className="bg-white p-4 rounded-2xl shadow-sm mb-4">
+                    <QRCodeCanvas 
+                      value={getVerificationUrl(receiptData.verification_code)}
+                      size={140}
+                      level="H"
+                      includeMargin={false}
+                    />
+                  </div>
+                  <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">Receipt Verification</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Scan to verify this document</p>
+                </div>
+              )}
+
               {receiptData ? (
                 <PDFDownloadLink
                   document={<ReceiptPdf data={receiptData} />}

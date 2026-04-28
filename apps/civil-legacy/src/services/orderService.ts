@@ -206,6 +206,35 @@ export async function getReceiptData(receiptId: string): Promise<ReceiptData> {
       currency: 'USD',
       status: payment.status,
     },
+    verification_code: receipt.verification_code,
+    verification_status: receipt.verification_status,
+    job_status: receipt.job_status,
+  };
+}
+
+/**
+ * Fetches a receipt by its unique verification code using the safe public view.
+ */
+export async function getReceiptByVerificationCode(code: string) {
+  const { data, error } = await supabase
+    .from('public_receipt_verification')
+    .select('*')
+    .eq('verification_code', code)
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message || "Invalid verification code");
+  }
+
+  return {
+    receipt_number: data.receipt_number,
+    created_at: data.created_at,
+    verification_status: data.verification_status,
+    job_status: data.job_status,
+    order_id: data.order_id,
+    amount: data.amount,
+    payment_status: data.payment_status,
+    payment_gateway: data.payment_gateway,
   };
 }
 /**

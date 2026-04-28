@@ -1,3 +1,4 @@
+import QRCode from 'qrcode';
 // ─── Receipt Data Types ─────────────────────────────────────────────────────
 
 export interface ReceiptService {
@@ -22,7 +23,10 @@ export interface ReceiptData {
     currency: string;
     status: string;
   };
-  verificationUrl?: string;
+  verification_code?: string;
+  verification_status?: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  job_status?: 'PENDING' | 'COMPLETED' | 'CANCELLED';
+  qr_url?: string;
   qrCodeImage?: string | null;
 }
 
@@ -131,4 +135,31 @@ export function buildReceiptData(opts: {
     verificationUrl: undefined,
     qrCodeImage: null,
   };
+}
+
+/**
+ * Generate a QR code data URL for a given string.
+ */
+export async function generateQrDataUrl(text: string): Promise<string> {
+  try {
+    return await QRCode.toDataURL(text, {
+      margin: 1,
+      width: 256,
+      color: {
+        dark: '#00529B', // BLUE used in PDF
+        light: '#FFFFFF',
+      },
+    });
+  } catch (err) {
+    console.error('Failed to generate QR code:', err);
+    return '';
+  }
+}
+
+/**
+ * Get the verification URL for a given code.
+ */
+export function getVerificationUrl(code: string): string {
+  const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+  return `${baseUrl}/verify-receipt/${code}`;
 }
