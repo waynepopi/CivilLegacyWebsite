@@ -1,64 +1,59 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { CheckCircle2, Download, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReceiptPdf from '@/components/pdf/ReceiptPdf';
 import { useCart } from '@/context/CartContext';
-import { buildReceiptData } from '@/lib/receiptUtils';
+import { getReceiptData } from '@/services/orderService';
 import type { ReceiptData } from '@/lib/receiptUtils';
 
 const BLUE = '#0077B6';
 
-const PaymentSuccess = () => {
+const ReceiptPage = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { cart, checkoutInfo, clearOrder } = useCart();
+  const { receiptId } = useParams();
+  const { clearOrder } = useCart();
+  
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showDownload, setShowDownload] = useState(false);
 
-  // Capture the ref and amount from the URL (forwarded by MockGateway / Paynow)
-  const ref = searchParams.get('ref');
-  const amount = searchParams.get('amount');
-
-  // Build the receipt data once and memoise so re-renders don't regenerate the receipt number
-  const receiptData: ReceiptData | null = useMemo(() => {
-    if (!checkoutInfo || cart.length === 0) {
-      // Try to recover from sessionStorage directly (in case context was lost)
+  useEffect(() => {
+    async function loadData() {
+      if (!receiptId) return;
       try {
-        const savedCheckout = sessionStorage.getItem('clc_checkout');
-        const savedCart = sessionStorage.getItem('clc_cart');
-        if (savedCheckout && savedCart) {
-          const ci = JSON.parse(savedCheckout);
-          const items = JSON.parse(savedCart);
-          if (ci && items && items.length > 0) {
-            return buildReceiptData({
-              checkoutInfo: ci,
-              cartItems: items,
-              transactionRef: ref || undefined,
-              amount: amount ? parseFloat(amount) : undefined,
-            });
-          }
-        }
-      } catch {
-        // ignore parse errors
+        setLoading(true);
+        const data = await getReceiptData(receiptId);
+        setReceiptData(data);
+        // Small delay to ensure page settling before PDF generation starts
+        setTimeout(() => setShowDownload(true), 1000);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load receipt');
+      } finally {
+        setLoading(false);
       }
-      return null;
     }
+    loadData();
+  }, [receiptId]);
 
-    return buildReceiptData({
-      checkoutInfo,
-      cartItems: cart,
-      transactionRef: ref || undefined,
-      amount: amount ? parseFloat(amount) : undefined,
-    });
-  }, []); // Empty deps: compute once on mount
-
-  // Clear the order after we've captured the receipt data
+  // Clear the order after we've loaded the receipt data successfully
   const hasClearedRef = useRef(false);
-  if (receiptData && !hasClearedRef.current) {
-    hasClearedRef.current = true;
-    // Use a microtask so we don't clear during render
-    queueMicrotask(() => clearOrder());
+  useEffect(() => {
+    if (receiptData && !hasClearedRef.current) {
+      hasClearedRef.current = true;
+      queueMicrotask(() => clearOrder());
+    }
+  }, [receiptData, clearOrder]);
+
+  if (loading) {
+    return (
+      <div className="pt-40 pb-32 min-h-screen text-center px-6">
+        <h2 className="text-2xl font-bold">Loading Receipt...</h2>
+      </div>
+    );
   }
 
   return (
@@ -105,40 +100,49 @@ const PaymentSuccess = () => {
                     .toLocaleString('en-US', { minimumFractionDigits: 2 })}
                 </span>
               </div>
-              {ref && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Transaction Ref</span>
-                  <span className="text-sm font-bold">{ref}</span>
-                </div>
-              )}
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-500">Transaction Ref</span>
+                <span className="text-sm font-bold">{receiptData.transaction.id}</span>
+              </div>
             </div>
           </div>
 
-          <PDFDownloadLink
-            document={<ReceiptPdf data={receiptData} />}
-            fileName={`${receiptData.receiptNo}.pdf`}
-          >
-            {({ loading }) => (
-              <Button
-                disabled={loading}
-                className="w-full h-16 text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-2xl transition-all flex items-center justify-center gap-3"
-                style={{
-                  background: loading
-                    ? '#888'
-                    : `linear-gradient(135deg, ${BLUE} 0%, #005f8f 100%)`,
-                }}
-              >
-                <Download size={18} />
-                {loading ? 'Generating PDF…' : 'Download Receipt (PDF)'}
-              </Button>
-            )}
-          </PDFDownloadLink>
+          {showDownload ? (
+            <PDFDownloadLink
+              document={<ReceiptPdf data={receiptData} />}
+              fileName={`${receiptData.receiptNo}.pdf`}
+              key={receiptData.receiptNo}
+            >
+              {({ loading }) => (
+                <Button
+                  disabled={loading}
+                  className="w-full h-16 text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-2xl transition-all flex items-center justify-center gap-3"
+                  style={{
+                    background: loading
+                      ? '#888'
+                      : `linear-gradient(135deg, ${BLUE} 0%, #005f8f 100%)`,
+                  }}
+                >
+                  <Download size={18} />
+                  {loading ? 'Preparing PDF…' : 'Download Receipt (PDF)'}
+                </Button>
+              )}
+            </PDFDownloadLink>
+          ) : (
+            <Button
+              disabled
+              className="w-full h-16 text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl shadow-2xl transition-all flex items-center justify-center gap-3 opacity-50"
+              style={{ background: '#888' }}
+            >
+              <Download size={18} className="animate-pulse" />
+              Initializing Download...
+            </Button>
+          )}
         </div>
       ) : (
         <div className="max-w-md mx-auto mb-10 p-8 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-3xl">
           <p className="text-sm text-gray-500">
-            Receipt details are not available. If you just completed a payment, the page may have been refreshed.
-            Please contact us at <strong>info@civillegacy.co.zw</strong> for a copy of your receipt.
+            {error || "Receipt details are not available. Please contact us at info@civillegacy.co.zw for a copy of your receipt."}
           </p>
         </div>
       )}
@@ -164,4 +168,4 @@ const PaymentSuccess = () => {
   );
 };
 
-export default PaymentSuccess;
+export default ReceiptPage;

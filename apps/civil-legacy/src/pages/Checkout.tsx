@@ -10,6 +10,7 @@ import { Button } from"@/components/ui/button";
 import { useCart } from '@/context/CartContext';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
+import { createOrderFromCart } from '@/services/orderService';
 
 const BLUE = '#0077B6';
 
@@ -38,42 +39,21 @@ const Checkout = () => {
 
   const onSubmit = async (values: CheckoutValues) => {
     try {
-      // Persist customer info so it survives the redirect to the payment gateway
+      // Persist customer info so it survives if needed
       setCheckoutInfo(values);
 
-      const response = await fetch('/api/paynow/initiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...values,
-          items: cart.map(item => ({ 
-            id: item.id, 
-            title: item.title, 
-            price: Number(item.price) 
-          })),
-          total: Number(total),
-        }),
-      });
+      const cartItems = cart.map(item => ({ 
+        id: item.id, 
+        title: item.title, 
+        price: Number(item.price) 
+      }));
 
-      const text = await response.text();
-      let data: any = {};
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch (e) {
-        throw new Error("Invalid response from server:" + text.substring(0, 100));
-      }
+      const { orderId, paymentId } = await createOrderFromCart(values, cartItems, Number(total));
       
-      if (!response.ok) {
-        throw new Error(data.error ||"Could not initiate payment. Please try again.");
-      }
-
-
-      if (data.browserurl) {
-        // We use window.location.href here because it's an external redirect to Paynow (or mock)
-        window.location.href = data.browserurl;
-      } else {
-        throw new Error("Invalid response from server.");
-      }
+      // Clear the local cart if needed, but maybe wait for success? 
+      // The user clears it on success page currently.
+      
+      navigate(`/mock-payment/${orderId}/${paymentId}`);
     } catch (error) {
       toast({
         variant:"destructive",

@@ -16,8 +16,9 @@ import Contact from '@/pages/Contact';
 import TrainingHub from '@/pages/TrainingHub';
 import Checkout from '@/pages/Checkout';
 import MockGateway from '@/pages/MockGateway';
-import PaymentSuccess from '@/pages/PaymentSuccess';
+import ReceiptPage from '@/pages/PaymentSuccess'; // Renaming below to ReceiptPage, but file can stay as PaymentSuccess or we will rename the file.
 import PaymentError from '@/pages/PaymentError';
+import PaymentStatus from '@/pages/PaymentStatus';
 import NotFound from '@/pages/not-found';
 
 export default function App() {
@@ -56,8 +57,9 @@ export default function App() {
               <Route path="/Contact" element={<Contact />} />
               <Route path="/Training" element={<TrainingHub />} />
               <Route path="/Checkout" element={<Checkout />} />
-              <Route path="/Mock-Payment-Gateway" element={<MockGateway />} />
-              <Route path="/Payment/Success" element={<PaymentSuccess />} />
+              <Route path="/mock-payment/:orderId/:paymentId" element={<MockGateway />} />
+              <Route path="/payment/status/:orderId" element={<PaymentStatus />} />
+              <Route path="/receipt/:receiptId" element={<ReceiptPage />} />
               <Route path="/Payment/Error" element={<PaymentError />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

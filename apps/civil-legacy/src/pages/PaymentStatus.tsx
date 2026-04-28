@@ -1,0 +1,168 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Helmet } from 'react-helmet-async';
+import { CheckCircle2, XCircle, Clock, AlertCircle, ArrowRight, Download, Home } from 'lucide-react';
+import { getPaymentStatusByOrderId } from '@/services/orderService';
+
+const BLUE = '#0077B6';
+
+const PaymentStatus = () => {
+  const { orderId } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    async function loadStatus() {
+      if (!orderId) return;
+      try {
+        setLoading(true);
+        const statusData = await getPaymentStatusByOrderId(orderId);
+        setData(statusData);
+        
+        // If it's already PAID, we could auto-redirect to receipt, 
+        // but showing the success state here first is better UX.
+      } catch (err: any) {
+        setError(err.message || "Failed to load payment status");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStatus();
+  }, [orderId]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex items-center justify-center min-h-screen p-6">
+        <Card className="max-w-md w-full p-12 text-center rounded-[3rem]">
+           <AlertCircle size={48} className="mx-auto mb-6 text-red-500" />
+           <h2 className="text-2xl font-black uppercase tracking-tighter mb-4">Error</h2>
+           <p className="text-gray-500 mb-8">{error || "Could not find your order."}</p>
+           <Button onClick={() => navigate('/Services')} className="w-full h-14 rounded-2xl bg-black">Return to Services</Button>
+        </Card>
+      </div>
+    );
+  }
+
+  const { order, latestPayment, receipt } = data;
+  const status = latestPayment?.status || 'PENDING';
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] p-6 pt-32 pb-20">
+      <Helmet>
+        <title>Payment Status | Civil Legacy</title>
+      </Helmet>
+      
+      <Card className="max-w-2xl w-full p-8 md:p-12 bg-white shadow-2xl rounded-[3rem] text-center border-none overflow-hidden relative">
+        {/* Background Accent */}
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-blue-600" />
+
+        <div className="mb-10">
+          {status === 'PAID' && (
+            <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 size={40} />
+            </div>
+          )}
+          {status === 'FAILED' && (
+            <div className="w-20 h-20 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <XCircle size={40} />
+            </div>
+          )}
+          {status === 'PENDING' && (
+            <div className="w-20 h-20 bg-orange-500/10 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Clock size={40} className="animate-pulse" />
+            </div>
+          )}
+          {status === 'EXPIRED' && (
+            <div className="w-20 h-20 bg-gray-500/10 text-gray-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertCircle size={40} />
+            </div>
+          )}
+
+          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-2">
+            <span className="text-black">Payment</span> {status === 'PENDING' ? <span style={{ color: BLUE }}>Processing</span> : <span style={{ color: BLUE }}>{status.toLowerCase()}</span>}
+          </h1>
+          <p className="text-gray-500 font-medium">Order Reference: {order.order_number}</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-left">
+          <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100">
+             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Amount Paid</p>
+             <p className="text-2xl font-black text-black">${Number(order.total_amount).toLocaleString()}</p>
+          </div>
+          <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100">
+             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Payment Method</p>
+             <p className="text-lg font-black text-black">{latestPayment?.gateway || 'Online Payment'}</p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {status === 'PENDING' && (
+            <div className="p-6 bg-orange-50 rounded-3xl border border-orange-100 text-orange-800 text-sm font-medium">
+              <p className="mb-2">Your payment is still being confirmed by the gateway.</p>
+              <p>Please do not pay again yet. You can bookmark this page or return later to check the status.</p>
+            </div>
+          )}
+
+          {status === 'PAID' && receipt && (
+            <Button 
+              asChild 
+              className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-600/20"
+            >
+              <Link to={`/receipt/${receipt.id}`}>
+                <Download size={18} className="mr-2" />
+                Download Official Receipt
+              </Link>
+            </Button>
+          )}
+
+          {status === 'FAILED' && (
+            <div className="p-6 bg-red-50 rounded-3xl border border-red-100 text-red-800 text-sm font-medium">
+              <p>The transaction was unsuccessful. Please try again or contact our support team if the problem persists.</p>
+            </div>
+          )}
+
+          {status === 'EXPIRED' && (
+            <div className="p-6 bg-gray-100 rounded-3xl border border-gray-200 text-gray-600 text-sm font-medium">
+              <p>This payment request has expired. Please return to the services page to start a new order.</p>
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+             <Button 
+                onClick={() => navigate('/Home')}
+                className="flex-1 h-14 bg-gray-100 text-black border border-black/10 font-black uppercase tracking-widest rounded-2xl hover:bg-gray-200 transition-all"
+             >
+                <Home size={16} className="mr-2" />
+                Home
+             </Button>
+             <Button 
+                onClick={() => navigate('/Services')}
+                className="flex-1 h-14 bg-black text-white font-black uppercase tracking-widest rounded-2xl hover:bg-gray-800 transition-all"
+             >
+                Services
+                <ArrowRight size={16} className="ml-2" />
+             </Button>
+          </div>
+        </div>
+
+        <p className="mt-12 text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">
+          Civil Legacy Consultancy &copy; {new Date().getFullYear()}
+        </p>
+      </Card>
+    </div>
+  );
+};
+
+export default PaymentStatus;
