@@ -276,7 +276,7 @@ const Home = () => {
           <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />
         </button>
         <button
-          onClick={() => navigate('/TrainingHub')}
+          onClick={() => navigate('/Training')}
           className="group flex items-center justify-center gap-3 px-7 py-4 font-black uppercase tracking-[0.3em] text-xs text-black transition-all duration-500 hover:scale-105 shadow-2xl bg-white rounded-full"
         >
           Join Training Now
