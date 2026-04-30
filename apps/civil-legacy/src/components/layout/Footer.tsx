@@ -9,13 +9,13 @@ const BLUE = '#0077B6';
 
 const Footer = () => {
   const socialLinks = [
-    { Icon: Facebook, url: CONFIG.CONTACT.SOCIALS.FACEBOOK },
-    { Icon: Twitter, url: CONFIG.CONTACT.SOCIALS.TWITTER },
-    { Icon: Linkedin, url: CONFIG.CONTACT.SOCIALS.LINKEDIN },
-    { Icon: Instagram, url: CONFIG.CONTACT.SOCIALS.INSTAGRAM },
-    { Icon: FaTiktok, url: CONFIG.CONTACT.SOCIALS.TIKTOK },
-    { Icon: FaWhatsapp, url: CONFIG.CONTACT.SOCIALS.WHATSAPP },
-    { Icon: Mail, url: CONFIG.CONTACT.SOCIALS.EMAIL },
+    { Icon: Facebook, url: CONFIG.CONTACT.SOCIALS.FACEBOOK, label: 'Facebook' },
+    { Icon: Twitter, url: CONFIG.CONTACT.SOCIALS.TWITTER, label: 'Twitter' },
+    { Icon: Linkedin, url: CONFIG.CONTACT.SOCIALS.LINKEDIN, label: 'LinkedIn' },
+    { Icon: Instagram, url: CONFIG.CONTACT.SOCIALS.INSTAGRAM, label: 'Instagram' },
+    { Icon: FaTiktok, url: CONFIG.CONTACT.SOCIALS.TIKTOK, label: 'TikTok' },
+    { Icon: FaWhatsapp, url: CONFIG.CONTACT.SOCIALS.WHATSAPP, label: 'WhatsApp' },
+    { Icon: Mail, url: CONFIG.CONTACT.SOCIALS.EMAIL, label: 'Email' },
   ];
   const { toast } = useToast();
 
@@ -48,10 +48,11 @@ const Footer = () => {
               Zimbabwe's premier engineering legacy built on structural precision and water management excellence.
             </p>
             <div className="flex flex-wrap gap-4 mb-8">
-              {socialLinks.map(({ Icon, url }, idx) => (
+              {socialLinks.map(({ Icon, url, label }, idx) => (
                 <a
                   key={idx}
                   href={url}
+                  aria-label={label}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 flex items-center justify-center text-gray-500 cursor-pointer border border-black/5 dark:border-white/5 rounded-full transition-all hover:text-black dark:hover:text-white"
