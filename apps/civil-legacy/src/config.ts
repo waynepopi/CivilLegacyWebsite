@@ -199,7 +199,7 @@ export const CONFIG = {
     EMAIL: 'info@civillegacy.com',
     OFFICES: [
       { name: 'Headquarters', location: '14th Floor Trust Towers, 56-60 Samora Machel Avenue, Harare' },
-      { name: 'Chiredzi Branch', location: 'Chiredzi' },
+      { name: 'Chiredzi Branch', location: '667 Chitsanga road, Chiredzi' },
       { name: 'Chipinge Branch', location: '1066 Dam View Mall, Chipinge' },
     ],
     SOCIALS: {
