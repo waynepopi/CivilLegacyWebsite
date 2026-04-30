@@ -90,10 +90,10 @@ export const RecentOrdersBanner = () => {
                 <div 
                   key={order.orderId}
                   onClick={() => handleNavigate(order.orderId)}
-                  className="group p-4 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-blue-500/30 rounded-2xl cursor-pointer transition-all flex justify-between items-center"
+                  className="group p-4 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-[#0077B6]/30 rounded-2xl cursor-pointer transition-all flex justify-between items-center"
                 >
                   <div className="overflow-hidden">
-                    <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 truncate">
+                    <p className="text-[10px] font-bold text-[#0077B6] uppercase tracking-widest mb-1 truncate">
                       {order.orderNumber}
                     </p>
                     <p className="text-[10px] font-medium text-gray-400">
@@ -125,7 +125,7 @@ export const RecentOrdersBanner = () => {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 group relative",
-          isOpen ? "bg-black text-white" : "bg-blue-600 text-white hover:scale-110"
+          isOpen ? "bg-black text-white" : "bg-[#0077B6] text-white hover:scale-110"
         )}
       >
         {isOpen ? <X size={20} /> : <ClipboardList size={20} />}

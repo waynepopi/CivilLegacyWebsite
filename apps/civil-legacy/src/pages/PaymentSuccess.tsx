@@ -111,7 +111,7 @@ const ReceiptPage = () => {
 
           {/* Visible QR Code */}
           {receiptData.verification_code && (
-            <div className="mb-8 p-6 bg-blue-50 dark:bg-white/5 rounded-3xl border border-blue-100 dark:border-white/10 flex flex-col items-center">
+            <div className="mb-8 p-6 bg-[#0077B6]/5 dark:bg-white/5 rounded-3xl border border-[#0077B6]/20 dark:border-white/10 flex flex-col items-center">
               <div className="bg-white p-3 rounded-2xl shadow-sm mb-3">
                 <QRCodeCanvas 
                   value={getVerificationUrl(receiptData.verification_code)}
@@ -119,7 +119,7 @@ const ReceiptPage = () => {
                   level="H"
                 />
               </div>
-              <p className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">Scan to Verify Receipt</p>
+              <p className="text-[9px] font-black text-[#0077B6] uppercase tracking-widest">Scan to Verify Receipt</p>
             </div>
           )}
 

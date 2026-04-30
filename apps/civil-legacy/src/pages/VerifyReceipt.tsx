@@ -35,7 +35,7 @@ const VerifyReceipt = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] dark:bg-[#0a0a0a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0077B6]"></div>
       </div>
     );
   }
@@ -51,7 +51,7 @@ const VerifyReceipt = () => {
       
       <Card className="max-w-2xl w-full p-8 md:p-12 bg-white dark:bg-[#111] shadow-2xl rounded-[3rem] text-center border-none overflow-hidden relative">
         {/* Background Accent */}
-        <div className={`absolute top-0 left-0 w-full h-2 ${isValid ? 'bg-green-500' : isCompleted ? 'bg-blue-500' : 'bg-red-500'}`} />
+        <div className={`absolute top-0 left-0 w-full h-2 ${isValid ? 'bg-green-500' : isCompleted ? 'bg-[#0077B6]' : 'bg-red-500'}`} />
 
         <div className="mb-10">
           {isValid && (
@@ -60,7 +60,7 @@ const VerifyReceipt = () => {
             </div>
           )}
           {isCompleted && (
-            <div className="w-20 h-20 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-[#0077B6]/10 text-[#0077B6] rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 size={40} />
             </div>
           )}
@@ -74,7 +74,7 @@ const VerifyReceipt = () => {
             {isValid ? (
               <span className="text-green-500">Valid Receipt</span>
             ) : isCompleted ? (
-              <span className="text-blue-500">Already Used</span>
+              <span className="text-[#0077B6]">Already Used</span>
             ) : (
               <span className="text-red-500">Invalid Receipt</span>
             )}
@@ -121,7 +121,7 @@ const VerifyReceipt = () => {
                   {data.items.map((item: any, idx: number) => (
                     <div key={idx} className="flex justify-between items-center text-sm border-b border-gray-200 dark:border-white/5 pb-4 last:border-0 last:pb-0">
                       <div className="font-medium text-black dark:text-white">
-                        <span className="text-blue-500 mr-2">{item.qty}x</span>
+                        <span className="text-[#0077B6] mr-2">{item.qty}x</span>
                         {item.description}
                       </div>
                       <div className="font-black text-gray-800 dark:text-gray-200">
@@ -140,7 +140,7 @@ const VerifyReceipt = () => {
                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${data.payment_status === 'PAID' ? 'bg-green-500/20 text-green-500' : 'bg-orange-500/20 text-orange-500'}`}>
                      Payment: {data.payment_status}
                    </span>
-                   <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${data.job_status === 'COMPLETED' ? 'bg-blue-500/20 text-blue-500' : 'bg-gray-500/20 text-gray-500'}`}>
+                   <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${data.job_status === 'COMPLETED' ? 'bg-[#0077B6]/20 text-[#0077B6]' : 'bg-gray-500/20 text-gray-500'}`}>
                      Job: {data.job_status}
                    </span>
                 </div>

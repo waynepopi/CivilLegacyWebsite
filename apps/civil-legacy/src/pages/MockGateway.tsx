@@ -157,7 +157,7 @@ const MockGateway = () => {
       </Helmet>
       <Card className="max-w-md w-full p-12 bg-white shadow-2xl rounded-[3rem] text-center border-none">
         <img src="/logo-full.png" alt="Civil Legacy" className="h-12 mx-auto mb-12" />
-        <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 text-black">Paynow <span className="text-blue-600">Mock</span> Gateway</h2>
+        <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 text-black">Paynow <span className="text-[#0077B6]">Mock</span> Gateway</h2>
         <p className="text-gray-500 text-sm mb-8 font-medium">This is a simulation for testing the Paynow integration flow.</p>
         
         {status === 'PENDING' && (
@@ -175,18 +175,18 @@ const MockGateway = () => {
             {amount !== null && (
               <div className="mt-4">
                 <p className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-widest mb-1">Amount</p>
-                <p className="text-2xl font-black text-blue-600">${Number(amount).toLocaleString()}</p>
+                <p className="text-2xl font-black text-[#0077B6]">${Number(amount).toLocaleString()}</p>
               </div>
             )}
           </div>
         )}
 
         {scenario && (
-          <div className="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-2xl animate-pulse">
-            <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Test Scenario Detected</p>
-            <p className="text-sm font-black text-blue-900">{scenario.name}</p>
+          <div className="mb-8 p-4 bg-[#0077B6]/5 border border-[#0077B6]/20 rounded-2xl animate-pulse">
+            <p className="text-xs font-bold text-[#0077B6] uppercase tracking-widest mb-1">Test Scenario Detected</p>
+            <p className="text-sm font-black text-[#005f8f]">{scenario.name}</p>
             {countdown !== null && countdown > 0 && (
-              <p className="text-xs font-bold text-blue-500 mt-2">Processing in {countdown}s...</p>
+              <p className="text-xs font-bold text-[#0077B6] mt-2">Processing in {countdown}s...</p>
             )}
           </div>
         )}
@@ -199,7 +199,7 @@ const MockGateway = () => {
               placeholder="Paste test token here..." 
               value={token}
               onChange={(e) => handleTokenSimulation(e.target.value)}
-              className="w-full h-12 bg-gray-50 border border-gray-100 rounded-xl px-4 text-xs font-medium text-black placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="w-full h-12 bg-gray-50 border border-gray-100 rounded-xl px-4 text-xs font-medium text-black placeholder:text-gray-400 focus:ring-2 focus:ring-[#0077B6] outline-none transition-all"
             />
           </div>
 

@@ -101,7 +101,7 @@ const PaymentStatus = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0077B6]"></div>
       </div>
     );
   }
@@ -130,7 +130,7 @@ const PaymentStatus = () => {
       
       <Card className="max-w-2xl w-full p-8 md:p-12 bg-white shadow-2xl rounded-[3rem] text-center border-none overflow-hidden relative">
         {/* Background Accent */}
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-blue-600" />
+        <div className="absolute top-0 left-0 w-full h-2 bg-[#0077B6]" />
 
         <div className="mb-10">
           {status === 'PAID' && (
@@ -182,7 +182,7 @@ const PaymentStatus = () => {
           {status === 'PAID' && (
             <div className="space-y-6">
               {receiptData && receiptData.verification_code && (
-                <div className="p-6 bg-blue-50 dark:bg-white/5 rounded-[2rem] border border-blue-100 dark:border-white/10 flex flex-col items-center">
+                <div className="p-6 bg-[#0077B6]/5 dark:bg-white/5 rounded-[2rem] border border-[#0077B6]/20 dark:border-white/10 flex flex-col items-center">
                   <div className="bg-white p-4 rounded-2xl shadow-sm mb-4">
                     <QRCodeCanvas 
                       value={getVerificationUrl(receiptData.verification_code)}
@@ -191,7 +191,7 @@ const PaymentStatus = () => {
                       includeMargin={false}
                     />
                   </div>
-                  <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">Receipt Verification</p>
+                  <p className="text-[10px] font-bold text-[#0077B6] uppercase tracking-widest mb-1">Receipt Verification</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Scan to verify this document</p>
                 </div>
               )}
@@ -205,7 +205,7 @@ const PaymentStatus = () => {
                   {({ loading: pdfLoading }) => (
                     <Button 
                       disabled={pdfLoading}
-                      className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-blue-600/20 gap-3"
+                      className="w-full h-16 bg-[#0077B6] hover:bg-[#005f8f] text-white font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-[#0077B6]/20 gap-3"
                     >
                       <Download size={18} />
                       {pdfLoading ? 'Preparing PDF...' : 'Download Official Receipt'}
