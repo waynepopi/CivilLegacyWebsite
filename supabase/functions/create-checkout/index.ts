@@ -32,7 +32,7 @@ serve(async (req) => {
 
     const { data: dbServices, error: fetchError } = await supabaseClient
       .from('services')
-      .select('id, price')
+      .select('id, price, is_quote_only')
       .in('id', serviceIds);
 
     if (fetchError) {
@@ -43,6 +43,10 @@ serve(async (req) => {
     let finalTotal = 0;
     const validatedItems = cartItems.map((item: any) => {
       const dbService = dbServices?.find(s => s.id === item.id);
+      
+      if (dbService?.is_quote_only) {
+        throw new Error(`Service "${item.title}" is quote-only and cannot be purchased directly.`);
+      }
       
       // If the service is found in the DB, use its authoritative price.
       // If the price is null (e.g. Project Management), or not found, it defaults to 0.

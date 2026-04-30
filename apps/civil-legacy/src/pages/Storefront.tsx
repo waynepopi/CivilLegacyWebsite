@@ -25,6 +25,7 @@ interface DBService {
   details: string[];
   price: number | null;
   icon_name: string;
+  is_quote_only: boolean;
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
@@ -178,7 +179,7 @@ const ServiceCard = ({
   categories: DBCategory[];
   onAddToCart: (s: DBService) => void;
 }) => {
-  const isPM = service.category_id === 'project-management';
+  const requiresQuote = service.is_quote_only;
   const categoryLabel = categories.find((c) => c.id === service.category_id)?.title ?? service.category_id;
   const Icon = service.icon_name ? ICON_MAP[service.icon_name] : ShoppingCart;
 
@@ -223,24 +224,24 @@ const ServiceCard = ({
           <div className="flex items-end justify-between mb-5">
             <div>
               <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 mb-1">
-                {isPM ? 'Pricing' : 'Est. Starting Price'}
+                {requiresQuote ? 'Pricing' : 'Est. Starting Price'}
               </p>
-              <p className={`font-black  tracking-tight ${isPM ? 'text-lg mt-1' : 'text-3xl'}`}>
-                {isPM ? (
+              <p className={`font-black  tracking-tight ${requiresQuote ? 'text-lg mt-1' : 'text-3xl'}`}>
+                {requiresQuote ? (
                   'Request a Quote below'
                 ) : (
                   `$${(service.price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                 )}
               </p>
             </div>
-            {!isPM && (
+            {!requiresQuote && (
               <p className="text-[9px] text-gray-600 font-medium text-right leading-tight max-w-[100px]">
                 Final price<br />varies by scope
               </p>
             )}
           </div>
 
-          {isPM ? (
+          {requiresQuote ? (
             <a
               href="#"
               onClick={(e) => e.preventDefault()}
