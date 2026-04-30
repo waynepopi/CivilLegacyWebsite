@@ -230,7 +230,7 @@ export const CONFIG = {
     { title: 'Structural Building Development', loc: 'Mt Selinda', sector: 'Institutional', scope: 'Comprehensive multi-storey reinforced concrete building structural design and certification', stands: 'Multi-Storey', date: 'Completed', status: 'Completed' },
   ],
   TEAM: [
-    { name: 'Eng Rumbidzai Kombora', role: 'Company Director', id: 'ZIE 198098 | ECZ 151080', creds: 'BSc (Hons), MBA, Pr Eng', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600' },
+    { name: 'Eng. Rumbidzai Kombora', role: 'Company Director', id: 'ZIE  | ECZ ', creds: 'BSc (Hons), MBA, Pr Eng', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600' },
     { name: 'Simbarashe Musakwembewa', role: 'Structural Expert', id: 'ZIE 084408 | ECZ 150285', creds: 'BSc (Hons), Pr. Eng, MECZ', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600' },
     { name: 'Eng. Byron Muzovaka', role: 'GeoTech Expert', id: 'ZIE 144395 | ECZ 100645', creds: 'BSc (Hons), ECZ, Pr. Eng', img: '/team/byron-muzovaka.png' },
     { name: 'Panashe R. Gora', role: 'Contracts Manager', id: '', creds: 'BSc (Hons), ECZ, Pr. Eng, Machine Learning, Artificial Intelligence', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600' },
@@ -239,7 +239,7 @@ export const CONFIG = {
     { name: 'Farai Likalawe', role: 'Planner', id: '', creds: '', img: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=600' },
     { name: 'Tanyaradzwa Mwapenya', role: 'Quantity Surveying Technician', id: '', creds: '', img: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=600' },
     { name: 'Bridget Makonese', role: 'Water Resources Technician', id: '', creds: '', img: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?auto=format&fit=crop&q=80&w=600' },
-    { name: 'Wayne M Popi', role: 'Software Engineer', id: '', creds: '', img: '/team/wayne-m-popi.jpg', pos: 'center top' },
+    { name: 'Wayne M. Popi', role: 'Software Engineer', id: '', creds: '', img: '/team/wayne-m-popi.jpg', pos: 'center top' },
   ],
   SCROLL_IMAGES: [
     '/scroll/scroll-1.jpg',
