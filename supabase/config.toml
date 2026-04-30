@@ -1,0 +1,4 @@
+project_id = "uacbchejzzvaadjaafwt"
+
+[functions.mock-paynow-result]
+verify_jwt = false
