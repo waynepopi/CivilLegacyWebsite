@@ -270,7 +270,7 @@ const Home = () => {
       >
         <button
           onClick={() => navigate('/Services')}
-          className="group flex items-center justify-center gap-3 px-7 py-4 font-black uppercase tracking-[0.3em] text-xs text-gray-800 transition-all duration-500 hover:scale-105 shadow-2xl bg-gradient-to-r from-[#0077B6] to-white/70 rounded-full"
+          className="group flex items-center justify-center gap-3 px-7 py-4 font-black uppercase tracking-[0.3em] text-xs text-black transition-all duration-500 hover:scale-105 shadow-2xl bg-gradient-to-r from-[#0077B6] via-white/90 to-[#0077B6] rounded-full animate-gradient-flow"
         >
           <span>Build with US</span>
           <ChevronRight size={16} className="group-hover:translate-x-2 transition-transform" />

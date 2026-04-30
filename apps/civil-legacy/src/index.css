@@ -297,3 +297,14 @@
   transform: scale(0.9) translateY(20px);
   transition: all 0.3s ease;
 }
+
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-flow {
+  background-size: 200% auto !important;
+  animation: gradient-flow 5s ease infinite !important;
+}
