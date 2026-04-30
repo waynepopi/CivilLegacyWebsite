@@ -33,7 +33,7 @@ CREATE OR REPLACE FUNCTION generate_receipt_verification_code()
 RETURNS TRIGGER AS $$
 BEGIN
   IF NEW.verification_code IS NULL THEN
-    NEW.verification_code := upper(encode(gen_random_bytes(6), 'hex'));
+    NEW.verification_code := upper(substr(md5(random()::text), 1, 12));
   END IF;
   RETURN NEW;
 END;
@@ -51,7 +51,7 @@ EXECUTE FUNCTION generate_receipt_verification_code();
 
 -- 6. Backfill existing rows
 UPDATE receipts
-SET verification_code = upper(encode(gen_random_bytes(6), 'hex'))
+SET verification_code = upper(substr(md5(random()::text), 1, 12))
 WHERE verification_code IS NULL;
 
 

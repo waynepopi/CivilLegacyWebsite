@@ -181,9 +181,10 @@ const Checkout = () => {
 
               <Button
                 type="submit"
-                className="w-full h-20 bg-[#0077B6] hover:bg-[#0077B6]/80  font-black uppercase tracking-[0.4em] text-xs rounded-2xl shadow-2xl transition-all"
+                disabled={form.formState.isSubmitting}
+                className="w-full h-20 bg-[#0077B6] hover:bg-[#0077B6]/80 font-black uppercase tracking-[0.4em] text-xs rounded-2xl shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Pay with Paynow
+                {form.formState.isSubmitting ? 'Processing...' : 'Pay with Paynow'}
               </Button>
             </form>
           </Form>

@@ -2,12 +2,30 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, GraduationCap, CheckCircle2, ArrowRight, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { SERVICE_CATEGORIES, CHILD_SERVICES } from '@/config';
+import { ICON_MAP } from '@/config';
 import { useCart } from '@/context/CartContext';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getServiceCategories, getServices } from '@/services/orderService';
 
 const BLUE = '#0077B6';
+
+interface DBCategory {
+  id: string;
+  title: string;
+  summary: string;
+  icon_name: string;
+}
+
+interface DBService {
+  id: string;
+  category_id: string;
+  title: string;
+  summary: string;
+  details: string[];
+  price: number | null;
+  icon_name: string;
+}
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 const StorefrontHero = ({
@@ -74,20 +92,20 @@ const StorefrontHero = ({
 );
 
 // ─── Category Tab Bar ─────────────────────────────────────────────────────────
-type CategoryId = 'all' | (typeof SERVICE_CATEGORIES)[number]['id'];
-
 const CategoryTabs = ({
   active,
   setActive,
   counts,
   tabsRef,
+  categories,
 }: {
-  active: CategoryId;
-  setActive: (id: CategoryId) => void;
+  active: string;
+  setActive: (id: string) => void;
   counts: Record<string, number>;
   tabsRef?: React.Ref<HTMLDivElement>;
+  categories: DBCategory[];
 }) => {
-  const tabs = [{ id: 'all' as const, title: 'All Services', Icon: null }, ...SERVICE_CATEGORIES];
+  const tabs = [{ id: 'all', title: 'All Services', icon_name: null }, ...categories];
 
   return (
     <div className="w-full overflow-x-auto" ref={tabsRef}>
@@ -95,6 +113,8 @@ const CategoryTabs = ({
         {tabs.map((tab) => {
           const isActive = active === tab.id;
           const count = tab.id === 'all' ? Object.values(counts).reduce((a, b) => a + b, 0) : (counts[tab.id] ?? 0);
+          const Icon = tab.icon_name ? ICON_MAP[tab.icon_name] : null;
+
           return (
             <button
               key={tab.id}
@@ -105,7 +125,7 @@ const CategoryTabs = ({
                   : 'bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-[#0077B6]/40 hover:'
               }`}
             >
-              {tab.Icon && <tab.Icon size={14} />}
+              {Icon && <Icon size={14} />}
               {tab.title}
               <span
                 className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
@@ -123,10 +143,12 @@ const CategoryTabs = ({
 };
 
 // ─── Category Info Banner (non-buyable) ───────────────────────────────────────
-const CategoryBanner = ({ categoryId }: { categoryId: CategoryId }) => {
+const CategoryBanner = ({ categoryId, categories }: { categoryId: string, categories: DBCategory[] }) => {
   if (categoryId === 'all') return null;
-  const cat = SERVICE_CATEGORIES.find((c) => c.id === categoryId);
+  const cat = categories.find((c) => c.id === categoryId);
   if (!cat) return null;
+
+  const Icon = cat.icon_name ? ICON_MAP[cat.icon_name] : null;
 
   return (
     <motion.div
@@ -136,13 +158,12 @@ const CategoryBanner = ({ categoryId }: { categoryId: CategoryId }) => {
       className="flex items-start gap-5 p-6 rounded-3xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 mb-10"
     >
       <div className="p-3.5 rounded-2xl shrink-0" style={{ background: `${BLUE}18` }}>
-        <cat.Icon size={26} color={BLUE} />
+        {Icon && <Icon size={26} color={BLUE} />}
       </div>
       <div>
         <h2 className="text-lg font-black uppercase tracking-tighter  mb-1">{cat.title}</h2>
         <p className="text-gray-600 dark:text-gray-400 text-sm font-light leading-relaxed max-w-2xl">{cat.summary}</p>
       </div>
-      {/* Intentionally NO price or CTA here — categories are informational only */}
     </motion.div>
   );
 };
@@ -150,13 +171,16 @@ const CategoryBanner = ({ categoryId }: { categoryId: CategoryId }) => {
 // ─── Child Service Card (buyable) ─────────────────────────────────────────────
 const ServiceCard = ({
   service,
+  categories,
   onAddToCart,
 }: {
-  service: (typeof CHILD_SERVICES)[number];
-  onAddToCart: (s: (typeof CHILD_SERVICES)[number]) => void;
+  service: DBService;
+  categories: DBCategory[];
+  onAddToCart: (s: DBService) => void;
 }) => {
-  const isPM = service.categoryId === 'project-management';
-  const categoryLabel = SERVICE_CATEGORIES.find((c) => c.id === service.categoryId)?.title ?? service.categoryId;
+  const isPM = service.category_id === 'project-management';
+  const categoryLabel = categories.find((c) => c.id === service.category_id)?.title ?? service.category_id;
+  const Icon = service.icon_name ? ICON_MAP[service.icon_name] : ShoppingCart;
 
   return (
     <motion.div
@@ -168,14 +192,13 @@ const ServiceCard = ({
       className="flex flex-col h-full"
     >
       <div className="group flex flex-col h-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-[2rem] overflow-hidden hover:border-[#0077B6]/50 transition-all duration-500 hover:shadow-xl hover:shadow-[#0077B6]/10">
-        {/* Card header */}
         <div className="p-8 pb-5">
           <div className="flex items-start justify-between mb-6">
             <div
               className="p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300"
               style={{ background: `${BLUE}15` }}
             >
-              <service.Icon size={28} color={BLUE} />
+              {Icon && <Icon size={28} color={BLUE} />}
             </div>
             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 border border-black/10 dark:border-white/10 rounded-full px-3 py-1">
               {categoryLabel}
@@ -185,7 +208,6 @@ const ServiceCard = ({
           <p className="text-gray-500 text-sm font-light leading-relaxed">{service.summary}</p>
         </div>
 
-        {/* Detail bullets */}
         <div className="px-8 pb-5 flex-grow">
           <div className="space-y-2.5">
             {service.details.map((detail, idx) => (
@@ -197,7 +219,6 @@ const ServiceCard = ({
           </div>
         </div>
 
-        {/* Price + CTA (child services only) */}
         <div className="px-8 pb-8 pt-4 border-t border-black/10 dark:border-white/10 mt-2">
           <div className="flex items-end justify-between mb-5">
             <div>
@@ -208,7 +229,7 @@ const ServiceCard = ({
                 {isPM ? (
                   'Request a Quote below'
                 ) : (
-                  `$${((service as any).price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+                  `$${(service.price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                 )}
               </p>
             </div>
@@ -219,7 +240,6 @@ const ServiceCard = ({
             )}
           </div>
 
-          {/* CTA — Add to Cart (all) | Request Quote no-op (Project Management only) */}
           {isPM ? (
             <a
               href="#"
@@ -257,20 +277,50 @@ const Storefront = () => {
   const { toast } = useToast();
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const [activeCategory, setActiveCategory] = useState<CategoryId>('all');
+  
+  const [categories, setCategories] = useState<DBCategory[]>([]);
+  const [services, setServices] = useState<DBService[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const tabsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [cats, svcs] = await Promise.all([
+          getServiceCategories(),
+          getServices()
+        ]);
+        if (cats && svcs) {
+          setCategories(cats);
+          setServices(svcs);
+        }
+      } catch (err) {
+        console.error("Failed to load store data:", err);
+        toast({
+          title: "Error loading services",
+          description: "Could not connect to the database. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, [toast]);
 
   // ── Hash-based deep linking ───────────────────────────────────────────────
   useEffect(() => {
     const applyHash = () => {
       const hash = window.location.hash.replace('#', '');
-      if (!hash) return;
-      const validIds = SERVICE_CATEGORIES.map(c => c.id) as readonly string[];
+      if (!hash || categories.length === 0) return;
+      
+      const validIds = categories.map(c => c.id);
       if (validIds.includes(hash)) {
-        setActiveCategory(hash as CategoryId);
-        // Smooth-scroll to the tab bar after a tick so the DOM can settle
+        setActiveCategory(hash);
         requestAnimationFrame(() => {
           tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
@@ -280,32 +330,36 @@ const Storefront = () => {
     applyHash();
     window.addEventListener('hashchange', applyHash);
     return () => window.removeEventListener('hashchange', applyHash);
-  }, [location]);
+  }, [location, categories]);
 
-  // Counts per category for tab badges
   const counts = useMemo(() => {
     const map: Record<string, number> = {};
-    SERVICE_CATEGORIES.forEach((c) => {
-      map[c.id] = CHILD_SERVICES.filter((s) => s.categoryId === c.id).length;
+    categories.forEach((c) => {
+      map[c.id] = services.filter((s) => s.category_id === c.id).length;
     });
     return map;
-  }, []);
+  }, [categories, services]);
 
-  // Filtered list of child services
   const filteredServices = useMemo(() => {
-    return CHILD_SERVICES.filter((s) => {
-      const matchesCategory = activeCategory === 'all' || s.categoryId === activeCategory;
+    return services.filter((s) => {
+      const matchesCategory = activeCategory === 'all' || s.category_id === activeCategory;
       const q = searchQuery.toLowerCase();
       const matchesSearch =
         s.title.toLowerCase().includes(q) ||
         s.summary.toLowerCase().includes(q) ||
-        s.details.some((d) => d.toLowerCase().includes(q));
+        (s.details && s.details.some((d) => d.toLowerCase().includes(q)));
       return matchesCategory && matchesSearch;
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, services]);
 
-  const handleAddToCart = (service: (typeof CHILD_SERVICES)[number]) => {
-    addToCart({ ...service, pillar: service.categoryId } as any);
+  const handleAddToCart = (service: DBService) => {
+    // Map DBService shape to the shape CartContext expects
+    addToCart({ 
+      id: service.id,
+      title: service.title,
+      price: service.price ?? 0,
+      pillar: service.category_id 
+    } as any);
     toast({
       title: '✓ Added to Cart',
       description: `${service.title} has been added. Proceed to checkout when ready.`,
@@ -322,67 +376,68 @@ const Storefront = () => {
       <StorefrontHero searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-14">
-
-        {/* ── Category Tab Bar (non-buyable) ─────────────────────────────────── */}
-        <div className="mb-10">
-          <CategoryTabs active={activeCategory} setActive={setActiveCategory} counts={counts} tabsRef={tabsRef} />
-        </div>
-
-        {/* ── Category Info Banner (non-buyable — no price/CTA) ──────────────── */}
-        <AnimatePresence mode="wait">
-          <CategoryBanner key={activeCategory} categoryId={activeCategory} />
-        </AnimatePresence>
-
-        {/* ── Section heading ────────────────────────────────────────────────── */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-1" style={{ color: BLUE }}>
-              {activeCategory === 'all' ? 'All Categories' : SERVICE_CATEGORIES.find((c) => c.id === activeCategory)?.title}
-            </p>
-            <h2 className="text-2xl font-black uppercase tracking-tighter">
-              {filteredServices.length} Service{filteredServices.length !== 1 ? 's' : ''} Available
-            </h2>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0077B6]"></div>
           </div>
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover: transition-colors"
-            >
-              Clear Search ✕
-            </button>
-          )}
-        </div>
+        ) : (
+          <>
+            <div className="mb-10">
+              <CategoryTabs active={activeCategory} setActive={setActiveCategory} counts={counts} tabsRef={tabsRef} categories={categories} />
+            </div>
 
-        {/* ── Child Service Cards Grid (all buyable) ─────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredServices.map((service) => (
-              <ServiceCard key={service.id} service={service} onAddToCart={handleAddToCart} />
-            ))}
-          </AnimatePresence>
-        </div>
+            <AnimatePresence mode="wait">
+              <CategoryBanner key={activeCategory} categoryId={activeCategory} categories={categories} />
+            </AnimatePresence>
 
-        {/* ── Empty state ────────────────────────────────────────────────────── */}
-        {filteredServices.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-28"
-          >
-            <Search size={40} className="mx-auto text-gray-700 mb-4" />
-            <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-600">No Services Found</h3>
-            <p className="text-gray-700 mt-2 text-sm">Try adjusting your search term or selecting a different category.</p>
-            <button
-              onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
-              className="mt-6 px-6 py-3 rounded-xl border border-black/10 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 hover: hover:border-black/20 dark:border-white/20 transition-all"
-            >
-              Reset Filters
-            </button>
-          </motion.div>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-1" style={{ color: BLUE }}>
+                  {activeCategory === 'all' ? 'All Categories' : categories.find((c) => c.id === activeCategory)?.title}
+                </p>
+                <h2 className="text-2xl font-black uppercase tracking-tighter">
+                  {filteredServices.length} Service{filteredServices.length !== 1 ? 's' : ''} Available
+                </h2>
+              </div>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover: transition-colors"
+                >
+                  Clear Search ✕
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <AnimatePresence mode="popLayout">
+                {filteredServices.map((service) => (
+                  <ServiceCard key={service.id} service={service} categories={categories} onAddToCart={handleAddToCart} />
+                ))}
+              </AnimatePresence>
+            </div>
+
+            {filteredServices.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-28"
+              >
+                <Search size={40} className="mx-auto text-gray-700 mb-4" />
+                <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-600">No Services Found</h3>
+                <p className="text-gray-700 mt-2 text-sm">Try adjusting your search term or selecting a different category.</p>
+                <button
+                  onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
+                  className="mt-6 px-6 py-3 rounded-xl border border-black/10 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 hover: hover:border-black/20 dark:border-white/20 transition-all"
+                >
+                  Reset Filters
+                </button>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
 
-      {/* ── Training Hub Sticky Tab (desktop) ──────────────────────────────── */}
       <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[90] hidden md:block">
         <button
           onClick={() => navigate('/Training')}
@@ -393,7 +448,6 @@ const Storefront = () => {
         </button>
       </div>
 
-      {/* ── Training Hub FAB (mobile) ───────────────────────────────────────── */}
       <div className="fixed left-4 bottom-24 z-[100] md:hidden">
         <button
           onClick={() => navigate('/Training')}

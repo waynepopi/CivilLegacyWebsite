@@ -34,81 +34,20 @@ export function formatMoney(amount: number): string {
  * @returns { orderId: string, paymentId: string }
  */
 export async function createOrderFromCart(customer: CustomerInfo, cartItems: CartItem[], totalAmount?: number) {
-  const total = totalAmount ?? calculateCartTotal(cartItems);
+  const { data, error } = await supabase.functions.invoke("create-checkout", {
+    body: {
+      customer,
+      cartItems,
+      totalAmount
+    },
+  });
 
-  // 1. Create the Order
-  const orderPayload = {
-    order_number: `CLC-ORD-${Date.now()}`,
-    customer_name: customer.full_name,
-    customer_email: customer.email,
-    customer_phone: customer.phone,
-    whatsapp_number: customer.whatsapp_number,
-    status: "PENDING_PAYMENT",
-    total_amount: total,
-    currency: "USD",
-    is_test: true
-  };
+  if (error) {
+    throw new Error(error.message || "Failed to create checkout");
+  }
 
-  const { data: orderData, error: orderError } = await supabase
-    .from('orders')
-    .insert(orderPayload)
-    .select('id')
-    .single();
-
-  if (orderError) throw new Error(`Failed to create order: ${orderError.message}`);
-  const orderId = orderData.id;
-
-  // 2. Create Order Items
-  const itemsToInsert = cartItems.map(item => ({
-    order_id: orderId,
-    service_id: item.id ?? null,
-    description: item.title,
-    qty: item.qty ?? 1,
-    unit_price: item.price,
-    line_total: (item.qty ?? 1) * item.price,
-  }));
-
-  const { error: itemsError } = await supabase
-    .from('order_items')
-    .insert(itemsToInsert);
-
-  if (itemsError) throw new Error(`Failed to create order items: ${itemsError.message}`);
-
-  // 3. Create Pending Payment
-  const { data: paymentData, error: paymentError } = await supabase
-    .from('payments')
-    .insert({
-      order_id: orderId,
-      status: 'PENDING',
-      gateway: 'Mock Paynow',
-      gateway_reference: `MOCK-${Date.now()}`,
-      amount: total,
-      currency: "USD",
-      is_test: true
-    })
-    .select('id')
-    .single();
-
-  if (paymentError) throw new Error(`Failed to create payment: ${paymentError.message}`);
-  const paymentId = paymentData.id;
-
-  // 4. Update with simulation URLs
-  await supabase
-    .from('payments')
-    .update({
-      paynow_poll_url: `/mock-paynow/poll/${paymentId}`,
-      paynow_browser_url: `/mock-payment/${orderId}/${paymentId}`
-    })
-    .eq('id', paymentId);
-
-  /**
-   * Status meanings:
-   * - PENDING: Initial state, or a stalled transaction being polled.
-   * - PAID: Confirmed via result_url or polling.
-   * - FAILED: Gateway reported failure.
-   * - EXPIRED: Transaction timed out (usually set by backend cleanup).
-   */
-  return { orderId, paymentId, orderNumber: orderPayload.order_number };
+  // data will contain { orderId, paymentId, orderNumber, browserUrl, pollUrl }
+  return data;
 }
 
 /**
@@ -246,8 +185,8 @@ export async function getPaymentStatusByOrderId(orderId: string) {
     .from('orders')
     .select(`
       *,
-      payments(*),
-      receipts(*)
+      order_items(*),
+      payments(*)
     `)
     .eq('id', orderId)
     .single();
@@ -262,11 +201,55 @@ export async function getPaymentStatusByOrderId(orderId: string) {
   );
 
   const latestPayment = sortedPayments[0] || null;
-  const receipt = (order.receipts || [])[0] || null;
+  
+  let receipt = null;
+  if (latestPayment && latestPayment.status === 'PAID') {
+    const { data: receiptData } = await supabase
+      .from('public_receipt_verification')
+      .select('*')
+      .eq('order_id', orderId)
+      .maybeSingle();
+      
+    if (receiptData) {
+      receipt = receiptData;
+    }
+  }
 
   return {
     order,
     latestPayment,
     receipt
   };
+}
+
+/**
+ * Fetches all service categories from the database.
+ */
+export async function getServiceCategories() {
+  const { data, error } = await supabase
+    .from('service_categories')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to load service categories: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * Fetches all services from the database.
+ */
+export async function getServices() {
+  const { data, error } = await supabase
+    .from('services')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to load services: ${error.message}`);
+  }
+
+  return data;
 }

@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
 import { CheckCircle2, XCircle, Clock, AlertCircle, ArrowRight, Download, Home } from 'lucide-react';
-import { getPaymentStatusByOrderId, getReceiptData } from '@/services/orderService';
+import { getPaymentStatusByOrderId } from '@/services/orderService';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReceiptPdf from '@/components/pdf/ReceiptPdf';
 import type { ReceiptData } from '@/lib/receiptUtils';
@@ -23,19 +23,49 @@ const PaymentStatus = () => {
   const [loadingReceipt, setLoadingReceipt] = useState(false);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     async function loadStatus() {
       if (!orderId) return;
       try {
-        setLoading(true);
+        if (!data) setLoading(true);
         const statusData = await getPaymentStatusByOrderId(orderId);
         setData(statusData);
         
-        // If it's already PAID and we have a receipt ID, fetch full receipt details for the PDF
-        if (statusData.latestPayment?.status === 'PAID' && statusData.receipt?.id) {
+        // If it's already PAID and we have a receipt ID, format full receipt details for the PDF
+        if (statusData.latestPayment?.status === 'PAID' && statusData.receipt?.receipt_number) {
           try {
             setLoadingReceipt(true);
-            const fullReceipt = await getReceiptData(statusData.receipt.id);
-            
+            const r = statusData.receipt;
+            const o = statusData.order;
+            const p = statusData.latestPayment;
+            const items = o.order_items || [];
+
+            const fullReceipt: ReceiptData = {
+              receiptNo: r.receipt_number,
+              dateIssued: new Date(r.created_at).toLocaleDateString('en-GB'),
+              paymentMethod: o.is_test ? 'Online Payment (Test)' : 'Online Payment (Paynow)',
+              client: {
+                name: o.customer_name,
+                email: o.customer_email,
+                phone: o.customer_phone || '',
+              },
+              services: items.map((item: any) => ({
+                description: item.description,
+                qty: item.qty,
+                unitPrice: Number(item.unit_price),
+              })),
+              transaction: {
+                id: p.id,
+                gateway: p.gateway,
+                currency: 'USD',
+                status: p.status,
+              },
+              verification_code: r.verification_code,
+              verification_status: r.verification_status,
+              job_status: r.job_status,
+            };
+
             // Generate QR Code for the PDF
             if (fullReceipt.verification_code) {
               const verifyUrl = getVerificationUrl(fullReceipt.verification_code);
@@ -46,10 +76,13 @@ const PaymentStatus = () => {
             
             setReceiptData(fullReceipt);
           } catch (rErr) {
-            console.error("Failed to load full receipt data:", rErr);
+            console.error("Failed to map full receipt data:", rErr);
           } finally {
             setLoadingReceipt(false);
           }
+        } else if (statusData.latestPayment?.status === 'PENDING') {
+          // Poll every 5 seconds if pending
+          timeoutId = setTimeout(loadStatus, 5000);
         }
       } catch (err: any) {
         setError(err.message || "Failed to load payment status");
@@ -57,7 +90,12 @@ const PaymentStatus = () => {
         setLoading(false);
       }
     }
+    
     loadStatus();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [orderId]);
 
   if (loading) {

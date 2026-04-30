@@ -1,5 +1,9 @@
 import { HardHat, Ruler, Briefcase, Layers, PenTool, BarChart2, Shield, ClipboardCheck, DollarSign, Eye, Waves, Building2, Droplets, Factory, Wrench, GitBranch, FlaskConical, FileText, FileSearch } from 'lucide-react';
 
+export const ICON_MAP: Record<string, React.ElementType> = {
+  HardHat, Ruler, Briefcase, Layers, PenTool, BarChart2, Shield, ClipboardCheck, DollarSign, Eye, Waves, Building2, Droplets, Factory, Wrench, GitBranch, FlaskConical, FileText, FileSearch
+};
+
 // ─── Non-buyable parent categories (tabs / organisational) ───────────────────
 export const SERVICE_CATEGORIES = [
   {
