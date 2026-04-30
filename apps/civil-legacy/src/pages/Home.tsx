@@ -77,6 +77,7 @@ export const Hero = ({
         <img
           src={bgImage}
           alt="Hero"
+          fetchPriority="high"
           className="w-full h-full object-cover"
           style={{ filter: 'brightness(0.3) contrast(1.25)', transform: 'scale(1.05)' }}
         />
@@ -94,7 +95,7 @@ export const Hero = ({
             {titleLine1}
             <span className="relative h-[1.15em] overflow-hidden inline-flex items-center pb-1" style={{ color: BLUE }}>
               <span className="invisible whitespace-nowrap">{currentText}</span>
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence mode="popLayout" initial={false}>
                 <motion.span
                   key={currentText}
                   initial={{ y:"100%", opacity: 0 }}

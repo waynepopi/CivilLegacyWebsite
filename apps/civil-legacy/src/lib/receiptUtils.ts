@@ -25,6 +25,7 @@ export interface ReceiptData {
   };
   verification_code?: string;
   verification_status?: 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  verificationUrl?: string;
   job_status?: 'PENDING' | 'COMPLETED' | 'CANCELLED';
   qr_url?: string;
   qrCodeImage?: string | null;

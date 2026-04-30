@@ -8,6 +8,8 @@ import ReceiptPdf from '@/components/pdf/ReceiptPdf';
 import { useCart } from '@/context/CartContext';
 import { getReceiptData } from '@/services/orderService';
 import type { ReceiptData } from '@/lib/receiptUtils';
+import { getVerificationUrl } from '@/lib/receiptUtils';
+import { QRCodeCanvas } from 'qrcode.react';
 
 const BLUE = '#0077B6';
 

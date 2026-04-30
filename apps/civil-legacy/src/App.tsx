@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -7,21 +7,30 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { RecentOrdersBanner } from '@/components/RecentOrdersBanner';
 
-// Pages
+// Synchronous import for Home to ensure fastest possible LCP
 import Home from '@/pages/Home';
-import About from '@/pages/About';
-import Team from '@/pages/Team';
-import Storefront from '@/pages/Storefront';
-import Projects from '@/pages/Projects';
-import Contact from '@/pages/Contact';
-import TrainingHub from '@/pages/TrainingHub';
-import Checkout from '@/pages/Checkout';
-import MockGateway from '@/pages/MockGateway';
-import ReceiptPage from '@/pages/PaymentSuccess'; // Renaming below to ReceiptPage, but file can stay as PaymentSuccess or we will rename the file.
-import PaymentError from '@/pages/PaymentError';
-import PaymentStatus from '@/pages/PaymentStatus';
-import VerifyReceipt from '@/pages/VerifyReceipt';
-import NotFound from '@/pages/not-found';
+
+// Lazy loaded pages to reduce initial bundle size (especially react-pdf in ReceiptPage)
+const About = lazy(() => import('@/pages/About'));
+const Team = lazy(() => import('@/pages/Team'));
+const Storefront = lazy(() => import('@/pages/Storefront'));
+const Projects = lazy(() => import('@/pages/Projects'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const TrainingHub = lazy(() => import('@/pages/TrainingHub'));
+const Checkout = lazy(() => import('@/pages/Checkout'));
+const MockGateway = lazy(() => import('@/pages/MockGateway'));
+const ReceiptPage = lazy(() => import('@/pages/PaymentSuccess'));
+const PaymentError = lazy(() => import('@/pages/PaymentError'));
+const PaymentStatus = lazy(() => import('@/pages/PaymentStatus'));
+const VerifyReceipt = lazy(() => import('@/pages/VerifyReceipt'));
+const NotFound = lazy(() => import('@/pages/not-found'));
+
+// Premium loading fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="w-8 h-8 border-4 border-[#0077B6] border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 export default function App() {
   const location = useLocation();
@@ -49,23 +58,25 @@ export default function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
           >
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Navigate to="/Home" replace />} />
-              <Route path="/Home" element={<Home />} />
-              <Route path="/About" element={<About />} />
-              <Route path="/Team" element={<Team />} />
-              <Route path="/Services" element={<Storefront />} />
-              <Route path="/Projects" element={<Projects />} />
-              <Route path="/Contact" element={<Contact />} />
-              <Route path="/Training" element={<TrainingHub />} />
-              <Route path="/Checkout" element={<Checkout />} />
-              <Route path="/mock-payment/:orderId/:paymentId" element={<MockGateway />} />
-              <Route path="/payment/status/:orderId" element={<PaymentStatus />} />
-              <Route path="/receipt/:receiptId" element={<ReceiptPage />} />
-              <Route path="/verify-receipt/:code" element={<VerifyReceipt />} />
-              <Route path="/Payment/Error" element={<PaymentError />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes location={location} key={location.pathname}>
+                <Route path="/" element={<Navigate to="/Home" replace />} />
+                <Route path="/Home" element={<Home />} />
+                <Route path="/About" element={<About />} />
+                <Route path="/Team" element={<Team />} />
+                <Route path="/Services" element={<Storefront />} />
+                <Route path="/Projects" element={<Projects />} />
+                <Route path="/Contact" element={<Contact />} />
+                <Route path="/Training" element={<TrainingHub />} />
+                <Route path="/Checkout" element={<Checkout />} />
+                <Route path="/mock-payment/:orderId/:paymentId" element={<MockGateway />} />
+                <Route path="/payment/status/:orderId" element={<PaymentStatus />} />
+                <Route path="/receipt/:receiptId" element={<ReceiptPage />} />
+                <Route path="/verify-receipt/:code" element={<VerifyReceipt />} />
+                <Route path="/Payment/Error" element={<PaymentError />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </motion.div>
         </AnimatePresence>
       </main>
