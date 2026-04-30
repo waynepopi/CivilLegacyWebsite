@@ -108,7 +108,7 @@ export async function createOrderFromCart(customer: CustomerInfo, cartItems: Car
    * - FAILED: Gateway reported failure.
    * - EXPIRED: Transaction timed out (usually set by backend cleanup).
    */
-  return { orderId, paymentId };
+  return { orderId, paymentId, orderNumber: orderPayload.order_number };
 }
 
 /**

@@ -5,6 +5,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { Toaster } from '@/components/ui/toaster';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { RecentOrdersBanner } from '@/components/RecentOrdersBanner';
 
 // Pages
 import Home from '@/pages/Home';
@@ -70,6 +71,7 @@ export default function App() {
       </main>
 
       <Footer />
+      <RecentOrdersBanner />
       <Toaster />
 
       {/* WhatsApp Floating Widget */}

@@ -11,6 +11,7 @@ import { useCart } from '@/context/CartContext';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { createOrderFromCart } from '@/services/orderService';
+import { addRecentOrder } from '@/lib/orderStorage';
 
 const BLUE = '#0077B6';
 
@@ -48,10 +49,10 @@ const Checkout = () => {
         price: Number(item.price) 
       }));
 
-      const { orderId, paymentId } = await createOrderFromCart(values, cartItems, Number(total));
+      const { orderId, paymentId, orderNumber } = await createOrderFromCart(values, cartItems, Number(total));
       
-      // Clear the local cart if needed, but maybe wait for success? 
-      // The user clears it on success page currently.
+      // Save for guest account history
+      addRecentOrder(orderId, orderNumber);
       
       navigate(`/mock-payment/${orderId}/${paymentId}`);
     } catch (error) {

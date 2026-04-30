@@ -13,23 +13,99 @@ const MockGateway = () => {
   const [status, setStatus] = useState<string | null>(null);
   const [amount, setAmount] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [customerPhone, setCustomerPhone] = useState<string | null>(null);
+  const [scenario, setScenario] = useState<{ name: string; type: 'SUCCESS' | 'FAILED' | 'DELAYED_SUCCESS' | 'INSUFFICIENT' } | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [token, setToken] = useState("");
   
   useEffect(() => {
     async function loadPayment() {
       if (!paymentId) return;
       const { data, error } = await supabase
         .from('payments')
-        .select('status, amount')
+        .select('status, amount, order:orders(customer_phone)')
         .eq('id', paymentId)
         .single();
         
       if (!error && data) {
         setStatus(data.status);
         setAmount(data.amount);
+        const phone = (data.order as any)?.customer_phone;
+        setCustomerPhone(phone);
+        
+        // Detect scenarios based on phone
+        if (phone === '0771111111') {
+          setScenario({ name: 'Mobile Money Success', type: 'SUCCESS' });
+          setCountdown(5);
+        } else if (phone === '0772222222') {
+          setScenario({ name: 'Mobile Money Delayed Success', type: 'DELAYED_SUCCESS' });
+          setCountdown(30);
+        } else if (phone === '0773333333') {
+          setScenario({ name: 'Mobile Money User Cancelled', type: 'FAILED' });
+          setCountdown(30);
+        } else if (phone === '0774444444') {
+          setScenario({ name: 'Mobile Money Insufficient Balance', type: 'INSUFFICIENT' });
+          setError("Insufficient balance");
+        }
       }
     }
     loadPayment();
   }, [paymentId]);
+
+  // Handle countdown and auto-simulation
+  useEffect(() => {
+    if (countdown === null || countdown < 0 || !scenario) return;
+    
+    if (countdown === 0) {
+      if (scenario.type === 'SUCCESS' || scenario.type === 'DELAYED_SUCCESS') {
+        handleSuccess();
+      } else if (scenario.type === 'FAILED') {
+        handleFailure();
+      }
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown(countdown - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [countdown, scenario]);
+
+  // Handle Token simulation
+  const handleTokenSimulation = (val: string) => {
+    setToken(val);
+    const inputVal = val.trim();
+    
+    const vmcSuccess = '{11111111-1111-1111-1111-111111111111}';
+    const zimSuccess = '11111111111111111111111111111111';
+    const vmcDelayed = '{22222222-2222-2222-2222-222222222222}';
+    const zimDelayed = '22222222222222222222222222222222';
+    const vmcCancelled = '{33333333-3333-3333-3333-333333333333}';
+    const zimCancelled = '33333333333333333333333333333333';
+    const vmcInsufficient = '{44444444-4444-4444-4444-444444444444}';
+    const zimInsufficient = '44444444444444444444444444444444';
+
+    console.log("Checking token:", inputVal);
+
+    if (inputVal === vmcSuccess || inputVal === zimSuccess) {
+      setScenario({ name: 'Token Success', type: 'SUCCESS' });
+      setCountdown(5);
+    } else if (inputVal === vmcDelayed || inputVal === zimDelayed) {
+      setScenario({ name: 'Token Delayed Success', type: 'DELAYED_SUCCESS' });
+      setCountdown(30);
+    } else if (inputVal === vmcCancelled || inputVal === zimCancelled) {
+      setScenario({ name: 'Token Cancelled', type: 'FAILED' });
+      setCountdown(30);
+    } else if (inputVal === vmcInsufficient || inputVal === zimInsufficient) {
+      setScenario({ name: 'Token Insufficient Balance', type: 'INSUFFICIENT' });
+      setError("Insufficient balance");
+    } else {
+      setScenario(null);
+      setCountdown(null);
+      if (error === "Insufficient balance") setError(null);
+    }
+  };
 
   const handleSuccess = async () => {
     if (!orderId || !paymentId) return;
@@ -105,10 +181,31 @@ const MockGateway = () => {
           </div>
         )}
 
+        {scenario && (
+          <div className="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-2xl animate-pulse">
+            <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Test Scenario Detected</p>
+            <p className="text-sm font-black text-blue-900">{scenario.name}</p>
+            {countdown !== null && countdown > 0 && (
+              <p className="text-xs font-bold text-blue-500 mt-2">Processing in {countdown}s...</p>
+            )}
+          </div>
+        )}
+
         <div className="space-y-4">
+          <div className="mb-4">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 text-left px-2">Simulate Token (VMC/Zimswitch)</p>
+            <input 
+              type="text" 
+              placeholder="Paste test token here..." 
+              value={token}
+              onChange={(e) => handleTokenSimulation(e.target.value)}
+              className="w-full h-12 bg-gray-50 border border-gray-100 rounded-xl px-4 text-xs font-medium text-black placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            />
+          </div>
+
           <Button
             onClick={handleSuccess}
-            disabled={loading || !paymentId}
+            disabled={loading || !paymentId || scenario?.type === 'INSUFFICIENT'}
             className="w-full h-16 bg-green-600 hover:bg-green-700 font-black uppercase tracking-widest rounded-2xl"
           >
             {loading ? 'Processing...' : 'Simulate Successful Payment'}
