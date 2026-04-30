@@ -265,7 +265,7 @@ const Home = () => {
         titleLine1="SHAPING"
         titleLine2={["LEGACY.","CONSTRUCTION.","CONSULTANCY.","EXCELLENCE.","PROFESSIONALISM.","PROJECT MANAGEMENT."]}
         subtitle="Zimbabwe's leading civil engineering consultancy delivering high-impact water and infrastructure solutions across the region."
-        bgImage="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1600"
+        bgImage="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=60&w=1080"
         ctaLabel="View Our Projects"
         onCta={() => navigate('/Projects')}
       >
@@ -396,7 +396,7 @@ const Home = () => {
                 </p>
                 <div className="flex items-center gap-4">
                   <img
-                    src={CONFIG.TEAM[0].img}
+                    src={CONFIG.TEAM[0].img.replace('w=600', 'w=150').replace('q=80', 'q=60')}
                     className="w-12 h-12 rounded-full object-cover"
                     style={{ objectPosition: (CONFIG.TEAM[0] as any).pos || 'center' }}
                     alt={CONFIG.TEAM[0].name}
