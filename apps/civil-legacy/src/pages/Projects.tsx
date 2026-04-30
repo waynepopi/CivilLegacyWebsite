@@ -1,17 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin } from 'lucide-react';
+import { MapPin, Loader2 } from 'lucide-react';
 import { SectionHeader } from './Home';
-import { CONFIG } from '@/config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from"@/components/ui/card";
 import { Badge } from"@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from"@/components/ui/carousel";
 import { Helmet } from 'react-helmet-async';
+import { getProjects, Project } from '@/services/projectService';
 
 const BLUE = '#0077B6';
 
-const Projects = () => (
-  <div className="pt-24  min-h-screen px-6 lg:px-12 text-left">
+const Projects = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await getProjects();
+        setProjects(data);
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  return (
+    <div className="pt-24  min-h-screen px-6 lg:px-12 text-left">
     <Helmet>
       <title>Projects | Civil Legacy Consultancy</title>
       <meta name="description" content="View our comprehensive structural and civil engineering projects across Zimbabwe." />
@@ -25,9 +44,15 @@ const Projects = () => (
       />
       
       {/* Featured Projects Carousel */}
-      <Carousel className="w-full max-w-6xl mx-auto mb-32">
-        <CarouselContent>
-          {CONFIG.PROJECTS.slice(0, 5).map((proj, i) => (
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="animate-spin text-[#0077B6]" size={48} />
+        </div>
+      ) : projects.length > 0 ? (
+        <>
+          <Carousel className="w-full max-w-6xl mx-auto mb-32">
+            <CarouselContent>
+              {projects.slice(0, 5).map((proj, i) => (
             <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 p-4">
               <Card className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 h-full flex flex-col hover:border-[#0077B6]/50 transition-all duration-500 rounded-[2rem] overflow-hidden text-left">
                 <CardHeader className="p-8">
@@ -59,7 +84,7 @@ const Projects = () => (
 
       {/* Project Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {CONFIG.PROJECTS.map((proj, i) => (
+        {projects.map((proj, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 20 }}
@@ -103,8 +128,15 @@ const Projects = () => (
           </motion.div>
         ))}
       </div>
+        </>
+      ) : (
+        <div className="text-center py-20 text-gray-500">
+          No projects available at the moment.
+        </div>
+      )}
     </div>
   </div>
-);
+  );
+};
 
 export default Projects;
