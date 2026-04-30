@@ -135,9 +135,20 @@ export const Hero = ({
   );
 };
 
+import { getScrollingImages } from '@/services/cmsService';
+
 export const ScrollingBanner = () => {
-  const images = CONFIG.SCROLL_IMAGES;
-  const count = images.length;
+  const [images, setImages] = useState<string[]>(CONFIG.SCROLL_IMAGES as unknown as string[]);
+
+  useEffect(() => {
+    getScrollingImages().then((data) => {
+      if (data && data.length > 0) {
+        setImages(data);
+      }
+    });
+  }, []);
+
+  const count = images.length || 1;
 
   // Tile 4 copies so the seam never shows
   const tiled = useMemo(() => [...images, ...images, ...images, ...images], [images]);

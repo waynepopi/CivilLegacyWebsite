@@ -4,9 +4,22 @@ import { CONFIG } from '@/config';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from"@/components/ui/card";
 import { Helmet } from 'react-helmet-async';
 
+import { getTeamMembers, TeamMember } from '@/services/cmsService';
+
 const BLUE = '#0077B6';
 
-const Team = () => (
+const Team = () => {
+  const [teamMembers, setTeamMembers] = React.useState<TeamMember[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    getTeamMembers().then((data) => {
+      setTeamMembers(data);
+      setLoading(false);
+    });
+  }, []);
+
+  return (
   <div className="pt-24  min-h-screen  px-6 lg:px-12 text-left">
     <Helmet>
       <title>Our Team | Civil Legacy Consultancy</title>
@@ -20,17 +33,20 @@ const Team = () => (
         eyebrow="Our Expert Engineering Team"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20">
-        {CONFIG.TEAM.map((member, i) => (
+        {loading ? (
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-20 text-gray-500">
+            Loading team members...
+          </div>
+        ) : teamMembers.map((member, i) => (
           <Card
             key={i}
             className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 hover:border-[#0077B6]/50 transition-all duration-500 overflow-hidden group rounded-[2rem] h-full flex flex-col text-left"
           >
             <div className="relative aspect-square overflow-hidden transition-all duration-700">
               <img
-                src={member.img}
+                src={member.image_url}
                 alt={String(member.name)}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                style={{ objectPosition: (member as any).pos || 'center' }}
                 loading="lazy"
                 width={600}
                 height={600}
@@ -49,14 +65,18 @@ const Team = () => (
               <div className="space-y-4">
                 <div className="h-px bg-black/10 dark:bg-white/10 w-12" />
                 <div className="space-y-1 font-mono text-[10px] text-gray-500 uppercase tracking-widest">
-                  <p className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: BLUE }} />
-                    {String(member.creds)}
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: BLUE }} />
-                    {String(member.id)}
-                  </p>
+                  {member.credentials && (
+                    <p className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: BLUE }} />
+                      {String(member.credentials)}
+                    </p>
+                  )}
+                  {member.registration_id && (
+                    <p className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: BLUE }} />
+                      {String(member.registration_id)}
+                    </p>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -70,6 +90,7 @@ const Team = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default Team;

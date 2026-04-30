@@ -55,6 +55,11 @@ const Projects = () => {
               {projects.slice(0, 5).map((proj, i) => (
             <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3 p-4">
               <Card className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 h-full flex flex-col hover:border-[#0077B6]/50 transition-all duration-500 rounded-[2rem] overflow-hidden text-left">
+                {proj.image_url && (
+                  <div className="relative h-48 overflow-hidden">
+                    <img src={proj.image_url} alt={proj.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                )}
                 <CardHeader className="p-8">
                   <div className="flex justify-between items-start mb-4">
                     <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-black/20 dark:border-white/20 text-gray-600 dark:text-gray-400">
@@ -92,7 +97,12 @@ const Projects = () => {
             viewport={{ once: true }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 hover:border-[#0077B6]/30 transition-all duration-500 rounded-[2rem] h-full text-left">
+            <Card className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 hover:border-[#0077B6]/30 transition-all duration-500 rounded-[2rem] h-full text-left overflow-hidden group">
+              {proj.image_url && (
+                <div className="relative h-48 overflow-hidden">
+                  <img src={proj.image_url} alt={proj.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+              )}
               <CardHeader className="p-8">
                 <div className="flex justify-between items-center mb-4">
                   <Badge variant="secondary" className="bg-[#0077B6]/10 text-[#0077B6] border-none text-[8px] uppercase tracking-widest">

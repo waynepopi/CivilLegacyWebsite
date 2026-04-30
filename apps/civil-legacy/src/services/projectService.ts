@@ -10,6 +10,7 @@ export interface Project {
   date: string;
   status: string;
   created_at: string;
+  image_url?: string | null;
 }
 
 export const getProjects = async (): Promise<Project[]> => {
