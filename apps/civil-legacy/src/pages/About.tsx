@@ -89,7 +89,7 @@ const About = () => {
                     <div className="flex items-center gap-3">
                       <div className="w-4 h-[1px] bg-gray-500" />
                       <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 drop-shadow-md">
-                         Eng. Dereck M. Popi <span className="mx-2 text-[#0077B6]">|</span> <span className="font-light text-gray-500">Company Director</span>
+                         Eng Rumbidzai Kombora <span className="mx-2 text-[#0077B6]">|</span> <span className="font-light text-gray-500">Company Director</span>
                       </p>
                     </div>
                  </div>
