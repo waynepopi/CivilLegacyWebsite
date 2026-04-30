@@ -174,6 +174,7 @@ export async function getReceiptByVerificationCode(code: string) {
     amount: data.amount,
     payment_status: data.payment_status,
     payment_gateway: data.payment_gateway,
+    items: data.items,
   };
 }
 /**

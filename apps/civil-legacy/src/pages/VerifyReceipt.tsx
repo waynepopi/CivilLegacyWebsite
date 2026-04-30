@@ -114,6 +114,25 @@ const VerifyReceipt = () => {
               </div>
             </div>
 
+            {data.items && data.items.length > 0 && (
+              <div className="p-6 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 text-left">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Purchased Services</p>
+                <div className="space-y-4">
+                  {data.items.map((item: any, idx: number) => (
+                    <div key={idx} className="flex justify-between items-center text-sm border-b border-gray-200 dark:border-white/5 pb-4 last:border-0 last:pb-0">
+                      <div className="font-medium text-black dark:text-white">
+                        <span className="text-blue-500 mr-2">{item.qty}x</span>
+                        {item.description}
+                      </div>
+                      <div className="font-black text-gray-800 dark:text-gray-200">
+                        ${Number(item.unit_price * item.qty).toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="p-6 bg-gray-50 dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 text-left">
               <div className="flex justify-between items-center mb-4">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">System Status</p>
