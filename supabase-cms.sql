@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS public.team_members (
   registration_id text, -- e.g. ZIE | ECZ
   credentials text,     -- e.g. BSc (Hons), MBA
   image_url text,
+  image_position text DEFAULT 'center',
   display_order int DEFAULT 0,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -106,15 +107,15 @@ INSERT INTO public.scrolling_images (image_url, order_index) VALUES
 ON CONFLICT DO NOTHING;
 
 -- Initial Data Migration (Team Members)
-INSERT INTO public.team_members (name, role, registration_id, credentials, image_url, display_order) VALUES
-  ('Eng. Rumbidzai Kombora', 'Company Director', 'ZIE | ECZ', 'BSc (Hons), MBA, Pr Eng', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600', 0),
-  ('Simbarashe Musakwembewa', 'Structural Expert', 'ZIE 084408 | ECZ 150285', 'BSc (Hons), Pr. Eng, MECZ', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600', 1),
-  ('Eng. Byron Muzovaka', 'GeoTech Expert', 'ZIE 144395 | ECZ 100645', 'BSc (Hons), ECZ, Pr. Eng', '/team/byron-muzovaka.png', 2),
-  ('Panashe R. Gora', 'Contracts Manager', '', 'BSc (Hons), ECZ, Pr. Eng, Machine Learning, Artificial Intelligence', 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600', 3),
-  ('Tinashe Mutero', 'Engineering Manager', '', '', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600', 4),
-  ('Pamela Nyoni', 'Civil Engineering Technician', '', '', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=600', 5),
-  ('Farai Likalawe', 'Planner', '', '', 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=600', 6),
-  ('Tanyaradzwa Mwapenya', 'Quantity Surveying Technician', '', '', 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=600', 7),
-  ('Bridget Makonese', 'Water Resources Technician', '', '', 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?auto=format&fit=crop&q=80&w=600', 8),
-  ('Wayne M. Popi', 'Software Engineer', '', '', '/team/wayne-m-popi.jpg', 9)
+INSERT INTO public.team_members (name, role, registration_id, credentials, image_url, display_order, image_position) VALUES
+  ('Eng. Rumbidzai Kombora', 'Company Director', 'ZIE | ECZ', 'BSc (Hons), MBA, Pr Eng', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600', 0, 'center'),
+  ('Simbarashe Musakwembewa', 'Structural Expert', 'ZIE 084408 | ECZ 150285', 'BSc (Hons), Pr. Eng, MECZ', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600', 1, 'center'),
+  ('Eng. Byron Muzovaka', 'GeoTech Expert', 'ZIE 144395 | ECZ 100645', 'BSc (Hons), ECZ, Pr. Eng', '/team/byron-muzovaka.png', 2, 'center'),
+  ('Panashe R. Gora', 'Contracts Manager', '', 'BSc (Hons), ECZ, Pr. Eng, Machine Learning, Artificial Intelligence', 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600', 3, 'center'),
+  ('Tinashe Mutero', 'Engineering Manager', '', '', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600', 4, 'center'),
+  ('Pamela Nyoni', 'Civil Engineering Technician', '', '', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=600', 5, 'center'),
+  ('Farai Likalawe', 'Planner', '', '', 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=600', 6, 'center'),
+  ('Tanyaradzwa Mwapenya', 'Quantity Surveying Technician', '', '', 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=600', 7, 'center'),
+  ('Bridget Makonese', 'Water Resources Technician', '', '', 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?auto=format&fit=crop&q=80&w=600', 8, 'center'),
+  ('Wayne M. Popi', 'Software Engineer', '', '', '/team/wayne-m-popi.jpg', 9, 'top')
 ON CONFLICT DO NOTHING;

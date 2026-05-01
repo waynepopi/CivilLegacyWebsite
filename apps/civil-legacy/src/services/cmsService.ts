@@ -14,6 +14,7 @@ export interface TeamMember {
   credentials: string;
   image_url: string;
   display_order: number;
+  image_position?: string;
 }
 
 export const getScrollingImages = async (): Promise<string[]> => {

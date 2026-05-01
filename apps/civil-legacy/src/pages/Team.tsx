@@ -50,6 +50,7 @@ const Team = () => {
                 src={member.image_url}
                 alt={String(member.name)}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                style={{ objectPosition: member.image_position || (String(member.name).includes('Wayne') ? 'top' : 'center') }}
                 loading="lazy"
                 width={600}
                 height={600}
