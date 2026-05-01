@@ -100,8 +100,17 @@ const PaymentStatus = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0077B6]"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] p-6 pt-32 pb-20">
+        <div className="max-w-2xl w-full space-y-6">
+          <div className="skeleton-shimmer h-20 w-20 rounded-full mx-auto" />
+          <div className="skeleton-shimmer h-10 w-1/2 rounded-2xl mx-auto" />
+          <div className="skeleton-shimmer h-5 w-1/3 rounded-xl mx-auto" />
+          <div className="grid grid-cols-2 gap-6">
+            <div className="skeleton-shimmer h-24 rounded-3xl" />
+            <div className="skeleton-shimmer h-24 rounded-3xl" />
+          </div>
+          <div className="skeleton-shimmer h-14 w-full rounded-2xl" />
+        </div>
       </div>
     );
   }
@@ -217,7 +226,7 @@ const PaymentStatus = () => {
                   disabled
                   className="w-full h-16 bg-gray-400 text-white font-black uppercase tracking-widest rounded-2xl gap-3"
                 >
-                  <Download size={18} className="animate-pulse" />
+                  <Download size={18} />
                   {loadingReceipt ? 'Fetching Receipt Data...' : 'Download Official Receipt'}
                 </Button>
               )}

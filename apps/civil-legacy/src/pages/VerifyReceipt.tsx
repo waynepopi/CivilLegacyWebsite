@@ -34,8 +34,19 @@ const VerifyReceipt = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] dark:bg-[#0a0a0a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0077B6]"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] dark:bg-[#0a0a0a] p-6 pt-32 pb-20">
+        <div className="max-w-2xl w-full space-y-6">
+          <div className="skeleton-shimmer h-20 w-20 rounded-full mx-auto" />
+          <div className="skeleton-shimmer h-10 w-1/2 rounded-2xl mx-auto" />
+          <div className="skeleton-shimmer h-4 w-1/3 rounded-xl mx-auto" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="skeleton-shimmer h-24 rounded-3xl" />
+            <div className="skeleton-shimmer h-24 rounded-3xl" />
+            <div className="skeleton-shimmer h-24 rounded-3xl" />
+          </div>
+          <div className="skeleton-shimmer h-32 rounded-3xl" />
+          <div className="skeleton-shimmer h-14 w-full rounded-2xl" />
+        </div>
       </div>
     );
   }

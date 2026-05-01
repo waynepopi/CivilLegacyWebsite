@@ -25,12 +25,10 @@ const PaymentStatus = lazy(() => import('@/pages/PaymentStatus'));
 const VerifyReceipt = lazy(() => import('@/pages/VerifyReceipt'));
 const NotFound = lazy(() => import('@/pages/not-found'));
 
-// Premium loading fallback
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[60vh]">
-    <div className="w-8 h-8 border-4 border-[#0077B6] border-t-transparent rounded-full animate-spin"></div>
-  </div>
-);
+// Minimal fallback for lazy-loaded pages to prevent double-skeleton flash.
+// Since code splitting chunks load extremely fast, showing nothing here 
+// allows the route component to render and immediately show its own specific skeleton.
+const PageLoader = () => null;
 
 export default function App() {
   const location = useLocation();

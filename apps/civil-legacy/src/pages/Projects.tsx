@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Loader2 } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { SectionHeader } from './Home';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from"@/components/ui/card";
 import { Badge } from"@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from"@/components/ui/carousel";
 import { Helmet } from 'react-helmet-async';
 import { getProjects, Project } from '@/services/projectService';
+import { ProjectCarouselSkeleton, ProjectCardSkeleton } from '@/components/ui/skeleton';
 
 const BLUE = '#0077B6';
 
@@ -45,9 +46,24 @@ const Projects = () => {
       
       {/* Featured Projects Carousel */}
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <Loader2 className="animate-spin text-[#0077B6]" size={48} />
-        </div>
+        <>
+          {/* Carousel skeletons */}
+          <div className="w-full max-w-6xl mx-auto mb-32 overflow-hidden">
+            <div className="flex gap-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="min-w-0 flex-[0_0_calc(33.333%-12px)]">
+                  <ProjectCarouselSkeleton />
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Grid skeletons */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))}
+          </div>
+        </>
       ) : projects.length > 0 ? (
         <>
           <Carousel className="w-full max-w-6xl mx-auto mb-32">

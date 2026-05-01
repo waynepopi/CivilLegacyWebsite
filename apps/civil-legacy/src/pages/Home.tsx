@@ -178,7 +178,7 @@ export const ScrollingBanner = () => {
       <div className="cl-strip flex gap-12 px-6 will-change-transform">
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => (
-             <div key={`skeleton-${i}`} className="min-w-[500px] h-[350px] bg-black/10 dark:bg-white/10 animate-pulse rounded-2xl flex-shrink-0" />
+             <div key={`skeleton-${i}`} className="min-w-[500px] h-[350px] skeleton-shimmer rounded-2xl flex-shrink-0" />
           ))
         ) : tiled.map((src, i) => (
           <div
@@ -432,10 +432,10 @@ const Home = () => {
                 <div className="flex items-center gap-4">
                   {loadingTeam ? (
                     <>
-                      <div className="w-12 h-12 rounded-full bg-black/10 dark:bg-white/10 animate-pulse" />
+                      <div className="w-12 h-12 rounded-full skeleton-shimmer" />
                       <div className="space-y-2">
-                        <div className="w-24 h-4 bg-black/10 dark:bg-white/10 animate-pulse rounded" />
-                        <div className="w-32 h-3 bg-black/10 dark:bg-white/10 animate-pulse rounded" />
+                        <div className="w-24 h-4 skeleton-shimmer rounded" />
+                        <div className="w-32 h-3 skeleton-shimmer rounded" />
                       </div>
                     </>
                   ) : leadMember ? (

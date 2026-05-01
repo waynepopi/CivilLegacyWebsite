@@ -8,6 +8,8 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getServiceCategories, getServices } from '@/services/orderService';
 
+import { CategoryTabsSkeleton, ServiceCardSkeleton } from '@/components/ui/skeleton';
+
 const BLUE = '#0077B6';
 
 interface DBCategory {
@@ -378,8 +380,13 @@ const Storefront = () => {
 
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-14">
         {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0077B6]"></div>
+          <div className="space-y-10">
+            <CategoryTabsSkeleton />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <ServiceCardSkeleton key={i} />
+              ))}
+            </div>
           </div>
         ) : (
           <>

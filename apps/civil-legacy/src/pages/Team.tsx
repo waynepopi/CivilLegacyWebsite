@@ -3,6 +3,7 @@ import { SectionHeader } from './Home';
 import { CONFIG } from '@/config';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from"@/components/ui/card";
 import { Helmet } from 'react-helmet-async';
+import { TeamCardSkeleton } from '@/components/ui/skeleton';
 
 import { getTeamMembers, TeamMember } from '@/services/cmsService';
 
@@ -34,9 +35,11 @@ const Team = () => {
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20">
         {loading ? (
-          <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-20 text-gray-500">
-            Loading team members...
-          </div>
+          <>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <TeamCardSkeleton key={i} />
+            ))}
+          </>
         ) : teamMembers.map((member, i) => (
           <Card
             key={i}

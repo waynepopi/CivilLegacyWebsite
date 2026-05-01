@@ -308,3 +308,32 @@
   background-size: 200% auto !important;
   animation: gradient-flow 5s ease infinite !important;
 }
+
+/* ─── Skeleton shimmer ──────────────────────────────────────────────────────── */
+@keyframes skeleton-wave {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(0,119,182,0.08)   50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.6s ease-in-out infinite;
+}
+
+/* Light mode override */
+.light .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0,0,0,0.06)       25%,
+    rgba(0,119,182,0.10)   50%,
+    rgba(0,0,0,0.06)       75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.6s ease-in-out infinite;
+}
