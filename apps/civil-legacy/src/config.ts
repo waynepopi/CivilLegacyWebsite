@@ -236,21 +236,21 @@ export const CONFIG = {
   TEAM: [
     { name: 'Eng. Rumbidzai Kombora', role: 'Company Director', id: 'ZIE  | ECZ ', creds: 'BSc (Hons), MBA, Pr Eng', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600' },
     { name: 'Simbarashe Musakwembewa', role: 'Structural Expert', id: 'ZIE 084408 | ECZ 150285', creds: 'BSc (Hons), Pr. Eng, MECZ', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600' },
-    { name: 'Eng. Byron Muzovaka', role: 'GeoTech Expert', id: 'ZIE 144395 | ECZ 100645', creds: 'BSc (Hons), ECZ, Pr. Eng', img: '/team/byron-muzovaka.png' },
+    { name: 'Eng. Byron Muzovaka', role: 'GeoTech Expert', id: 'ZIE 144395 | ECZ 100645', creds: 'BSc (Hons), ECZ, Pr. Eng', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600' },
     { name: 'Panashe R. Gora', role: 'Contracts Manager', id: '', creds: 'BSc (Hons), ECZ, Pr. Eng, Machine Learning, Artificial Intelligence', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600' },
     { name: 'Tinashe Mutero', role: 'Engineering Manager', id: '', creds: '', img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600' },
     { name: 'Pamela Nyoni', role: 'Civil Engineering Technician', id: '', creds: '', img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=600' },
     { name: 'Farai Likalawe', role: 'Planner', id: '', creds: '', img: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=600' },
     { name: 'Tanyaradzwa Mwapenya', role: 'Quantity Surveying Technician', id: '', creds: '', img: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=600' },
     { name: 'Bridget Makonese', role: 'Water Resources Technician', id: '', creds: '', img: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?auto=format&fit=crop&q=80&w=600' },
-    { name: 'Wayne M. Popi', role: 'Software Engineer', id: '', creds: '', img: '/team/wayne-m-popi.jpg', pos: 'center top' },
+    { name: 'Wayne M. Popi', role: 'Software Engineer', id: '', creds: '', img: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=600', pos: 'center top' },
   ],
   SCROLL_IMAGES: [
-    '/scroll/scroll-1.jpg',
-    '/scroll/scroll-2.jpg',
-    '/scroll/scroll-3.jpg',
-    '/scroll/scroll-4.jpg',
-    '/scroll/scroll-5.jpg',
+    'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=1000',
+    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=1000',
+    'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=1000',
+    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1000',
+    'https://images.unsplash.com/photo-1590496736636-63303db5d5f2?auto=format&fit=crop&q=80&w=1000',
   ],
 } as const;
 

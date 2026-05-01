@@ -27,7 +27,11 @@ export const getScrollingImages = async (): Promise<string[]> => {
     return [];
   }
 
-  return data.map(item => item.image_url);
+  return data.map(item => 
+    item.image_url.startsWith('/') 
+      ? `https://uacbchejzzvaadjaafwt.supabase.co/storage/v1/object/public/site-assets${item.image_url}` 
+      : item.image_url
+  );
 };
 
 export const getTeamMembers = async (): Promise<TeamMember[]> => {
@@ -41,5 +45,10 @@ export const getTeamMembers = async (): Promise<TeamMember[]> => {
     return [];
   }
 
-  return data as TeamMember[];
+  return data.map(member => ({
+    ...member,
+    image_url: member.image_url?.startsWith('/') 
+      ? `https://uacbchejzzvaadjaafwt.supabase.co/storage/v1/object/public/site-assets${member.image_url}` 
+      : member.image_url
+  })) as TeamMember[];
 };

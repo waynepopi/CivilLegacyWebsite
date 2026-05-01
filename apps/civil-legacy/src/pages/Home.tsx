@@ -135,16 +135,23 @@ export const Hero = ({
   );
 };
 
-import { getScrollingImages } from '@/services/cmsService';
+import { getScrollingImages, getTeamMembers, TeamMember } from '@/services/cmsService';
 
 export const ScrollingBanner = () => {
-  const [images, setImages] = useState<string[]>(CONFIG.SCROLL_IMAGES as unknown as string[]);
+  const [images, setImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getScrollingImages().then((data) => {
       if (data && data.length > 0) {
         setImages(data);
+      } else {
+        setImages(CONFIG.SCROLL_IMAGES as unknown as string[]);
       }
+      setLoading(false);
+    }).catch(() => {
+      setImages(CONFIG.SCROLL_IMAGES as unknown as string[]);
+      setLoading(false);
     });
   }, []);
 
@@ -169,7 +176,11 @@ export const ScrollingBanner = () => {
       `}</style>
 
       <div className="cl-strip flex gap-12 px-6 will-change-transform">
-        {tiled.map((src, i) => (
+        {loading ? (
+          Array.from({ length: 5 }).map((_, i) => (
+             <div key={`skeleton-${i}`} className="min-w-[500px] h-[350px] bg-black/10 dark:bg-white/10 animate-pulse rounded-2xl flex-shrink-0" />
+          ))
+        ) : tiled.map((src, i) => (
           <div
             key={i}
             className="min-w-[500px] h-[350px] overflow-hidden flex-shrink-0 rounded-2xl border border-black/10 dark:border-white/10 cursor-pointer"
@@ -245,7 +256,20 @@ export const AccordionItem = ({
 
 const Home = () => {
   const [openIdx, setOpenIdx] = useState<number>(0);
+  const [leadMember, setLeadMember] = useState<TeamMember | null>(null);
+  const [loadingTeam, setLoadingTeam] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    getTeamMembers().then(members => {
+      if (members && members.length > 0) {
+        setLeadMember(members[0]);
+      }
+      setLoadingTeam(false);
+    }).catch(() => {
+      setLoadingTeam(false);
+    });
+  }, []);
 
   const ACCORDION = [
     {
@@ -406,21 +430,51 @@ const Home = () => {
                 <p className="text-gray-600 dark:text-gray-400 italic font-light text-lg leading-relaxed">"We partner with municipalities to ensure infrastructure stands the test of time."
                 </p>
                 <div className="flex items-center gap-4">
-                  <img
-                    src={CONFIG.TEAM[0].img.replace('w=600', 'w=150').replace('q=80', 'q=60')}
-                    className="w-12 h-12 rounded-full object-cover"
-                    style={{ objectPosition: (CONFIG.TEAM[0] as any).pos || 'center' }}
-                    alt={CONFIG.TEAM[0].name}
-                    loading="lazy"
-                    width={48}
-                    height={48}
-                  />
-                  <div>
-                    <p className="font-bold text-sm">{String(CONFIG.TEAM[0].name)}</p>
-                    <p className="text-[10px] uppercase tracking-widest text-gray-500">
-                      {String(CONFIG.TEAM[0].role)}
-                    </p>
-                  </div>
+                  {loadingTeam ? (
+                    <>
+                      <div className="w-12 h-12 rounded-full bg-black/10 dark:bg-white/10 animate-pulse" />
+                      <div className="space-y-2">
+                        <div className="w-24 h-4 bg-black/10 dark:bg-white/10 animate-pulse rounded" />
+                        <div className="w-32 h-3 bg-black/10 dark:bg-white/10 animate-pulse rounded" />
+                      </div>
+                    </>
+                  ) : leadMember ? (
+                    <>
+                      <img
+                        src={leadMember.image_url}
+                        className="w-12 h-12 rounded-full object-cover"
+                        style={{ objectPosition: 'center' }}
+                        alt={leadMember.name}
+                        loading="lazy"
+                        width={48}
+                        height={48}
+                      />
+                      <div>
+                        <p className="font-bold text-sm">{leadMember.name}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-gray-500">
+                          {leadMember.role}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <img
+                        src={CONFIG.TEAM[0].img.replace('w=600', 'w=150').replace('q=80', 'q=60')}
+                        className="w-12 h-12 rounded-full object-cover"
+                        style={{ objectPosition: (CONFIG.TEAM[0] as any).pos || 'center' }}
+                        alt={CONFIG.TEAM[0].name}
+                        loading="lazy"
+                        width={48}
+                        height={48}
+                      />
+                      <div>
+                        <p className="font-bold text-sm">{String(CONFIG.TEAM[0].name)}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-gray-500">
+                          {String(CONFIG.TEAM[0].role)}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
