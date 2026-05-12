@@ -15,6 +15,11 @@ export default function SettingsTab() {
     contactPhone: '+263 123 456 789',
     facebookUrl: '',
     linkedinUrl: '',
+    instagramUrl: '',
+    tiktokUrl: '',
+    youtubeUrl: '',
+    xUrl: '',
+    whatsappUrl: '',
     seoDescription: 'Civil Engineering and Project Management Experts',
   });
 
@@ -161,6 +166,33 @@ export default function SettingsTab() {
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">Facebook URL</label>
+              <Input 
+                value={settings.facebookUrl} 
+                onChange={e => handleChange('facebookUrl', e.target.value)} 
+                className="bg-zinc-800 border-zinc-700 text-white" 
+                placeholder="https://facebook.com/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">Instagram URL</label>
+              <Input 
+                value={settings.instagramUrl} 
+                onChange={e => handleChange('instagramUrl', e.target.value)} 
+                className="bg-zinc-800 border-zinc-700 text-white" 
+                placeholder="https://instagram.com/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">TikTok URL</label>
+              <Input 
+                value={settings.tiktokUrl} 
+                onChange={e => handleChange('tiktokUrl', e.target.value)} 
+                className="bg-zinc-800 border-zinc-700 text-white" 
+                placeholder="https://tiktok.com/@..."
+              />
+            </div>
+            <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-300">LinkedIn URL</label>
               <Input 
                 value={settings.linkedinUrl} 
@@ -170,12 +202,30 @@ export default function SettingsTab() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Facebook URL</label>
+              <label className="text-sm font-medium text-zinc-300">YouTube URL</label>
               <Input 
-                value={settings.facebookUrl} 
-                onChange={e => handleChange('facebookUrl', e.target.value)} 
+                value={settings.youtubeUrl} 
+                onChange={e => handleChange('youtubeUrl', e.target.value)} 
                 className="bg-zinc-800 border-zinc-700 text-white" 
-                placeholder="https://facebook.com/..."
+                placeholder="https://youtube.com/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">X (Twitter) URL</label>
+              <Input 
+                value={settings.xUrl} 
+                onChange={e => handleChange('xUrl', e.target.value)} 
+                className="bg-zinc-800 border-zinc-700 text-white" 
+                placeholder="https://x.com/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">WhatsApp URL</label>
+              <Input 
+                value={settings.whatsappUrl} 
+                onChange={e => handleChange('whatsappUrl', e.target.value)} 
+                className="bg-zinc-800 border-zinc-700 text-white" 
+                placeholder="https://wa.me/..."
               />
             </div>
           </CardContent>

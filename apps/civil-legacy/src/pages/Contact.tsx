@@ -3,7 +3,7 @@ import { useForm } from"react-hook-form";
 import * as z from"zod";
 import { zodResolver } from"@hookform/resolvers/zod";
 import { Mail, MapPin } from 'lucide-react';
-import { FaTiktok, FaInstagram, FaLinkedinIn, FaFacebookF, FaWhatsapp } from 'react-icons/fa';
+import { FaTiktok, FaInstagram, FaLinkedinIn, FaFacebookF, FaWhatsapp, FaYoutube, FaXTwitter } from 'react-icons/fa6';
 import { useToast } from '@/hooks/use-toast';
 import { CONFIG } from '@/config';
 import { SectionHeader } from './Home';
@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from"@/
 import { Textarea } from"@/components/ui/textarea";
 import { Button } from"@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const BLUE = '#0077B6';
 
@@ -27,6 +28,7 @@ type ContactValues = z.infer<typeof contactSchema>;
 
 const Contact = () => {
   const { toast } = useToast();
+  const { settings, branches } = useSiteSettings();
   const form = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -38,7 +40,7 @@ const Contact = () => {
   });
 
   const copyPhone = () => {
-    navigator.clipboard.writeText(String(CONFIG.CONTACT.MAIN_LINE));
+    navigator.clipboard.writeText(String(settings.phone));
     toast({ description: 'Copied to clipboard!' });
   };
 
@@ -52,8 +54,11 @@ const Contact = () => {
       `CIVIL LEGACY INQUIRY\n\nTYPE: ${decodeURIComponent(sanitizedType)}\nNAME: ${decodeURIComponent(sanitizedName)}\nEMAIL: ${decodeURIComponent(sanitizedEmail)}\n\nMESSAGE: ${decodeURIComponent(sanitizedMessage)}`,
     );
     
+    const whatsappBase = settings.socials.WHATSAPP || `https://wa.me/${String(CONFIG.CONTACT.WHATSAPP_NUM)}`;
+    const joinChar = whatsappBase.includes('?') ? '&' : '?';
+    
     window.open(
-      `https://wa.me/${String(CONFIG.CONTACT.WHATSAPP_NUM)}?text=${whatsappMessage}`,
+      `${whatsappBase}${joinChar}text=${whatsappMessage}`,
       '_blank',
       'noopener,noreferrer',
     );
@@ -65,13 +70,15 @@ const Contact = () => {
   };
 
   const SOCIAL_LINKS = [
-    { icon: FaTiktok,      label: 'TikTok',    href: 'https://www.tiktok.com/@civillegacy' },
-    { icon: FaInstagram,   label: 'Instagram',  href: 'https://www.instagram.com/civillegacy' },
-    { icon: FaLinkedinIn,  label: 'LinkedIn',   href: 'https://www.linkedin.com/company/civillegacy' },
-    { icon: FaFacebookF,   label: 'Facebook',   href: 'https://www.facebook.com/civillegacy' },
-    { icon: FaWhatsapp,    label: 'WhatsApp',   href: `https://wa.me/${String(CONFIG.CONTACT.WHATSAPP_NUM)}` },
-    { icon: Mail,          label: 'Email',      href: `mailto:${String(CONFIG.CONTACT.EMAIL)}` },
-    { icon: MapPin,        label: 'Location',   href: `https://maps.google.com/?q=${encodeURIComponent(String(CONFIG.CONTACT.OFFICES[0].location))}` },
+    { icon: FaTiktok,      label: 'TikTok',    href: settings.socials.TIKTOK },
+    { icon: FaInstagram,   label: 'Instagram',  href: settings.socials.INSTAGRAM },
+    { icon: FaLinkedinIn,  label: 'LinkedIn',   href: settings.socials.LINKEDIN },
+    { icon: FaFacebookF,   label: 'Facebook',   href: settings.socials.FACEBOOK },
+    { icon: FaYoutube,     label: 'YouTube',    href: (settings.socials as any).YOUTUBE },
+    { icon: FaXTwitter,    label: 'X (Twitter)', href: (settings.socials as any).TWITTER },
+    { icon: FaWhatsapp,    label: 'WhatsApp',   href: settings.socials.WHATSAPP },
+    { icon: Mail,          label: 'Email',      href: `mailto:${String(settings.email)}` },
+    { icon: MapPin,        label: 'Location',   href: branches.length > 0 ? `https://maps.google.com/?q=${encodeURIComponent(String(branches[0].location))}` : '#' },
   ];
 
   return (
@@ -100,7 +107,7 @@ const Contact = () => {
                   className="text-4xl font-black  hover:text-[#0077B6] transition-colors cursor-pointer tracking-tighter"
                   title="Click to copy"
                 >
-                  {String(CONFIG.CONTACT.MAIN_LINE)}
+                  {String(settings.phone)}
                 </button>
               </div>
               <div>
@@ -108,10 +115,10 @@ const Contact = () => {
                   Email
                 </h5>
                 <a
-                  href={`mailto:${String(CONFIG.CONTACT.EMAIL)}`}
+                  href={`mailto:${String(settings.email)}`}
                   className="text-2xl font-black  break-all hover:text-[#0077B6] transition-colors tracking-tighter"
                 >
-                  {String(CONFIG.CONTACT.EMAIL)}
+                  {String(settings.email)}
                 </a>
               </div>
             </div>

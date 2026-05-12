@@ -1,26 +1,29 @@
 import React from 'react';
-import { Facebook, Twitter, Linkedin, Instagram, Mail } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Instagram, Mail, Youtube } from 'lucide-react';
 import { FaWhatsapp, FaTiktok } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CONFIG } from '@/config';
 import { useToast } from '@/hooks/use-toast';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const BLUE = '#0077B6';
 
 const Footer = () => {
+  const { settings, branches } = useSiteSettings();
   const socialLinks = [
-    { Icon: Facebook, url: CONFIG.CONTACT.SOCIALS.FACEBOOK, label: 'Facebook' },
-    { Icon: Twitter, url: CONFIG.CONTACT.SOCIALS.TWITTER, label: 'Twitter' },
-    { Icon: Linkedin, url: CONFIG.CONTACT.SOCIALS.LINKEDIN, label: 'LinkedIn' },
-    { Icon: Instagram, url: CONFIG.CONTACT.SOCIALS.INSTAGRAM, label: 'Instagram' },
-    { Icon: FaTiktok, url: CONFIG.CONTACT.SOCIALS.TIKTOK, label: 'TikTok' },
-    { Icon: FaWhatsapp, url: CONFIG.CONTACT.SOCIALS.WHATSAPP, label: 'WhatsApp' },
-    { Icon: Mail, url: CONFIG.CONTACT.SOCIALS.EMAIL, label: 'Email' },
+    { Icon: Facebook, url: settings.socials.FACEBOOK, label: 'Facebook' },
+    { Icon: Twitter, url: settings.socials.TWITTER, label: 'X (Twitter)' },
+    { Icon: Linkedin, url: settings.socials.LINKEDIN, label: 'LinkedIn' },
+    { Icon: Instagram, url: settings.socials.INSTAGRAM, label: 'Instagram' },
+    { Icon: FaTiktok, url: settings.socials.TIKTOK, label: 'TikTok' },
+    { Icon: Youtube, url: (settings.socials as any).YOUTUBE, label: 'YouTube' },
+    { Icon: FaWhatsapp, url: settings.socials.WHATSAPP, label: 'WhatsApp' },
+    { Icon: Mail, url: settings.socials.EMAIL, label: 'Email' },
   ];
   const { toast } = useToast();
 
   const copyPhone = () => {
-    navigator.clipboard.writeText(String(CONFIG.CONTACT.MAIN_LINE));
+    navigator.clipboard.writeText(String(settings.phone));
     toast({ description: 'Copied to clipboard!' });
   };
 
@@ -91,12 +94,13 @@ const Footer = () => {
               Branches
             </h4>
             <ul className="space-y-6 text-sm text-gray-600 dark:text-gray-400 font-light">
-              {CONFIG.CONTACT.OFFICES.map((off, idx) => (
+              {branches.map((off: any, idx: number) => (
                 <li key={idx} className="flex flex-col gap-1">
                   <span className="text-black dark:text-white font-bold uppercase tracking-widest text-[10px]">
                     {off.name}
                   </span>
                   <span>{off.location}</span>
+                  {off.phone && <span className="text-[10px] uppercase font-mono">{off.phone}</span>}
                 </li>
               ))}
             </ul>
@@ -114,15 +118,15 @@ const Footer = () => {
                   className="text-black dark:text-white font-black hover:text-[#0077B6] transition-colors cursor-pointer"
                   title="Click to copy"
                 >
-                  {String(CONFIG.CONTACT.MAIN_LINE)}
+                  {String(settings.phone)}
                 </button>
               </li>
               <li>
                 <a
-                  href={`mailto:${String(CONFIG.CONTACT.EMAIL)}`}
+                  href={`mailto:${String(settings.email)}`}
                   className="hover:text-black dark:hover:text-white transition-colors"
                 >
-                  {String(CONFIG.CONTACT.EMAIL)}
+                  {String(settings.email)}
                 </a>
               </li>
             </ul>

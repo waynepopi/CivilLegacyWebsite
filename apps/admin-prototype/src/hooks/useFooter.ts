@@ -55,6 +55,17 @@ export function useFooter() {
       throw err;
     }
   };
+  const updateBranch = async (id: string, updates: Partial<Omit<Branch, 'id'>>) => {
+    try {
+      const { data, error: err } = await supabase.from('footer_branches').update(updates).eq('id', id).select().single();
+      if (err) throw err;
+      setBranches(prev => prev.map(b => b.id === id ? data : b));
+      return data;
+    } catch (err: any) {
+      console.error('Update branch error:', err);
+      throw err;
+    }
+  };
 
-  return { branches, loading, error, addBranch, deleteBranch, refresh: fetchBranches };
+  return { branches, loading, error, addBranch, updateBranch, deleteBranch, refresh: fetchBranches };
 }
