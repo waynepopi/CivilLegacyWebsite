@@ -78,6 +78,9 @@ importers:
 
   apps/admin-prototype:
     dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.49.9
+        version: 2.104.1
       react-helmet-async:
         specifier: ^3.0.0
         version: 3.0.0(react@19.1.0)
