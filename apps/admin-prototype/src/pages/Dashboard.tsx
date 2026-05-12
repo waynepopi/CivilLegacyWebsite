@@ -3,27 +3,37 @@ import { useAuth } from '../App';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 import { Button } from '../components/ui/button';
 import {
-  LogOut, Images, Users, FolderOpen, Settings2, Menu, X, ShoppingCart, Loader2, ShieldAlert
+  LogOut, Images, Users, FolderOpen, Settings2, Menu, X, ShoppingCart, Loader2, ShieldAlert, Activity, MapPin
 } from 'lucide-react';
 import BannerTab from './tabs/BannerTab';
 import TeamTab from './tabs/TeamTab';
 import ProjectsTab from './tabs/ProjectsTab';
 import ServicesTab from './tabs/ServicesTab';
 import OrdersTab from './tabs/OrdersTab';
+import MetricsTab from './tabs/MetricsTab';
+import UsersTab from './tabs/UsersTab';
+import FooterTab from './tabs/FooterTab';
+import SettingsTab from './tabs/SettingsTab';
+import MediaTab from './tabs/MediaTab';
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
 const tabs = [
+  { id: 'metrics',  label: 'Overview',      icon: Activity,     component: <MetricsTab /> },
   { id: 'banner',   label: 'Banner Images', icon: Images,       component: <BannerTab /> },
   { id: 'team',     label: 'Team Members',  icon: Users,        component: <TeamTab /> },
   { id: 'projects', label: 'Projects',      icon: FolderOpen,   component: <ProjectsTab /> },
   { id: 'services', label: 'Storefront',    icon: Settings2,    component: <ServicesTab /> },
   { id: 'orders',   label: 'Orders',        icon: ShoppingCart, component: <OrdersTab /> },
+  { id: 'footer',   label: 'Footer Config', icon: MapPin,       component: <FooterTab /> },
+  { id: 'media',    label: 'Media Library', icon: Images,       component: <MediaTab /> },
+  { id: 'settings', label: 'Settings',      icon: Settings2,    component: <SettingsTab /> },
+  { id: 'users',    label: 'Admins',        icon: ShieldAlert,  component: <UsersTab /> },
 ];
 
 export default function Dashboard() {
   const { session, signOut } = useAuth();
-  const { isAdmin, loading } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState('banner');
+  const { isAdmin, loading, adminError } = useAdminAuth();
+  const [activeTab, setActiveTab] = useState('metrics');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const active = tabs.find(t => t.id === activeTab) ?? tabs[0];
@@ -48,6 +58,12 @@ export default function Dashboard() {
           <p className="text-zinc-400 mb-6">
             Your account ({email}) is not authorized to access the Admin Dashboard. Please contact a system administrator.
           </p>
+          {adminError && (
+            <div className="bg-red-950/30 text-red-400 border border-red-900/50 rounded-lg p-3 text-xs mb-6 text-left overflow-auto">
+              <span className="font-bold uppercase tracking-wider block mb-1">Debug Info:</span>
+              {adminError}
+            </div>
+          )}
           <Button onClick={signOut} className="w-full bg-red-600 hover:bg-red-700 text-white">
             <LogOut className="mr-2 h-4 w-4" /> Sign Out
           </Button>

@@ -1,123 +1,92 @@
-import React, { useState } from 'react';
-import { useAppData } from '../../context/AppDataContext';
+import React from 'react';
+import { useUsers } from '../../hooks/useUsers';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Switch } from '../../components/ui/switch';
-import { Label } from '../../components/ui/label';
-import { AuthContext } from '../../App';
-import { ShieldAlert, ShieldCheck, UserCog, UserPlus } from 'lucide-react';
+import { ShieldAlert, ShieldCheck, UserCog, Loader2, Trash2 } from 'lucide-react';
+import { useAuth } from '../../App';
 
 export default function UsersTab() {
-  const { state, updateUserPermissions, addUser } = useAppData();
-  const { user } = React.useContext(AuthContext);
-  const [newUsername, setNewUsername] = useState('');
+  const { users, loading, error, removeUser } = useUsers();
+  const { session } = useAuth();
+  
+  const currentUserEmail = session?.user?.email;
 
-  const canManage = user?.role === 'Master' || user?.permissions?.canManageMembers;
-
-  const handleAddUser = () => {
-    if (!newUsername.trim()) return;
-
-    // In this prototype, Master/Leader only creates basic 'Member' tier users
-    // who then log in with default 'admin' password and have no perms by default.
-    addUser({
-      id: Date.now().toString(),
-      username: newUsername,
-      role: 'Member',
-      permissions: { canEditContent: false, canManageMembers: false }
-    });
-    setNewUsername('');
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to remove this admin? They will lose dashboard access immediately.")) {
+      try {
+        await removeUser(id);
+      } catch (err) {
+        alert("Failed to remove user.");
+      }
+    }
   };
 
-  if (!canManage) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
-        <ShieldAlert className="h-16 w-16 text-zinc-600" />
-        <h2 className="text-2xl font-bold text-zinc-300">Access Denied</h2>
-        <p className="text-zinc-500 max-w-md">You do not have the required permissions to view or manage user roles. Please contact an administrator.</p>
-      </div>
-    );
+  if (loading) {
+    return <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 text-[#0077B6] animate-spin" /></div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <UserCog className="text-blue-500" /> Role Management
+          <UserCog className="text-[#0077B6]" /> Administrator Management
         </h2>
       </div>
 
-      <Card className="bg-zinc-900 border-zinc-800 text-zinc-100">
+      {error && (
+        <div className="bg-red-950/50 border border-red-900/50 text-red-400 p-4 rounded-md">
+          {error}
+        </div>
+      )}
+
+      <Card className="bg-zinc-900 border-zinc-800 text-zinc-100 mb-6">
         <CardHeader>
           <CardTitle className="text-xl font-bold flex items-center gap-2">
-            <UserPlus className="text-blue-500 h-5 w-5" /> Add New Member
+            <ShieldCheck className="text-[#0077B6] h-5 w-5" /> Active Administrators
           </CardTitle>
           <CardDescription className="text-zinc-400">
-            Create a new user with the 'Member' role. You can assign them permissions below.
+            Current users with access to this dashboard. Note: Adding new admins requires backend configuration of their Auth User first.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex space-x-4 items-end max-w-md">
-            <div className="space-y-2 flex-1">
-              <label className="text-sm font-medium text-zinc-300">Username</label>
-              <Input
-                placeholder="E.g., ContentEditor1"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                className="bg-zinc-800 border-zinc-700 text-white focus-visible:ring-blue-500"
-              />
-            </div>
-            <Button onClick={handleAddUser} className="bg-blue-600 hover:bg-blue-700 text-white">
-              Create User
-            </Button>
-          </div>
-        </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {state.users.map(u => {
-          const isMaster = u.role === 'Master';
-          const canEditThisUser = user?.role === 'Master' || (user?.role === 'Leader' && u.role === 'Member');
-
-          return (
-            <Card key={u.id} className="bg-zinc-900 border-zinc-800 text-zinc-100">
-              <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-zinc-800">
+      <div className="grid gap-4">
+        {users.length === 0 ? (
+           <p className="text-zinc-500 text-center py-8">No administrators found.</p>
+        ) : (
+          users.map(u => (
+            <Card key={u.id} className="bg-zinc-900 border-zinc-800 text-zinc-100 flex items-center justify-between p-4">
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-full bg-[#0077B6]/20 border border-[#0077B6]/30 flex items-center justify-center shrink-0">
+                  <span className="text-sm font-bold text-[#0077B6]">{u.email.charAt(0).toUpperCase()}</span>
+                </div>
                 <div>
-                  <CardTitle className="text-xl font-bold">{u.username}</CardTitle>
-                  <CardDescription className="text-blue-400 font-medium flex items-center gap-1 mt-1">
-                    {isMaster && <ShieldCheck className="h-4 w-4" />} {u.role}
-                  </CardDescription>
+                  <h3 className="font-bold text-lg flex items-center gap-2">
+                    {u.email}
+                    {u.email === currentUserEmail && (
+                      <span className="text-[10px] uppercase bg-green-900/30 text-green-400 px-2 py-0.5 rounded-full border border-green-800/50">You</span>
+                    )}
+                  </h3>
+                  <p className="text-sm text-zinc-400 flex items-center gap-1 mt-0.5">
+                    <ShieldAlert className="h-3 w-3" /> {u.role}
+                  </p>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-6 space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base font-semibold text-zinc-200">Edit Content</Label>
-                    <p className="text-sm text-zinc-500">Allow user to add, edit, or delete items on tabs.</p>
-                  </div>
-                  <Switch
-                    checked={u.permissions.canEditContent}
-                    disabled={!canEditThisUser || isMaster}
-                    onCheckedChange={(checked) => updateUserPermissions(u.id, { ...u.permissions, canEditContent: checked })}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base font-semibold text-zinc-200">Manage Members</Label>
-                    <p className="text-sm text-zinc-500">Allow user to manage roles and permissions of lower-tier users.</p>
-                  </div>
-                  <Switch
-                    checked={u.permissions.canManageMembers}
-                    disabled={!canEditThisUser || isMaster}
-                    onCheckedChange={(checked) => updateUserPermissions(u.id, { ...u.permissions, canManageMembers: checked })}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </div>
-              </CardContent>
+              </div>
+              
+              {u.email !== currentUserEmail && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => handleDelete(u.id)}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-950/30"
+                  title="Remove Admin Access"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
+              )}
             </Card>
-          );
-        })}
+          ))
+        )}
       </div>
     </div>
   );
