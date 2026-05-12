@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { motion, AnimatePresence, useMotionValue, useAnimationFrame } from 'framer-motion';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { CONFIG, SERVICE_CATEGORIES } from '@/config';
 import { Helmet } from 'react-helmet-async';
@@ -156,26 +156,79 @@ export const ScrollingBanner = () => {
   }, []);
 
   const count = images.length || 1;
-
-  // Tile 4 copies so the seam never shows
-  const tiled = useMemo(() => [...images, ...images, ...images, ...images], [images]);
-
   const loopPx  = count * (512 + 48); // card width + gap
-  const duration = loopPx / 35; // ~35 px/s
+
+  const x = useMotionValue(0);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const wasDragging = useRef(false);
+
+  // Initialize position and set up wrapping logic
+  useEffect(() => {
+    if (!loopPx) return;
+    
+    const unsubscribe = x.on("change", (latest) => {
+      if (latest <= -loopPx) {
+        x.set(latest + loopPx);
+      } else if (latest > 0) {
+        x.set(latest - loopPx);
+      }
+    });
+    return unsubscribe;
+  }, [loopPx, x]);
+
+  // Handle auto-resume timeouts
+  const handleInteractionStart = () => {
+    setIsPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+  };
+
+  const handleInteractionEnd = () => {
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => {
+      setIsPaused(false);
+    }, 4000);
+  };
+
+  // Auto-scrolling loop
+  useAnimationFrame((t, delta) => {
+    if (isPaused || isDragging.current || loading || images.length === 0) return;
+    let moveBy = 35 * (delta / 1000); // 35px per second
+    x.set(x.get() - moveBy);
+  });
+
+  // Tile enough copies so we never see a seam.
+  const tiled = useMemo(() => [...images, ...images, ...images, ...images], [images]);
 
   return (
     <div className="py-20 overflow-hidden border-y border-black/5 dark:border-white/5">
-      <style>{`
-        @keyframes cl-scroll {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-${loopPx}px); }
-        }
-        .cl-strip {
-          animation: cl-scroll ${duration}s linear infinite;
-        }
-      `}</style>
-
-      <div className="cl-strip flex gap-12 px-6 will-change-transform">
+      <motion.div 
+        className="flex gap-12 px-6 cursor-grab active:cursor-grabbing will-change-transform"
+        style={{ x, touchAction: 'pan-y' }}
+        drag="x"
+        dragElastic={0}
+        dragConstraints={{ left: -loopPx * 2, right: loopPx }} // Lenient constraints
+        onDragStart={(e, info) => {
+          isDragging.current = true;
+          wasDragging.current = false;
+          dragStartX.current = info.point.x;
+          handleInteractionStart();
+        }}
+        onDrag={(e, info) => {
+          if (Math.abs(info.point.x - dragStartX.current) > 5) {
+            wasDragging.current = true;
+          }
+        }}
+        onDragEnd={() => {
+          isDragging.current = false;
+          handleInteractionEnd();
+        }}
+        onPointerDown={handleInteractionStart}
+        onPointerUp={handleInteractionEnd}
+      >
         {loading ? (
           Array.from({ length: 5 }).map((_, i) => (
              <div key={`skeleton-${i}`} className="min-w-[500px] h-[350px] skeleton-shimmer rounded-2xl flex-shrink-0" />
@@ -191,11 +244,27 @@ export const ScrollingBanner = () => {
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
             }}
+            onClick={(e) => {
+              if (wasDragging.current) {
+                e.preventDefault();
+                e.stopPropagation();
+                wasDragging.current = false;
+                return;
+              }
+              handleInteractionStart();
+            }}
           >
-            <img src={src} alt="Project" loading="lazy" width={500} height={350} className="w-full h-full object-cover" />
+            <img 
+              src={src} 
+              alt="Project" 
+              loading="lazy" 
+              width={500} 
+              height={350} 
+              className="w-full h-full object-cover pointer-events-none select-none" 
+            />
           </div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 };
