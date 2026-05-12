@@ -1,30 +1,60 @@
 import React, { useState } from 'react';
 import { useAuth } from '../App';
+import { useAdminAuth } from '../hooks/useAdminAuth';
 import { Button } from '../components/ui/button';
 import {
-  LogOut, Images, Users, FolderOpen, Settings2, Menu, X
+  LogOut, Images, Users, FolderOpen, Settings2, Menu, X, ShoppingCart, Loader2, ShieldAlert
 } from 'lucide-react';
 import BannerTab from './tabs/BannerTab';
 import TeamTab from './tabs/TeamTab';
 import ProjectsTab from './tabs/ProjectsTab';
 import ServicesTab from './tabs/ServicesTab';
+import OrdersTab from './tabs/OrdersTab';
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
 const tabs = [
-  { id: 'banner',   label: 'Banner Images', icon: Images,     component: <BannerTab /> },
-  { id: 'team',     label: 'Team Members',  icon: Users,      component: <TeamTab /> },
-  { id: 'projects', label: 'Projects',      icon: FolderOpen, component: <ProjectsTab /> },
-  { id: 'services', label: 'Services',      icon: Settings2,  component: <ServicesTab />, badge: 'Phase 2' },
+  { id: 'banner',   label: 'Banner Images', icon: Images,       component: <BannerTab /> },
+  { id: 'team',     label: 'Team Members',  icon: Users,        component: <TeamTab /> },
+  { id: 'projects', label: 'Projects',      icon: FolderOpen,   component: <ProjectsTab /> },
+  { id: 'services', label: 'Storefront',    icon: Settings2,    component: <ServicesTab /> },
+  { id: 'orders',   label: 'Orders',        icon: ShoppingCart, component: <OrdersTab /> },
 ];
 
 export default function Dashboard() {
   const { session, signOut } = useAuth();
+  const { isAdmin, loading } = useAdminAuth();
   const [activeTab, setActiveTab] = useState('banner');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const active = tabs.find(t => t.id === activeTab) ?? tabs[0];
   const email = session?.user?.email ?? '';
   const initial = email.charAt(0).toUpperCase();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center gap-4">
+        <Loader2 className="h-8 w-8 text-[#0077B6] animate-spin" />
+        <p className="text-zinc-400">Verifying admin access...</p>
+      </div>
+    );
+  }
+
+  if (isAdmin === false) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4">
+        <div className="bg-zinc-900 border border-red-900/50 p-8 rounded-2xl max-w-md w-full text-center">
+          <ShieldAlert className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-white mb-2">Access Denied</h1>
+          <p className="text-zinc-400 mb-6">
+            Your account ({email}) is not authorized to access the Admin Dashboard. Please contact a system administrator.
+          </p>
+          <Button onClick={signOut} className="w-full bg-red-600 hover:bg-red-700 text-white">
+            <LogOut className="mr-2 h-4 w-4" /> Sign Out
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-zinc-950 text-zinc-100 font-sans overflow-hidden">
@@ -78,11 +108,6 @@ export default function Dashboard() {
                 <tab.icon className="h-4 w-4 shrink-0" />
                 {tab.label}
               </span>
-              {'badge' in tab && tab.badge && (
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-zinc-800 text-zinc-500 border border-zinc-700">
-                  {tab.badge}
-                </span>
-              )}
             </button>
           ))}
         </nav>
@@ -122,9 +147,6 @@ export default function Dashboard() {
                   }`}
                 >
                   <span className="flex items-center gap-3"><tab.icon className="h-4 w-4" />{tab.label}</span>
-                  {'badge' in tab && tab.badge && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-zinc-800 text-zinc-500 border border-zinc-700">{tab.badge}</span>
-                  )}
                 </button>
               ))}
             </nav>

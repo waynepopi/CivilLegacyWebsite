@@ -181,7 +181,8 @@ const ServiceCard = ({
   categories: DBCategory[];
   onAddToCart: (s: DBService) => void;
 }) => {
-  const requiresQuote = service.is_quote_only;
+  // Services in project-management or with no price set are "Request a Quote" only
+  const requiresQuote = service.price === null || service.price === 0 || service.category_id === 'project-management';
   const categoryLabel = categories.find((c) => c.id === service.category_id)?.title ?? service.category_id;
   const Icon = service.icon_name ? ICON_MAP[service.icon_name] : ShoppingCart;
 
