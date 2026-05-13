@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
-import { Loader2, Image as ImageIcon, Trash2, UploadCloud, Copy, FileText, CheckCircle2 } from 'lucide-react';
+import { Loader2, Image as ImageIcon, Trash2, UploadCloud, Copy, FileText, CheckCircle2, Folder } from 'lucide-react';
 import { logAdminAction } from '../../lib/auditLogger';
 
 const BUCKETS = [
@@ -10,9 +10,16 @@ const BUCKETS = [
   { id: 'project-images', name: 'Project Images' }
 ];
 
+interface MediaFile {
+  name: string;
+  folder: string; // '' for root, 'scroll' / 'team' / etc.
+  fullPath: string; // folder/name or just name
+  metadata?: { size: number };
+}
+
 export default function MediaTab() {
   const [activeBucket, setActiveBucket] = useState('site-assets');
-  const [files, setFiles] = useState<any[]>([]);
+  const [files, setFiles] = useState<MediaFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -20,11 +27,51 @@ export default function MediaTab() {
   async function fetchFiles(bucket: string) {
     setLoading(true);
     try {
-      const { data, error } = await supabase.storage.from(bucket).list('', {
+      const allFiles: MediaFile[] = [];
+
+      // 1. List root
+      const { data: rootItems, error: rootErr } = await supabase.storage.from(bucket).list('', {
         sortBy: { column: 'created_at', order: 'desc' }
       });
-      if (error) throw error;
-      setFiles((data || []).filter(f => f.name !== '.emptyFolderPlaceholder'));
+      if (rootErr) throw rootErr;
+
+      const rootFiles = (rootItems || []).filter(
+        f => f.name !== '.emptyFolderPlaceholder' && f.metadata // files have metadata, folders don't
+      );
+      const folders = (rootItems || []).filter(
+        f => f.name !== '.emptyFolderPlaceholder' && !f.metadata // folders lack metadata
+      );
+
+      rootFiles.forEach(f =>
+        allFiles.push({ name: f.name, folder: '', fullPath: f.name, metadata: f.metadata })
+      );
+
+      // 2. List each subfolder
+      await Promise.all(
+        folders.map(async folder => {
+          const { data: folderItems, error: folderErr } = await supabase.storage
+            .from(bucket)
+            .list(folder.name, { sortBy: { column: 'created_at', order: 'desc' } });
+
+          if (folderErr) {
+            console.error(`Error listing folder ${folder.name}:`, folderErr);
+            return;
+          }
+
+          (folderItems || [])
+            .filter(f => f.name !== '.emptyFolderPlaceholder')
+            .forEach(f =>
+              allFiles.push({
+                name: f.name,
+                folder: folder.name,
+                fullPath: `${folder.name}/${f.name}`,
+                metadata: f.metadata,
+              })
+            );
+        })
+      );
+
+      setFiles(allFiles);
     } catch (err) {
       console.error('Failed to fetch files:', err);
     } finally {
@@ -64,30 +111,30 @@ export default function MediaTab() {
     }
   };
 
-  const handleDelete = async (fileName: string) => {
-    if (!window.confirm(`Are you sure you want to delete ${fileName}? This may break images on the live site if they are still referenced.`)) return;
+  const handleDelete = async (fullPath: string) => {
+    if (!window.confirm(`Are you sure you want to delete ${fullPath}? This may break images on the live site if they are still referenced.`)) return;
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const email = session?.user?.email;
 
-      const { error } = await supabase.storage.from(activeBucket).remove([fileName]);
+      const { error } = await supabase.storage.from(activeBucket).remove([fullPath]);
       if (error) throw error;
 
       if (email) {
-        await logAdminAction(email, 'DELETE', 'media', fileName, { bucket: activeBucket });
+        await logAdminAction(email, 'DELETE', 'media', fullPath, { bucket: activeBucket });
       }
 
-      setFiles(prev => prev.filter(f => f.name !== fileName));
+      setFiles(prev => prev.filter(f => f.fullPath !== fullPath));
     } catch (err: any) {
       alert(`Delete failed: ${err.message}`);
     }
   };
 
-  const copyUrl = (fileName: string) => {
-    const { data } = supabase.storage.from(activeBucket).getPublicUrl(fileName);
+  const copyUrl = (fullPath: string) => {
+    const { data } = supabase.storage.from(activeBucket).getPublicUrl(fullPath);
     navigator.clipboard.writeText(data.publicUrl);
-    setCopiedId(fileName);
+    setCopiedId(fullPath);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -148,9 +195,9 @@ export default function MediaTab() {
           ) : (
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {files.map(f => {
-                const url = supabase.storage.from(activeBucket).getPublicUrl(f.name).data.publicUrl;
+                const url = supabase.storage.from(activeBucket).getPublicUrl(f.fullPath).data.publicUrl;
                 return (
-                  <div key={f.name} className="group relative rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden flex flex-col">
+                  <div key={f.fullPath} className="group relative rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden flex flex-col">
                     <div className="aspect-square bg-zinc-900 flex items-center justify-center p-2 relative overflow-hidden">
                       {isImage(f.name) ? (
                         <img src={url} alt={f.name} className="max-w-full max-h-full object-contain" />
@@ -163,16 +210,16 @@ export default function MediaTab() {
                         <Button 
                           size="icon" 
                           variant="secondary" 
-                          onClick={() => copyUrl(f.name)}
+                          onClick={() => copyUrl(f.fullPath)}
                           className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
                           title="Copy Public URL"
                         >
-                          {copiedId === f.name ? <CheckCircle2 className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
+                          {copiedId === f.fullPath ? <CheckCircle2 className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
                         </Button>
                         <Button 
                           size="icon" 
                           variant="destructive" 
-                          onClick={() => handleDelete(f.name)}
+                          onClick={() => handleDelete(f.fullPath)}
                           className="h-8 w-8 bg-red-500/80 hover:bg-red-500 text-white"
                           title="Delete File"
                         >
@@ -181,8 +228,13 @@ export default function MediaTab() {
                       </div>
                     </div>
                     <div className="p-2 border-t border-zinc-800">
-                      <p className="text-xs text-zinc-300 truncate font-medium" title={f.name}>{f.name}</p>
-                      <p className="text-[10px] text-zinc-500">{(f.metadata?.size / 1024).toFixed(1)} KB</p>
+                      {f.folder && (
+                        <p className="text-[10px] text-[#0077B6] font-medium flex items-center gap-1 mb-0.5">
+                          <Folder className="h-2.5 w-2.5" />{f.folder}
+                        </p>
+                      )}
+                      <p className="text-xs text-zinc-300 truncate font-medium" title={f.fullPath}>{f.name}</p>
+                      <p className="text-[10px] text-zinc-500">{((f.metadata?.size || 0) / 1024).toFixed(1)} KB</p>
                     </div>
                   </div>
                 );
