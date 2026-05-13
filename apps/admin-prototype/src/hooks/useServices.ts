@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { logAdminAction } from '../lib/auditLogger';
 
 export interface ServiceCategory {
   id: string;
   title: string;
   summary: string;
   icon_name: string;
+  is_quote_only?: boolean;
   created_at?: string;
 }
 
@@ -25,6 +27,8 @@ export function useServices() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const getEmail = async () => (await supabase.auth.getSession()).data.session?.user.email || 'unknown';
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -56,18 +60,21 @@ export function useServices() {
     const newId = crypto.randomUUID();
     const { error } = await supabase.from('service_categories').insert([{ id: newId, ...cat }]);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'CREATE', 'service_categories', newId, { title: cat.title });
     await fetchData();
   };
 
   const updateCategory = async (id: string, updates: Partial<Omit<ServiceCategory, 'id' | 'created_at'>>) => {
     const { error } = await supabase.from('service_categories').update(updates).eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'UPDATE', 'service_categories', id, updates);
     await fetchData();
   };
 
   const deleteCategory = async (id: string) => {
     const { error } = await supabase.from('service_categories').delete().eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'DELETE', 'service_categories', id);
     await fetchData();
   };
 
@@ -76,22 +83,26 @@ export function useServices() {
     const newId = crypto.randomUUID();
     const { error } = await supabase.from('services').insert([{ id: newId, ...service }]);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'CREATE', 'services', newId, { title: service.title });
     await fetchData();
   };
 
   const updateService = async (id: string, updates: Partial<Omit<Service, 'id' | 'created_at'>>) => {
     const { error } = await supabase.from('services').update(updates).eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'UPDATE', 'services', id, updates);
     await fetchData();
   };
 
   const deleteService = async (id: string) => {
     const { error } = await supabase.from('services').delete().eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'DELETE', 'services', id);
     await fetchData();
   };
 
   return {
+
     categories,
     services,
     loading,

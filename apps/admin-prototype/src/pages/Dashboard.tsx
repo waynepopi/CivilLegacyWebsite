@@ -3,7 +3,7 @@ import { useAuth } from '../App';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 import { Button } from '../components/ui/button';
 import {
-  LogOut, Images, Users, FolderOpen, Settings2, Menu, X, ShoppingCart, Loader2, ShieldAlert, Activity, MapPin
+  LogOut, Images, Users, FolderOpen, Settings2, Menu, X, ShoppingCart, Loader2, ShieldAlert, Activity, MapPin, FileText
 } from 'lucide-react';
 import BannerTab from './tabs/BannerTab';
 import TeamTab from './tabs/TeamTab';
@@ -15,6 +15,7 @@ import UsersTab from './tabs/UsersTab';
 import FooterTab from './tabs/FooterTab';
 import SettingsTab from './tabs/SettingsTab';
 import MediaTab from './tabs/MediaTab';
+import SystemLogTab from './tabs/SystemLogTab';
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
 const tabs = [
@@ -27,6 +28,7 @@ const tabs = [
   { id: 'footer',   label: 'Footer Config', icon: MapPin,       component: <FooterTab /> },
   { id: 'media',    label: 'Media Library', icon: Images,       component: <MediaTab /> },
   { id: 'settings', label: 'Settings',      icon: Settings2,    component: <SettingsTab /> },
+  { id: 'system',   label: 'System Logs',   icon: FileText,     component: <SystemLogTab /> },
   { id: 'users',    label: 'Admins',        icon: ShieldAlert,  component: <UsersTab /> },
 ];
 

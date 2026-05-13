@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, BUCKETS } from '../lib/supabaseClient';
 import { resolveImageUrl } from '../lib/resolveImageUrl';
+import { logAdminAction } from '../lib/auditLogger';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 export interface ScrollingImage {
@@ -35,6 +36,8 @@ export function useBanner() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getEmail = async () => (await supabase.auth.getSession()).data.session?.user.email || 'unknown';
+
   const fetchImages = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -62,11 +65,13 @@ export function useBanner() {
       ? Math.max(...images.map(i => i.order_index)) + 1
       : 0;
 
+    const newId = crypto.randomUUID();
     const { error } = await supabase
       .from('scrolling_images')
-      .insert({ image_url: imageUrl, order_index: nextIndex });
+      .insert([{ id: newId, image_url: imageUrl, order_index: nextIndex }]);
 
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'CREATE', 'scrolling_images', newId, { url: imageUrl });
     await fetchImages();
   }
 
@@ -83,6 +88,7 @@ export function useBanner() {
       .delete()
       .eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'DELETE', 'scrolling_images', id);
     await fetchImages();
   }
 
@@ -100,6 +106,7 @@ export function useBanner() {
       supabase.from('scrolling_images').update({ order_index: b.order_index }).eq('id', a.id),
       supabase.from('scrolling_images').update({ order_index: a.order_index }).eq('id', b.id),
     ]);
+    await logAdminAction(await getEmail(), 'UPDATE', 'scrolling_images', id, { action: 'reorder', direction });
     await fetchImages();
   }
 

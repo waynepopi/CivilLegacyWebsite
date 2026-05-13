@@ -48,7 +48,7 @@ export default function ServicesTab() {
   // Category State
   const [catDialogOpen, setCatDialogOpen] = useState(false);
   const [editCat, setEditCat] = useState<ServiceCategory | null>(null);
-  const [catForm, setCatForm] = useState({ title: '', summary: '', icon_name: 'Folder' });
+  const [catForm, setCatForm] = useState({ title: '', summary: '', icon_name: 'Folder', is_quote_only: false });
   const [catSaving, setCatSaving] = useState(false);
 
   // Service State
@@ -146,7 +146,7 @@ export default function ServicesTab() {
               <FolderPlus className="h-5 w-5 text-[#0077B6]" /> Service Categories
             </h2>
           </div>
-          <Button onClick={() => { setEditCat(null); setCatForm({ title: '', summary: '', icon_name: 'Folder' }); setCatDialogOpen(true); }} className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700">
+          <Button onClick={() => { setEditCat(null); setCatForm({ title: '', summary: '', icon_name: 'Folder', is_quote_only: false }); setCatDialogOpen(true); }} className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700">
             <Plus className="mr-2 h-4 w-4" /> Add Category
           </Button>
         </div>
@@ -158,7 +158,7 @@ export default function ServicesTab() {
                 <CardTitle className="text-zinc-100 flex items-center justify-between text-base">
                   {c.title}
                   <div className="flex gap-1">
-                    <button onClick={() => { setEditCat(c); setCatForm({ title: c.title, summary: c.summary || '', icon_name: c.icon_name || 'Folder' }); setCatDialogOpen(true); }} className="p-1.5 text-zinc-400 hover:text-white bg-zinc-800 rounded">
+                    <button onClick={() => { setEditCat(c); setCatForm({ title: c.title, summary: c.summary || '', icon_name: c.icon_name || 'Folder', is_quote_only: c.is_quote_only || false }); setCatDialogOpen(true); }} className="p-1.5 text-zinc-400 hover:text-white bg-zinc-800 rounded">
                       <Pencil className="h-3 w-3" />
                     </button>
                     <button onClick={() => setDeleteTarget({ type: 'cat', id: c.id, name: c.title })} className="p-1.5 text-red-400 hover:text-red-300 bg-red-950/30 rounded">
@@ -250,6 +250,16 @@ export default function ServicesTab() {
               <label className="text-sm text-zinc-400">Select Icon</label>
               <IconSelector value={catForm.icon_name} onChange={val => setCatForm(f => ({ ...f, icon_name: val }))} />
             </div>
+            <div className="flex items-center gap-2 pt-2 border-t border-zinc-800">
+              <input 
+                type="checkbox" 
+                id="quote_only"
+                checked={catForm.is_quote_only} 
+                onChange={e => setCatForm(f => ({ ...f, is_quote_only: e.target.checked }))} 
+                className="rounded border-zinc-700 bg-zinc-800 text-[#0077B6] focus:ring-[#0077B6]"
+              />
+              <label htmlFor="quote_only" className="text-sm text-zinc-300">Require Quote Instead of Purchase</label>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setCatDialogOpen(false)}>Cancel</Button>
@@ -272,7 +282,8 @@ export default function ServicesTab() {
                   value={servForm.category_id} 
                   onChange={e => {
                     const newCat = e.target.value;
-                    setServForm(f => ({ ...f, category_id: newCat, price: newCat === 'project-management' ? '' : f.price }));
+                    const isQuoteOnly = categories.find(cat => cat.id === newCat)?.is_quote_only;
+                    setServForm(f => ({ ...f, category_id: newCat, price: isQuoteOnly ? '' : f.price }));
                   }} 
                   className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 focus:ring-1 focus:ring-[#0077B6] focus:outline-none"
                 >

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { logAdminAction } from '../lib/auditLogger';
 
 export interface AdminUser {
   id: string;
@@ -12,6 +13,8 @@ export function useUsers() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const getEmail = async () => (await supabase.auth.getSession()).data.session?.user.email || 'unknown';
 
   async function fetchUsers() {
     setLoading(true);
@@ -36,6 +39,7 @@ export function useUsers() {
     try {
       const { error: err } = await supabase.from('admin_users').delete().eq('id', id);
       if (err) throw err;
+      await logAdminAction(await getEmail(), 'DELETE', 'admin_users', id);
       setUsers(prev => prev.filter(u => u.id !== id));
     } catch (err: any) {
       console.error('Delete user error:', err);

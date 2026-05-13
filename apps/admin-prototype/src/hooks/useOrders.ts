@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { logAdminAction } from '../lib/auditLogger';
 
 export interface OrderItem {
   id: string;
@@ -44,6 +45,8 @@ export function useOrders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getEmail = async () => (await supabase.auth.getSession()).data.session?.user.email || 'unknown';
+
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
@@ -81,6 +84,7 @@ export function useOrders() {
       .eq('id', receiptId);
 
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'UPDATE', 'receipts', receiptId, { job_status: newStatus });
     await fetchOrders();
   };
 

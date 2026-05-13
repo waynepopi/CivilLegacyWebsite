@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { logAdminAction } from '../lib/auditLogger';
 
 export interface Branch {
   id: string;
@@ -13,6 +14,8 @@ export function useFooter() {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const getEmail = async () => (await supabase.auth.getSession()).data.session?.user.email || 'unknown';
 
   async function fetchBranches() {
     setLoading(true);
@@ -37,6 +40,7 @@ export function useFooter() {
     try {
       const { data, error: err } = await supabase.from('footer_branches').insert([branch]).select().single();
       if (err) throw err;
+      await logAdminAction(await getEmail(), 'CREATE', 'footer_branches', data.id, { name: branch.name });
       setBranches(prev => [...prev, data].sort((a, b) => a.display_order - b.display_order));
       return data;
     } catch (err: any) {
@@ -49,6 +53,7 @@ export function useFooter() {
     try {
       const { error: err } = await supabase.from('footer_branches').delete().eq('id', id);
       if (err) throw err;
+      await logAdminAction(await getEmail(), 'DELETE', 'footer_branches', id);
       setBranches(prev => prev.filter(b => b.id !== id));
     } catch (err: any) {
       console.error('Delete branch error:', err);
@@ -59,6 +64,7 @@ export function useFooter() {
     try {
       const { data, error: err } = await supabase.from('footer_branches').update(updates).eq('id', id).select().single();
       if (err) throw err;
+      await logAdminAction(await getEmail(), 'UPDATE', 'footer_branches', id, updates);
       setBranches(prev => prev.map(b => b.id === id ? data : b));
       return data;
     } catch (err: any) {

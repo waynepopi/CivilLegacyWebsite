@@ -113,3 +113,8 @@ CREATE POLICY "Admins can manage site_settings" ON public.site_settings FOR ALL 
 INSERT INTO public.admin_users (id, email, role)
 SELECT id, email, 'Admin' FROM auth.users
 ON CONFLICT (id) DO NOTHING;
+
+-- ==========================================
+-- Add quote-only setting to service categories
+-- ==========================================
+ALTER TABLE public.service_categories ADD COLUMN IF NOT EXISTS is_quote_only BOOLEAN DEFAULT false;

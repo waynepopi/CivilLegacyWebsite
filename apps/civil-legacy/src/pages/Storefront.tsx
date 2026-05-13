@@ -17,6 +17,7 @@ interface DBCategory {
   title: string;
   summary: string;
   icon_name: string;
+  is_quote_only?: boolean;
 }
 
 interface DBService {
@@ -181,9 +182,10 @@ const ServiceCard = ({
   categories: DBCategory[];
   onAddToCart: (s: DBService) => void;
 }) => {
-  // Services in project-management or with no price set are "Request a Quote" only
-  const requiresQuote = service.price === null || service.price === 0 || service.category_id === 'project-management';
-  const categoryLabel = categories.find((c) => c.id === service.category_id)?.title ?? service.category_id;
+  // Services in a quote-only category or with no price set are "Request a Quote" only
+  const category = categories.find((c) => c.id === service.category_id);
+  const requiresQuote = service.price === null || service.price === 0 || !!category?.is_quote_only;
+  const categoryLabel = category?.title ?? service.category_id;
   const Icon = service.icon_name ? ICON_MAP[service.icon_name] : ShoppingCart;
 
   return (

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase, BUCKETS } from '../lib/supabaseClient';
 import { uploadImageToStorage } from './useBanner';
 import { resolveImageUrl } from '../lib/resolveImageUrl';
+import { logAdminAction } from '../lib/auditLogger';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 export interface Project {
@@ -25,6 +26,8 @@ export function useProjects() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getEmail = async () => (await supabase.auth.getSession()).data.session?.user.email || 'unknown';
+
   const fetchProjects = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -47,8 +50,10 @@ export function useProjects() {
   useEffect(() => { fetchProjects(); }, [fetchProjects]);
 
   async function addProject(input: ProjectInput): Promise<void> {
-    const { error } = await supabase.from('projects').insert(input);
+    const newId = crypto.randomUUID();
+    const { error } = await supabase.from('projects').insert([{ id: newId, ...input }]);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'CREATE', 'projects', newId, { title: input.title });
     await fetchProjects();
   }
 
@@ -58,6 +63,7 @@ export function useProjects() {
       .update(input)
       .eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'UPDATE', 'projects', id, input);
     await fetchProjects();
   }
 
@@ -67,6 +73,7 @@ export function useProjects() {
       .delete()
       .eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'DELETE', 'projects', id);
     await fetchProjects();
   }
 

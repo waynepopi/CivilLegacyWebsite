@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase, BUCKETS } from '../lib/supabaseClient';
 import { uploadImageToStorage } from './useBanner';
 import { resolveImageUrl } from '../lib/resolveImageUrl';
+import { logAdminAction } from '../lib/auditLogger';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 export interface TeamMember {
@@ -23,6 +24,8 @@ export function useTeam() {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const getEmail = async () => (await supabase.auth.getSession()).data.session?.user.email || 'unknown';
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -46,8 +49,10 @@ export function useTeam() {
   useEffect(() => { fetchMembers(); }, [fetchMembers]);
 
   async function addMember(input: TeamMemberInput): Promise<void> {
-    const { error } = await supabase.from('team_members').insert(input);
+    const newId = crypto.randomUUID();
+    const { error } = await supabase.from('team_members').insert([{ id: newId, ...input }]);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'CREATE', 'team_members', newId, { name: input.name });
     await fetchMembers();
   }
 
@@ -57,6 +62,7 @@ export function useTeam() {
       .update(input)
       .eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'UPDATE', 'team_members', id, input);
     await fetchMembers();
   }
 
@@ -66,6 +72,7 @@ export function useTeam() {
       .delete()
       .eq('id', id);
     if (error) throw error;
+    await logAdminAction(await getEmail(), 'DELETE', 'team_members', id);
     await fetchMembers();
   }
 
