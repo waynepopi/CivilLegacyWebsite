@@ -68,43 +68,50 @@ const About = () => {
             </div>
           </motion.div>
 
-          {/* Right Side: Large Silhouette Cutout + Integrated Quote */}
+          {/* Right Side: Large Integrated Cutout */}
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="hidden lg:flex justify-end items-end h-full relative self-end"
+            className="hidden lg:flex justify-end items-end h-full relative group"
           >
-            <div className="relative translate-y-24">
-              {/* Decorative accent behind silhouette */}
-              <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-[#0077B6]/10 rounded-full blur-3xl" />
+            <div className="relative h-full flex items-end">
+              {/* Premium Blue Circle Pop Effect */}
+              <div className="absolute bottom-[15%] right-[-10%] w-[600px] h-[600px] bg-[#0077B6]/20 rounded-full blur-[120px] pointer-events-none -z-10 group-hover:bg-[#0077B6]/30 transition-colors duration-700" />
+              <div className="absolute bottom-[25%] right-[5%] w-[400px] h-[400px] border border-[#0077B6]/20 rounded-full pointer-events-none -z-10 opacity-20 scale-150 group-hover:scale-[1.6] transition-transform duration-1000" />
               
               {/* Director Quote - Floating over the cutout */}
-              <div className="absolute left-[-50%] top-[40%] z-20 w-[400px] pointer-events-none">
+              <div className="absolute left-[-60%] top-[45%] z-20 w-[450px] pointer-events-none">
                  <div className="relative pl-8">
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#0077B6]" />
-                    <p className="text-xl lg:text-2xl font-bold text-white italic leading-snug mb-4 drop-shadow-lg">
+                    <p className="text-xl lg:text-3xl font-bold text-white italic leading-snug mb-6 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
                       “We partner with municipalities to ensure infrastructure stands the test of time.”
                     </p>
                     <div className="flex items-center gap-3">
-                      <div className="w-4 h-[1px] bg-gray-500" />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 drop-shadow-md">
+                      <div className="w-6 h-[1px] bg-gray-500" />
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 drop-shadow-md">
                          Eng Rumbidzai Kombora <span className="mx-2 text-[#0077B6]">|</span> <span className="font-light text-gray-500">Company Director</span>
                       </p>
                     </div>
                  </div>
               </div>
-
-              {/* Silhouette Placeholder */}
-              <div className="w-[350px] h-[500px] lg:w-[450px] lg:h-[650px] bg-white/5 rounded-t-[120px] relative flex items-center justify-center border-x border-t border-white/10 shadow-2xl backdrop-blur-md overflow-hidden">
-                <div className="flex flex-col items-center gap-6 opacity-20 transform -translate-y-12">
-                   <Users size={120} className="text-white" />
-                   <div className="flex flex-col items-center text-white">
-                      <span className="text-xs font-black uppercase tracking-[0.5em]">Director</span>
-                      <span className="text-[10px] font-light uppercase tracking-[0.3em] opacity-70">Cutout Placeholder</span>
-                   </div>
-                </div>
-              </div>
+              
+              {/* Large Image Cutout with Interactive Hover */}
+              <motion.img 
+                initial={{ opacity: 0, y: 100, scaleX: -1.1, scaleY: 1.1 }}
+                animate={{ opacity: 1, y: 128, scaleX: -1.1, scaleY: 1.1 }} // y: 128 is translate-y-32
+                whileHover={{ 
+                  scaleX: -1.13, 
+                  scaleY: 1.13, 
+                  y: 122, // More subtle upward shift
+                  transition: { duration: 0.4, ease: "easeOut" }
+                }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                src="/director-cutout.png" 
+                alt="Eng Rumbidzai Kombora" 
+                className="h-[85vh] lg:h-[95vh] w-auto object-contain object-bottom select-none cursor-pointer -translate-x-16"
+                style={{ filter: 'drop-shadow(0 20px 50px rgba(0,0,0,0.3))' }}
+              />
             </div>
           </motion.div>
         </div>
