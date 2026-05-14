@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { CONFIG } from '@/config';
 
+interface Branch {
+  name: string;
+  location: string;
+  phone?: string;
+}
+
 export function useSiteSettings() {
   const [settings, setSettings] = useState({
     email: CONFIG.CONTACT.EMAIL,
@@ -10,7 +16,7 @@ export function useSiteSettings() {
     seoDescription: '',
     siteName: CONFIG.BRAND.NAME_1 + ' ' + CONFIG.BRAND.NAME_2,
   });
-  const [branches, setBranches] = useState(CONFIG.CONTACT.OFFICES);
+  const [branches, setBranches] = useState<Branch[]>([...CONFIG.CONTACT.OFFICES]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

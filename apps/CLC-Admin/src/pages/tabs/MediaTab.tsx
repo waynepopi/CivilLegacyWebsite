@@ -14,7 +14,7 @@ interface MediaFile {
   name: string;
   folder: string; // '' for root, 'scroll' / 'team' / etc.
   fullPath: string; // folder/name or just name
-  metadata?: { size: number };
+  metadata?: { size: number } | null;
 }
 
 export default function MediaTab() {
