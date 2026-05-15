@@ -10,27 +10,26 @@ const MockGateway = () => {
   const { orderId, paymentId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [amount, setAmount] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [customerPhone, setCustomerPhone] = useState<string | null>(null);
   const [scenario, setScenario] = useState<{ name: string; type: 'SUCCESS' | 'FAILED' | 'DELAYED_SUCCESS' | 'INSUFFICIENT' } | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [token, setToken] = useState("");
 
-  // Check whether the simulation token exists for this session.
-  // If missing (e.g., user navigated directly to this URL for an old order),
-  // we show a clear message instead of a silent 403 later.
-  const hasSimulationToken = paymentId ? Boolean(getSimulationToken(paymentId)) : false;
+  // Compute the token check ONCE at mount via lazy useState initializer.
+  // Using a plain const would recompute on every render, causing the "Expired"
+  // screen to flash after callMockPaynowResult clears the token from sessionStorage
+  // (which happens before navigate() fires, triggering a re-render).
+  const [hasSimulationToken] = useState<boolean>(
+    () => Boolean(paymentId && getSimulationToken(paymentId))
+  );
 
   useEffect(() => {
     async function loadPayment() {
       if (!paymentId) return;
 
-      // Load payment amount and phone for scenario detection.
-      // This query works only because Supabase anon key allows reading
-      // payments via public_payment_status view or the payment is is_test.
-      // If RLS blocks this, the gateway will show "Amount: —" but still function.
       const { data, error: fetchError } = await supabase
         .from('payments')
         .select('status, amount, order:orders(customer_phone)')
@@ -41,7 +40,6 @@ const MockGateway = () => {
         setStatus(data.status);
         setAmount(data.amount);
         const phone = (data.order as any)?.customer_phone;
-        setCustomerPhone(phone);
 
         // Auto-trigger scenarios based on test phone numbers
         if (phone === '0771111111') {
@@ -119,11 +117,14 @@ const MockGateway = () => {
     if (!orderId || !paymentId) return;
     try {
       setLoading(true);
-      // simulationToken is read from sessionStorage automatically inside markMockPaymentPaid
+      // Set isNavigating BEFORE the async call so any re-renders during the
+      // await don't briefly flash the "Session Expired" screen.
+      setIsNavigating(true);
       await markMockPaymentPaid(orderId, paymentId);
       navigate(`/payment/status/${orderId}`);
     } catch (err: any) {
       console.error("Mock payment success failed:", err);
+      setIsNavigating(false);
       setError(err.message || "Failed to process successful payment");
     } finally {
       setLoading(false);
@@ -134,11 +135,12 @@ const MockGateway = () => {
     if (!orderId || !paymentId) return;
     try {
       setLoading(true);
-      // simulationToken is read from sessionStorage automatically inside markMockPaymentFailed
+      setIsNavigating(true);
       await markMockPaymentFailed(orderId, paymentId);
       navigate(`/payment/status/${orderId}`);
     } catch (err: any) {
       console.error("Mock payment failure failed:", err);
+      setIsNavigating(false);
       setError(err.message || "Failed to process payment failure");
     } finally {
       setLoading(false);
@@ -147,16 +149,16 @@ const MockGateway = () => {
 
   const handlePending = () => {
     if (!orderId) return;
-    // Simulate user abandoning the gateway — navigate back without changing status
+    setIsNavigating(true);
     navigate(`/payment/status/${orderId}`);
   };
 
-  // -------------------------------------------------------------------------
-  // Missing token guard
-  // Shown when a user opens the mock gateway URL directly (e.g. bookmark,
-  // old order) without having gone through checkout in this browser session.
-  // -------------------------------------------------------------------------
-  if (!hasSimulationToken) {
+  // ---------------------------------------------------------------------------
+  // Missing token guard — only shown when NOT navigating away.
+  // The isNavigating check prevents this screen from flashing during the
+  // AnimatePresence page-exit transition after a successful simulation.
+  // ---------------------------------------------------------------------------
+  if (!hasSimulationToken && !isNavigating) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] p-6">
         <Helmet>
@@ -182,9 +184,10 @@ const MockGateway = () => {
     );
   }
 
-  // -------------------------------------------------------------------------
-  // Normal gateway UI
-  // -------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Normal gateway UI (also rendered while navigating away — shows nothing
+  // visible because loading state covers it and AnimatePresence fades it out)
+  // ---------------------------------------------------------------------------
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] p-6">
       <Helmet>
