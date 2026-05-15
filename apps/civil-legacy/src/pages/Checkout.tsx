@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from"react-hook-form";
 import * as z from"zod";
 import { zodResolver } from"@hookform/resolvers/zod";
@@ -15,11 +15,13 @@ import { addRecentOrder } from '@/lib/orderStorage';
 
 const BLUE = '#0077B6';
 
+const phoneRegex = /^07[1378]\d{7}$/;
+
 const checkoutSchema = z.object({
   full_name: z.string().min(2,"Full name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(10,"Valid phone number is required"),
-  whatsapp_number: z.string().min(10,"Valid WhatsApp number is required"),
+  phone: z.string().regex(phoneRegex, "Must be a valid Zimbabwean mobile number (e.g., 077XXXXXXX)"),
+  whatsapp_number: z.string().regex(phoneRegex, "Must be a valid Zimbabwean mobile number (e.g., 077XXXXXXX)"),
 });
 
 type CheckoutValues = z.infer<typeof checkoutSchema>;
@@ -27,16 +29,32 @@ type CheckoutValues = z.infer<typeof checkoutSchema>;
 const Checkout = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { cart, removeFromCart, total, setCheckoutInfo } = useCart();
-  const form = useForm<CheckoutValues>({
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: {
+  const { cart, removeFromCart, total, setCheckoutInfo, checkoutInfo } = useCart();
+  
+  const [initialValues] = useState<CheckoutValues>(() => {
+    try {
+      const draft = sessionStorage.getItem('clc_checkout_draft');
+      if (draft) return JSON.parse(draft);
+    } catch {}
+    return checkoutInfo || {
       full_name:"",
       email:"",
       phone:"",
       whatsapp_number:"",
-    },
+    };
   });
+
+  const form = useForm<CheckoutValues>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: initialValues,
+  });
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      sessionStorage.setItem('clc_checkout_draft', JSON.stringify(value));
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
 
   const onSubmit = async (values: CheckoutValues) => {
     try {
@@ -158,7 +176,7 @@ const Checkout = () => {
                     <FormItem>
                       <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">Phone</FormLabel>
                       <FormControl>
-                        <Input placeholder="07XX XXX XXX" {...field} className="bg-transparent border-black/10 dark:border-white/10  font-bold h-14 rounded-xl focus:border-[#0077B6]" />
+                        <Input placeholder="07XXXXXXXX" {...field} className="bg-transparent border-black/10 dark:border-white/10  font-bold h-14 rounded-xl focus:border-[#0077B6]" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -171,7 +189,7 @@ const Checkout = () => {
                     <FormItem>
                       <FormLabel className="text-[10px] uppercase tracking-widest font-black text-gray-500">WhatsApp</FormLabel>
                       <FormControl>
-                        <Input placeholder="263XXXXXXXXX" {...field} className="bg-transparent border-black/10 dark:border-white/10  font-bold h-14 rounded-xl focus:border-[#0077B6]" />
+                        <Input placeholder="07XXXXXXXX" {...field} className="bg-transparent border-black/10 dark:border-white/10  font-bold h-14 rounded-xl focus:border-[#0077B6]" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

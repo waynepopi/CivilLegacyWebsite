@@ -486,16 +486,7 @@ const Home = () => {
               className="bg-black/5 dark:bg-white/5 p-12 lg:p-20  relative overflow-hidden text-left border border-black/10 dark:border-white/10"
               style={{ borderLeft: `12px solid ${BLUE}` }}
             >
-              <div className="text-[12rem] font-black leading-none tracking-tighter  opacity-5 absolute -top-10 right-0 pointer-events-none select-none">
-                15
-              </div>
-              <h3 className="text-7xl font-black tracking-tighter mb-4 relative z-10">
-                15+
-              </h3>
-              <p className="text-xs font-black uppercase tracking-[0.4em] mb-12 relative z-10" style={{ color: BLUE }}>
-                Successful Projects
-              </p>
-              <div className="space-y-6 border-t border-black/10 dark:border-white/10 pt-8 relative z-10">
+              <div className="space-y-6 relative z-10">
                 <p className="text-gray-600 dark:text-gray-400 italic font-light text-lg leading-relaxed">"We partner with municipalities to ensure infrastructure stands the test of time."
                 </p>
                 <div className="flex items-center gap-4">
