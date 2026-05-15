@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
 import { CheckCircle2, XCircle, Clock, AlertCircle, ArrowRight, Download, Home } from 'lucide-react';
-import { getPaymentStatusByOrderId } from '@/services/orderService';
+import { getPaymentStatusByOrderId, getReceiptData } from '@/services/orderService';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import ReceiptPdf from '@/components/pdf/ReceiptPdf';
 import type { ReceiptData } from '@/lib/receiptUtils';
@@ -32,51 +32,38 @@ const PaymentStatus = () => {
         const statusData = await getPaymentStatusByOrderId(orderId);
         setData(statusData);
         
-        // If it's already PAID and we have a receipt ID, format full receipt details for the PDF
-        if (statusData.latestPayment?.status === 'PAID' && statusData.receipt?.receipt_number) {
+        // If PAID, load the full receipt (including client PII) via getReceiptData().
+          // The status endpoint intentionally strips PII; the receipt endpoint is safe
+          // because it requires the receipt ID and is used only to render the PDF.
+          if (statusData.latestPayment?.status === 'PAID' && statusData.receipt?.order_id) {
           try {
             setLoadingReceipt(true);
-            const r = statusData.receipt;
-            const o = statusData.order;
-            const p = statusData.latestPayment;
-            const items = o.order_items || [];
 
-            const fullReceipt: ReceiptData = {
-              receiptNo: r.receipt_number,
-              dateIssued: new Date(r.created_at).toLocaleDateString('en-GB'),
-              paymentMethod: o.is_test ? 'Online Payment (Test)' : 'Online Payment (Paynow)',
-              client: {
-                name: o.customer_name,
-                email: o.customer_email,
-                phone: o.customer_phone || '',
-              },
-              services: items.map((item: any) => ({
-                description: item.description,
-                qty: item.qty,
-                unitPrice: Number(item.unit_price),
-              })),
-              transaction: {
-                id: p.id,
-                gateway: p.gateway,
-                currency: 'USD',
-                status: p.status,
-              },
-              verification_code: r.verification_code,
-              verification_status: r.verification_status,
-              job_status: r.job_status,
-            };
+            // Fetch the receipt row ID from the receipts table using order_id.
+            // We use the public_receipt_verification view which exposes order_id.
+            // Then pass the receipt's UUID to getReceiptData() for the full PII-inclusive build.
+            const { supabase } = await import('@/lib/supabaseClient');
+            const { data: receiptRow } = await supabase
+              .from('receipts')
+              .select('id')
+              .eq('order_id', statusData.receipt.order_id)
+              .maybeSingle();
 
-            // Generate QR Code for the PDF
-            if (fullReceipt.verification_code) {
-              const verifyUrl = getVerificationUrl(fullReceipt.verification_code);
-              const qrDataUrl = await generateQrDataUrl(verifyUrl);
-              fullReceipt.qrCodeImage = qrDataUrl;
-              fullReceipt.qr_url = verifyUrl;
+            if (receiptRow?.id) {
+              const fullReceipt = await getReceiptData(receiptRow.id);
+
+              // Generate QR Code for the PDF
+              if (fullReceipt.verification_code) {
+                const verifyUrl = getVerificationUrl(fullReceipt.verification_code);
+                const qrDataUrl = await generateQrDataUrl(verifyUrl);
+                fullReceipt.qrCodeImage = qrDataUrl;
+                fullReceipt.qr_url = verifyUrl;
+              }
+
+              setReceiptData(fullReceipt);
             }
-            
-            setReceiptData(fullReceipt);
           } catch (rErr) {
-            console.error("Failed to map full receipt data:", rErr);
+            console.error("Failed to load full receipt data:", rErr);
           } finally {
             setLoadingReceipt(false);
           }

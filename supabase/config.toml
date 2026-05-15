@@ -1,4 +1,11 @@
 project_id = "uacbchejzzvaadjaafwt"
 
+# Mock gateway callback – no JWT because in real Paynow the callback also
+# comes from an external server. Protected by simulationToken instead.
 [functions.mock-paynow-result]
+verify_jwt = false
+
+# Payment status query – no JWT so unauthenticated customers can check their
+# own order status. Returns no PII (name/email/phone are excluded).
+[functions.get-payment-status]
 verify_jwt = false

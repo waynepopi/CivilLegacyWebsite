@@ -15,6 +15,28 @@ export interface CartItem {
   qty?: number;
 }
 
+// ---------------------------------------------------------------------------
+// Session storage helpers
+// The simulationToken is stored locally after checkout and passed to the
+// mock gateway so that nobody else can mutate that payment's status.
+// For real Paynow, this will be null and the gateway call is skipped.
+// ---------------------------------------------------------------------------
+
+const SIM_TOKEN_PREFIX = 'clc_sim_token_';
+
+export function storeSimulationToken(paymentId: string, token: string | null) {
+  if (!token) return;
+  sessionStorage.setItem(`${SIM_TOKEN_PREFIX}${paymentId}`, token);
+}
+
+export function getSimulationToken(paymentId: string): string | null {
+  return sessionStorage.getItem(`${SIM_TOKEN_PREFIX}${paymentId}`);
+}
+
+export function clearSimulationToken(paymentId: string) {
+  sessionStorage.removeItem(`${SIM_TOKEN_PREFIX}${paymentId}`);
+}
+
 /**
  * Calculates the total of the cart.
  */
@@ -30,28 +52,42 @@ export function formatMoney(amount: number): string {
 }
 
 /**
- * Creates an order, order_items, and a pending payment record.
- * @returns { orderId: string, paymentId: string }
+ * Creates an order, order_items, and a pending payment record via
+ * the create-checkout Edge Function.
+ *
+ * Returns { orderId, paymentId, orderNumber, browserUrl, pollUrl, simulationToken }
+ * The simulationToken is stored in sessionStorage automatically.
  */
 export async function createOrderFromCart(customer: CustomerInfo, cartItems: CartItem[], totalAmount?: number) {
-  const { data, error } = await supabase.functions.invoke("create-checkout", {
-    body: {
-      customer,
-      cartItems,
-      totalAmount
-    },
+  const { data, error } = await supabase.functions.invoke('create-checkout', {
+    body: { customer, cartItems, totalAmount },
   });
 
   if (error) {
-    throw new Error(error.message || "Failed to create checkout");
+    throw new Error(error.message || 'Failed to create checkout');
   }
 
-  // data will contain { orderId, paymentId, orderNumber, browserUrl, pollUrl }
-  return data;
+  // Store the simulation token for this payment session
+  if (data?.paymentId && data?.simulationToken) {
+    storeSimulationToken(data.paymentId, data.simulationToken);
+  }
+
+  return data as {
+    orderId: string;
+    paymentId: string;
+    orderNumber: string;
+    browserUrl: string;
+    pollUrl: string;
+    simulationToken: string | null;
+  };
 }
 
 /**
- * Calls the Supabase Edge Function for mock Paynow results.
+ * Calls the mock-paynow-result Edge Function with the simulation token.
+ * The token is read from sessionStorage automatically.
+ *
+ * If there is no token (e.g., order created before this change), the call
+ * will be rejected by the server with a 403.
  */
 export async function callMockPaynowResult({
   orderId,
@@ -60,47 +96,76 @@ export async function callMockPaynowResult({
 }: {
   orderId: string;
   paymentId: string;
-  status: "PAID" | "FAILED";
+  status: 'PAID' | 'FAILED' | 'EXPIRED';
 }) {
-  const { data, error } = await supabase.functions.invoke("mock-paynow-result", {
-    body: {
-      orderId,
-      paymentId,
-      status,
-    },
+  const simulationToken = getSimulationToken(paymentId);
+
+  const { data, error } = await supabase.functions.invoke('mock-paynow-result', {
+    body: { orderId, paymentId, status, simulationToken },
   });
 
   if (error) {
-    throw new Error(error.message || "Failed to call mock Paynow result function");
+    throw new Error(error.message || 'Failed to call mock Paynow result function');
+  }
+
+  // Clear token after a terminal state is reached
+  if (status === 'PAID' || status === 'FAILED' || status === 'EXPIRED') {
+    clearSimulationToken(paymentId);
   }
 
   return data;
 }
 
 /**
- * Updates payment and order status to PAID, and creates a receipt via Edge Function.
+ * Simulates a successful payment (PAID).
  */
 export async function markMockPaymentPaid(orderId: string, paymentId: string) {
-  return callMockPaynowResult({
-    orderId,
-    paymentId,
-    status: "PAID",
-  });
+  return callMockPaynowResult({ orderId, paymentId, status: 'PAID' });
 }
 
 /**
- * Updates payment and order status to FAILED via Edge Function.
+ * Simulates a failed payment (FAILED).
  */
 export async function markMockPaymentFailed(orderId: string, paymentId: string) {
-  return callMockPaynowResult({
-    orderId,
-    paymentId,
-    status: "FAILED",
+  return callMockPaynowResult({ orderId, paymentId, status: 'FAILED' });
+}
+
+/**
+ * Fetches payment and order status via the get-payment-status Edge Function.
+ * This replaces direct DB queries to orders/payments and avoids PII exposure.
+ *
+ * Returns { order, payment, receipt }
+ */
+export async function getPaymentStatusByOrderId(orderId: string) {
+  const { data, error } = await supabase.functions.invoke('get-payment-status', {
+    body: { orderId },
   });
+
+  if (error) {
+    throw new Error(error.message || 'Failed to fetch payment status');
+  }
+
+  // Normalise to the shape the PaymentStatus page already expects
+  const order = {
+    ...data.order,
+    // Map snake_case → what the page uses
+    order_number: data.order?.orderNumber,
+    total_amount: data.order?.totalAmount,
+    created_at: data.order?.createdAt,
+    order_items: data.order?.items ?? [],
+    payments: data.payment ? [data.payment] : [],
+  };
+
+  return {
+    order,
+    latestPayment: data.payment ?? null,
+    receipt: data.receipt ?? null,
+  };
 }
 
 /**
  * Fetches all receipt, order, and payment details and formats them into ReceiptData.
+ * Called from the /receipt/:receiptId page.
  */
 export async function getReceiptData(receiptId: string): Promise<ReceiptData> {
   const { data: receipt, error } = await supabase
@@ -120,14 +185,14 @@ export async function getReceiptData(receiptId: string): Promise<ReceiptData> {
 
   const order = Array.isArray(receipt.order) ? receipt.order[0] : receipt.order;
   const payment = Array.isArray(receipt.payment) ? receipt.payment[0] : receipt.payment;
-  
+
   if (!order || !payment) throw new Error('Incomplete receipt data');
 
   const items = order.order_items || [];
 
   return {
     receiptNo: receipt.receipt_number,
-    dateIssued: new Date(receipt.created_at).toLocaleDateString('en-GB'), // DD/MM/YYYY
+    dateIssued: new Date(receipt.created_at).toLocaleDateString('en-GB'),
     paymentMethod: receipt.is_test ? 'Online Payment (Test)' : 'Online Payment (Paynow)',
     client: {
       name: order.customer_name,
@@ -162,7 +227,7 @@ export async function getReceiptByVerificationCode(code: string) {
     .single();
 
   if (error || !data) {
-    throw new Error(error?.message || "Invalid verification code");
+    throw new Error(error?.message || 'Invalid verification code');
   }
 
   return {
@@ -175,51 +240,6 @@ export async function getReceiptByVerificationCode(code: string) {
     payment_status: data.payment_status,
     payment_gateway: data.payment_gateway,
     items: data.items,
-  };
-}
-/**
- * Fetches the status of an order and its latest payment.
- * Used for the Payment Status page.
- */
-export async function getPaymentStatusByOrderId(orderId: string) {
-  const { data: order, error: orderError } = await supabase
-    .from('orders')
-    .select(`
-      *,
-      order_items(*),
-      payments(*)
-    `)
-    .eq('id', orderId)
-    .single();
-
-  if (orderError || !order) {
-    throw new Error(orderError?.message || "Order not found");
-  }
-
-  // Sort payments by created_at to get the latest one
-  const sortedPayments = (order.payments || []).sort(
-    (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-
-  const latestPayment = sortedPayments[0] || null;
-  
-  let receipt = null;
-  if (latestPayment && latestPayment.status === 'PAID') {
-    const { data: receiptData } = await supabase
-      .from('public_receipt_verification')
-      .select('*')
-      .eq('order_id', orderId)
-      .maybeSingle();
-      
-    if (receiptData) {
-      receipt = receiptData;
-    }
-  }
-
-  return {
-    order,
-    latestPayment,
-    receipt
   };
 }
 

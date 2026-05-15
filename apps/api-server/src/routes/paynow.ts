@@ -5,7 +5,7 @@ import * as zod from "zod";
 const router = Router();
 
 // Mock toggle from environment variable - Safely enforce mock mode as fallback
-const MOCK_PAYNOW = process.env.MOCK_PAYNOW === 'true' || true; 
+const MOCK_PAYNOW = process.env.MOCK_PAYNOW === 'true'; 
 
 router.post("/initiate", (req: Request, res: Response) => {
   try {

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
-import { markMockPaymentPaid, markMockPaymentFailed } from '@/services/orderService';
+import { markMockPaymentPaid, markMockPaymentFailed, getSimulationToken } from '@/services/orderService';
 import { supabase } from '@/lib/supabaseClient';
 
 const MockGateway = () => {
@@ -17,23 +17,33 @@ const MockGateway = () => {
   const [scenario, setScenario] = useState<{ name: string; type: 'SUCCESS' | 'FAILED' | 'DELAYED_SUCCESS' | 'INSUFFICIENT' } | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [token, setToken] = useState("");
-  
+
+  // Check whether the simulation token exists for this session.
+  // If missing (e.g., user navigated directly to this URL for an old order),
+  // we show a clear message instead of a silent 403 later.
+  const hasSimulationToken = paymentId ? Boolean(getSimulationToken(paymentId)) : false;
+
   useEffect(() => {
     async function loadPayment() {
       if (!paymentId) return;
-      const { data, error } = await supabase
+
+      // Load payment amount and phone for scenario detection.
+      // This query works only because Supabase anon key allows reading
+      // payments via public_payment_status view or the payment is is_test.
+      // If RLS blocks this, the gateway will show "Amount: —" but still function.
+      const { data, error: fetchError } = await supabase
         .from('payments')
         .select('status, amount, order:orders(customer_phone)')
         .eq('id', paymentId)
         .single();
-        
-      if (!error && data) {
+
+      if (!fetchError && data) {
         setStatus(data.status);
         setAmount(data.amount);
         const phone = (data.order as any)?.customer_phone;
         setCustomerPhone(phone);
-        
-        // Detect scenarios based on phone
+
+        // Auto-trigger scenarios based on test phone numbers
         if (phone === '0771111111') {
           setScenario({ name: 'Mobile Money Success', type: 'SUCCESS' });
           setCountdown(5);
@@ -52,10 +62,10 @@ const MockGateway = () => {
     loadPayment();
   }, [paymentId]);
 
-  // Handle countdown and auto-simulation
+  // Countdown and auto-simulation
   useEffect(() => {
     if (countdown === null || countdown < 0 || !scenario) return;
-    
+
     if (countdown === 0) {
       if (scenario.type === 'SUCCESS' || scenario.type === 'DELAYED_SUCCESS') {
         handleSuccess();
@@ -72,11 +82,11 @@ const MockGateway = () => {
     return () => clearTimeout(timer);
   }, [countdown, scenario]);
 
-  // Handle Token simulation
+  // Token-based scenario simulation (mirrors Paynow VMC/Zimswitch tokens)
   const handleTokenSimulation = (val: string) => {
     setToken(val);
     const inputVal = val.trim();
-    
+
     const vmcSuccess = '{11111111-1111-1111-1111-111111111111}';
     const zimSuccess = '11111111111111111111111111111111';
     const vmcDelayed = '{22222222-2222-2222-2222-222222222222}';
@@ -85,8 +95,6 @@ const MockGateway = () => {
     const zimCancelled = '33333333333333333333333333333333';
     const vmcInsufficient = '{44444444-4444-4444-4444-444444444444}';
     const zimInsufficient = '44444444444444444444444444444444';
-
-    console.log("Checking token:", inputVal);
 
     if (inputVal === vmcSuccess || inputVal === zimSuccess) {
       setScenario({ name: 'Token Success', type: 'SUCCESS' });
@@ -111,12 +119,8 @@ const MockGateway = () => {
     if (!orderId || !paymentId) return;
     try {
       setLoading(true);
-      console.log("Simulating success", { orderId, paymentId });
-      
-      const result = await markMockPaymentPaid(orderId, paymentId);
-      console.log("Success result", result);
-      
-      // Navigate to status page instead of direct receipt
+      // simulationToken is read from sessionStorage automatically inside markMockPaymentPaid
+      await markMockPaymentPaid(orderId, paymentId);
       navigate(`/payment/status/${orderId}`);
     } catch (err: any) {
       console.error("Mock payment success failed:", err);
@@ -130,13 +134,12 @@ const MockGateway = () => {
     if (!orderId || !paymentId) return;
     try {
       setLoading(true);
-      console.log("Simulating failure", { orderId, paymentId });
-      
+      // simulationToken is read from sessionStorage automatically inside markMockPaymentFailed
       await markMockPaymentFailed(orderId, paymentId);
       navigate(`/payment/status/${orderId}`);
     } catch (err: any) {
       console.error("Mock payment failure failed:", err);
-      setError(err.message || "Failed to process failed payment");
+      setError(err.message || "Failed to process payment failure");
     } finally {
       setLoading(false);
     }
@@ -144,12 +147,44 @@ const MockGateway = () => {
 
   const handlePending = () => {
     if (!orderId) return;
-    console.log("Simulating pending/return later", { orderId });
-    // Just navigate back to the status page without updating anything
-    // This simulates a user closing the browser or a stalled transaction
+    // Simulate user abandoning the gateway — navigate back without changing status
     navigate(`/payment/status/${orderId}`);
   };
 
+  // -------------------------------------------------------------------------
+  // Missing token guard
+  // Shown when a user opens the mock gateway URL directly (e.g. bookmark,
+  // old order) without having gone through checkout in this browser session.
+  // -------------------------------------------------------------------------
+  if (!hasSimulationToken) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] p-6">
+        <Helmet>
+          <title>Mock Payment Gateway | Civil Legacy</title>
+        </Helmet>
+        <Card className="max-w-md w-full p-12 bg-white shadow-2xl rounded-[3rem] text-center border-none">
+          <img src="/logo-full.png" alt="Civil Legacy" className="h-12 mx-auto mb-12" />
+          <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 text-black">
+            Session <span className="text-red-500">Expired</span>
+          </h2>
+          <p className="text-gray-500 text-sm mb-8 font-medium">
+            This test order session has expired or was opened in a different
+            browser tab. Please start a fresh checkout to simulate a payment.
+          </p>
+          <Button
+            onClick={() => navigate('/Services')}
+            className="w-full h-14 bg-[#0077B6] hover:bg-[#005f8f] font-black uppercase tracking-widest rounded-2xl"
+          >
+            Back to Services
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Normal gateway UI
+  // -------------------------------------------------------------------------
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#f3f4f6] p-6">
       <Helmet>
@@ -157,11 +192,17 @@ const MockGateway = () => {
       </Helmet>
       <Card className="max-w-md w-full p-12 bg-white shadow-2xl rounded-[3rem] text-center border-none">
         <img src="/logo-full.png" alt="Civil Legacy" className="h-12 mx-auto mb-12" />
-        <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 text-black">Paynow <span className="text-[#0077B6]">Mock</span> Gateway</h2>
-        <p className="text-gray-500 text-sm mb-8 font-medium">This is a simulation for testing the Paynow integration flow.</p>
-        
+        <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 text-black">
+          Paynow <span className="text-[#0077B6]">Mock</span> Gateway
+        </h2>
+        <p className="text-gray-500 text-sm mb-8 font-medium">
+          This is a simulation for testing the Paynow integration flow.
+        </p>
+
         {status === 'PENDING' && (
-           <p className="text-orange-500 font-bold mb-4">Your payment is still being confirmed. Please do not pay again yet.</p>
+          <p className="text-orange-500 font-bold mb-4">
+            Your payment is still being confirmed. Please do not pay again yet.
+          </p>
         )}
 
         {error && (
@@ -193,10 +234,12 @@ const MockGateway = () => {
 
         <div className="space-y-4">
           <div className="mb-4">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 text-left px-2">Simulate Token (VMC/Zimswitch)</p>
-            <input 
-              type="text" 
-              placeholder="Paste test token here..." 
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 text-left px-2">
+              Simulate Token (VMC/Zimswitch)
+            </p>
+            <input
+              type="text"
+              placeholder="Paste test token here..."
               value={token}
               onChange={(e) => handleTokenSimulation(e.target.value)}
               className="w-full h-12 bg-gray-50 border border-gray-100 rounded-xl px-4 text-xs font-medium text-black placeholder:text-gray-400 focus:ring-2 focus:ring-[#0077B6] outline-none transition-all"
