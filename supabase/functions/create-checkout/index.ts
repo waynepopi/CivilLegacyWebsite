@@ -6,6 +6,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const MAX_CART_ITEMS = 50
+const CHECKOUT_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
+const MAX_CHECKOUTS_PER_EMAIL_WINDOW = 5
+
 // ---------------------------------------------------------------------------
 // PaymentProvider interface
 // ---------------------------------------------------------------------------
@@ -101,8 +105,37 @@ serve(async (req) => {
       }
     }
 
-    if (!cartItems || cartItems.length === 0) {
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
       throw new Error('Cart is empty')
+    }
+
+    if (cartItems.length > MAX_CART_ITEMS) {
+      throw new Error(`Cart cannot contain more than ${MAX_CART_ITEMS} items`)
+    }
+
+    const normalizedCustomer = {
+      full_name: customer.full_name.trim(),
+      email: customer.email.trim().toLowerCase(),
+      phone: customer.phone.trim(),
+      whatsapp_number: customer.whatsapp_number?.trim() ?? null,
+    }
+
+    const rateLimitSince = new Date(Date.now() - CHECKOUT_RATE_LIMIT_WINDOW_MS).toISOString()
+    const { count: recentCheckoutCount, error: rateLimitError } = await supabaseClient
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('customer_email', normalizedCustomer.email)
+      .gte('created_at', rateLimitSince)
+
+    if (rateLimitError) {
+      throw new Error(`Failed to verify checkout rate limit: ${rateLimitError.message}`)
+    }
+
+    if ((recentCheckoutCount ?? 0) >= MAX_CHECKOUTS_PER_EMAIL_WINDOW) {
+      return new Response(
+        JSON.stringify({ error: 'Too many checkout attempts. Please wait a few minutes and try again.' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 429 }
+      )
     }
 
     // ------------------------------------------------------------------
@@ -169,10 +202,10 @@ serve(async (req) => {
       .from('orders')
       .insert({
         order_number: orderNumber,
-        customer_name: customer.full_name.trim(),
-        customer_email: customer.email.trim().toLowerCase(),
-        customer_phone: customer.phone.trim(),
-        whatsapp_number: customer.whatsapp_number?.trim() ?? null,
+        customer_name: normalizedCustomer.full_name,
+        customer_email: normalizedCustomer.email,
+        customer_phone: normalizedCustomer.phone,
+        whatsapp_number: normalizedCustomer.whatsapp_number,
         status: 'PENDING_PAYMENT',
         total_amount: finalTotal,
         currency: 'USD',
@@ -201,8 +234,8 @@ serve(async (req) => {
       orderId,
       amount: finalTotal,
       currency: 'USD',
-      customerEmail: customer.email.trim().toLowerCase(),
-      customerName: customer.full_name.trim(),
+      customerEmail: normalizedCustomer.email,
+      customerName: normalizedCustomer.full_name,
     })
 
     // ------------------------------------------------------------------

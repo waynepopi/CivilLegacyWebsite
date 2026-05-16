@@ -40,10 +40,10 @@ serve(async (req) => {
       throw new Error('Unauthorized')
     }
 
-    // Check if the caller is in admin_users
+    // Check if the caller is a super admin.
     const { data: adminCheck, error: adminError } = await supabaseAdmin
       .from('admin_users')
-      .select('id')
+      .select('id, is_super_admin')
       .eq('id', userData.user.id)
       .single()
 
@@ -51,16 +51,27 @@ serve(async (req) => {
       throw new Error('Forbidden: Only admins can create new admins')
     }
 
+    if (!adminCheck.is_super_admin) {
+      throw new Error('Forbidden: Only super admins can create new admins')
+    }
+
     // 4. Extract new user info
     const { email, password } = await req.json()
-    if (!email || !password) {
+    const normalizedEmail = email?.toString().trim().toLowerCase()
+    const normalizedPassword = password?.toString()
+
+    if (!normalizedEmail || !normalizedPassword) {
       throw new Error('Email and password are required')
+    }
+
+    if (normalizedPassword.length < 6) {
+      throw new Error('Password must be at least 6 characters')
     }
 
     // 5. Create user in Supabase Auth
     const { data: authData, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
+      email: normalizedEmail,
+      password: normalizedPassword,
       email_confirm: true,
     })
 
@@ -75,7 +86,7 @@ serve(async (req) => {
       .from('admin_users')
       .insert({
         id: newUserId,
-        email: email,
+        email: normalizedEmail,
       })
 
     if (insertError) {

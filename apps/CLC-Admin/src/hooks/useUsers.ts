@@ -12,6 +12,7 @@ export interface AdminUser {
 
 export function useUsers() {
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,9 +21,13 @@ export function useUsers() {
   async function fetchUsers() {
     setLoading(true);
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const currentUserId = sessionData.session?.user.id ?? null;
       const { data, error: err } = await supabase.from('admin_users').select('*').order('created_at', { ascending: false });
       if (err) throw err;
-      setUsers(data || []);
+      const adminUsers = data || [];
+      setUsers(adminUsers);
+      setCurrentAdmin(adminUsers.find(user => user.id === currentUserId) ?? null);
       setError(null);
     } catch (err: any) {
       console.error('Fetch users error:', err);
@@ -66,5 +71,14 @@ export function useUsers() {
     }
   };
 
-  return { users, loading, error, removeUser, createAdmin, refresh: fetchUsers };
+  return {
+    users,
+    currentAdmin,
+    canManageAdmins: Boolean(currentAdmin?.is_super_admin),
+    loading,
+    error,
+    removeUser,
+    createAdmin,
+    refresh: fetchUsers
+  };
 }

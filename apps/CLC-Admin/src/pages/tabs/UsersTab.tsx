@@ -9,7 +9,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 
 export default function UsersTab() {
-  const { users, loading, error, removeUser, createAdmin } = useUsers();
+  const { users, loading, error, removeUser, createAdmin, canManageAdmins } = useUsers();
   const { session } = useAuth();
   
   const currentUserEmail = session?.user?.email;
@@ -58,68 +58,70 @@ export default function UsersTab() {
         <h2 className="text-2xl font-bold text-white flex items-center gap-2">
           <UserCog className="text-[#0077B6]" /> Administrator Management
         </h2>
-        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-[#0077B6] hover:bg-[#0077B6]/80 text-white flex items-center gap-2">
-              <Plus className="h-4 w-4" /> Add Administrator
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-zinc-900 border-zinc-800 text-zinc-100 sm:max-w-[425px]">
-            <form onSubmit={handleAddSubmit}>
-              <DialogHeader>
-                <DialogTitle>Add New Administrator</DialogTitle>
-                <DialogDescription className="text-zinc-400">
-                  Create a new admin user. They will immediately have access to this dashboard.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                {addError && (
-                  <div className="bg-red-950/50 border border-red-900/50 text-red-400 p-3 rounded-md text-sm">
-                    {addError}
+        {canManageAdmins && (
+          <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#0077B6] hover:bg-[#0077B6]/80 text-white flex items-center gap-2">
+                <Plus className="h-4 w-4" /> Add Administrator
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-zinc-900 border-zinc-800 text-zinc-100 sm:max-w-[425px]">
+              <form onSubmit={handleAddSubmit}>
+                <DialogHeader>
+                  <DialogTitle>Add New Administrator</DialogTitle>
+                  <DialogDescription className="text-zinc-400">
+                    Create a new admin user. They will immediately have access to this dashboard.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  {addError && (
+                    <div className="bg-red-950/50 border border-red-900/50 text-red-400 p-3 rounded-md text-sm">
+                      {addError}
+                    </div>
+                  )}
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="email" className="text-right text-zinc-300">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={newEmail}
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      className="col-span-3 bg-zinc-800 border-zinc-700 text-zinc-100"
+                      placeholder="admin@example.com"
+                      required
+                    />
                   </div>
-                )}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="email" className="text-right text-zinc-300">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    className="col-span-3 bg-zinc-800 border-zinc-700 text-zinc-100"
-                    placeholder="admin@example.com"
-                    required
-                  />
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="password" className="text-right text-zinc-300">
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="col-span-3 bg-zinc-800 border-zinc-700 text-zinc-100"
+                      placeholder="Min 6 characters"
+                      required
+                      minLength={6}
+                    />
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="password" className="text-right text-zinc-300">
-                    Password
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="col-span-3 bg-zinc-800 border-zinc-700 text-zinc-100"
-                    placeholder="Min 6 characters"
-                    required
-                    minLength={6}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsAddOpen(false)} className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white">
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isAdding} className="bg-[#0077B6] hover:bg-[#0077B6]/80 text-white">
-                  {isAdding ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Create Admin
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setIsAddOpen(false)} className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white">
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isAdding} className="bg-[#0077B6] hover:bg-[#0077B6]/80 text-white">
+                    {isAdding ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                    Create Admin
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {error && (
@@ -134,7 +136,9 @@ export default function UsersTab() {
             <ShieldCheck className="text-[#0077B6] h-5 w-5" /> Active Administrators
           </CardTitle>
           <CardDescription className="text-zinc-400">
-            Current users with access to this dashboard. Note: Adding new admins requires backend configuration of their Auth User first.
+            {canManageAdmins
+              ? 'Current users with access to this dashboard.'
+              : 'Your administrator access is active. Super admin privileges are required to manage other admins.'}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -165,7 +169,7 @@ export default function UsersTab() {
                 </div>
               </div>
               
-              {u.email !== currentUserEmail && !u.is_super_admin && (
+              {canManageAdmins && u.email !== currentUserEmail && !u.is_super_admin && (
                 <Button 
                   variant="ghost" 
                   size="icon" 

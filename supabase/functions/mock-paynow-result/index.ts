@@ -75,7 +75,7 @@ serve(async (req) => {
     // ------------------------------------------------------------------
     const { data: payment, error: fetchError } = await supabaseClient
       .from('payments')
-      .select('id, status, is_test, simulation_token, payment_provider')
+      .select('id, order_id, status, is_test, simulation_token, payment_provider')
       .eq('id', paymentId)
       .single()
 
@@ -110,6 +110,18 @@ serve(async (req) => {
       )
     }
 
+    // Guard: bind the caller-supplied orderId to the payment row we validated.
+    // The token protects the payment, so every order mutation must use that
+    // payment's trusted order_id rather than untrusted request body data.
+    if (payment.order_id !== orderId) {
+      return new Response(
+        JSON.stringify({ error: 'Payment does not belong to the supplied order.' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      )
+    }
+
+    const trustedOrderId = payment.order_id
+
     // Guard: strict state transitions (PENDING is the only mutable state)
     if (payment.status !== 'PENDING') {
       return new Response(
@@ -136,7 +148,7 @@ serve(async (req) => {
       const { error: orderError } = await supabaseClient
         .from('orders')
         .update({ status: 'PAID' })
-        .eq('id', orderId)
+        .eq('id', trustedOrderId)
 
       if (orderError) throw orderError
 
@@ -149,7 +161,7 @@ serve(async (req) => {
 
       if (existingReceipt) {
         return new Response(
-          JSON.stringify({ orderId, paymentId, receiptId: existingReceipt.id, status: 'PAID' }),
+          JSON.stringify({ orderId: trustedOrderId, paymentId, receiptId: existingReceipt.id, status: 'PAID' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
@@ -161,7 +173,7 @@ serve(async (req) => {
       const { data: receiptData, error: receiptError } = await supabaseClient
         .from('receipts')
         .insert({
-          order_id: orderId,
+          order_id: trustedOrderId,
           payment_id: paymentId,
           receipt_number: receiptNumber,
           is_test: true,
@@ -172,7 +184,7 @@ serve(async (req) => {
       if (receiptError) throw receiptError
 
       return new Response(
-        JSON.stringify({ orderId, paymentId, receiptId: receiptData.id, status: 'PAID' }),
+        JSON.stringify({ orderId: trustedOrderId, paymentId, receiptId: receiptData.id, status: 'PAID' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     } else {
@@ -189,12 +201,12 @@ serve(async (req) => {
       const { error: orderError } = await supabaseClient
         .from('orders')
         .update({ status: targetStatus })
-        .eq('id', orderId)
+        .eq('id', trustedOrderId)
 
       if (orderError) throw orderError
 
       return new Response(
-        JSON.stringify({ orderId, paymentId, status: targetStatus }),
+        JSON.stringify({ orderId: trustedOrderId, paymentId, status: targetStatus }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
