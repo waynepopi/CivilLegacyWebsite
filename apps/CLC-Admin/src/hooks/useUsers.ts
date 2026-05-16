@@ -7,6 +7,7 @@ export interface AdminUser {
   email: string;
   role: string;
   created_at: string;
+  is_super_admin: boolean;
 }
 
 export function useUsers() {
@@ -47,5 +48,23 @@ export function useUsers() {
     }
   };
 
-  return { users, loading, error, removeUser, refresh: fetchUsers };
+  const createAdmin = async (email: string, password: string) => {
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke('create-admin-user', {
+        body: { email, password }
+      });
+      
+      if (invokeError) throw invokeError;
+      if (data?.error) throw new Error(data.error);
+
+      await logAdminAction(await getEmail(), 'INSERT', 'admin_users', data?.user?.id || 'new');
+      await fetchUsers();
+      return data;
+    } catch (err: any) {
+      console.error('Create user error:', err);
+      throw err;
+    }
+  };
+
+  return { users, loading, error, removeUser, createAdmin, refresh: fetchUsers };
 }
